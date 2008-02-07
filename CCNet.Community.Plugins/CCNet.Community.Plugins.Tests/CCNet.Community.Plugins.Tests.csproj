@@ -60,7 +60,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="TasksTests.cs" />
+    <Compile Include="MbUnitTasksTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CCNet.Community.Plugins\CCNet.Community.Plugins.csproj">
