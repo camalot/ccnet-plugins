@@ -5,6 +5,7 @@
     <Configuration Condition="'$(CCNetBuildCondition)' != 'ForceBuild'">Debug</Configuration>
     <BuildAllDependsOn>CleanBuild;CoreBuild;ZipRelease;ReleaseCleanup</BuildAllDependsOn>
     <OutputPath>$(CCNetArtifactDirectory)\$(Configuration)\$(CCNetLabel)\</OutputPath>
+    <DocumentationFile>$(CCNetArtifactDirectory)\$(Configuration)\$(CCNetLabel)\$(CCNetProject).XML</DocumentationFile>
     <CompileDependsOn>PrepareBuild;$(CompileDependsOn)</CompileDependsOn>
     <MSBuildExtendedTasksTargets>$(MSBuildExtensionsPath)\MSBuildExtendedTasks\MSBuild.Extended.Tasks.Targets</MSBuildExtendedTasksTargets>
     <MSBuildProperties>Configuration=$(Configuration);OutputPath=$(OutputPath);CCNetLabel=$(CCNetLabel);CCNetIntegrationStatus=$(CCNetIntegrationStatus);CCNetBuildCondition=$(CCNetBuildCondition);CCNetProject=$(CCNetProject);CCNetBuildDate=$(CCNetBuildDate);CCNetLastIntegrationStatus=$(CCNetLastIntegrationStatus);CCNetBuildTime=$(CCNetBuildTime);CCNetArtifactDirectory=$(CCNetArtifactDirectory);CCNetWorkingDirectory=$(CCNetWorkingDirectory);CCNetRequestSource=$(CCNetRequestSource)</MSBuildProperties>

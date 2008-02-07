@@ -1,7 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Configuration Condition="'$(CCNetBuildCondition)' != 'ForceBuild'">Debug</Configuration>
+    <Configuration Condition="'$(CCNetBuildCondition)' == 'ForceBuild'">Release</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
@@ -17,20 +18,25 @@
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(CCNetLabel)' != '' ">
+    <DocumentationFile>$(OutputPath)$(AssemblyName).XML</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(CCNetLabel)' == '' ">
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <DocumentationFile>..\bin\$(Configuration)\$(AssemblyName).XML</DocumentationFile>
+    <OutputPath>..\bin\$(Configuration)\</OutputPath>
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\bin\Debug\CCNet.Community.Plugins.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -70,11 +76,17 @@
     <Folder Include="Triggers\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
+  <Import Project="$(MSBuildExtensionsPath)\MSBuildCommunityTasks\MSBuild.Community.Tasks.Targets" Condition=" '$(CCNetLabel)' != '' " />
+  <Target Name="BeforeBuild" Condition=" '$(CCNetLabel)' != '' ">
+    <CallTarget Targets="PrepareBuild" />
   </Target>
-  <Target Name="AfterBuild">
+  <Target Name="AssemblyInfo" Outputs="$(MSBuildProjectDirectory)\Properties\AssemblyInfo.cs" Condition=" '$(CCNetLabel)' != '' ">
+    <CreateItem Include="Properties\AssemblyInfo.cs" Condition=" '$(CCNetLabel)' != '' ">
+      <Output TaskParameter="Include" ItemName="Compile" />
+    </CreateItem>
+    <AssemblyInfo CodeLanguage="CS" AssemblyCompany="Camalot Designs" AssemblyCopyright="Copyright © Ryan Conrad 2006. All Rights Reserved." AssemblyDescription="A GUI Configuration Tool for CruiseControl.Net" AssemblyProduct="CCNetConfig" AssemblyTitle="CCNetConfig" AssemblyFileVersion="$(CCNetLabel)" AssemblyVersion="$(CCNetLabel)" ComVisible="false" CLSCompliant="true" OutputFile="$(MSBuildProjectDirectory)\Properties\AssemblyInfo.cs" Guid="2351f08c-1dce-4cd9-b0d7-ec7adce69010" />
   </Target>
-  -->
+  <Target Name="PrepareBuild" DependsOnTargets="AssemblyInfo" Condition=" '$(CCNetLabel)' != '' ">
+    <MakeDir Directories="$(OutputPath)" Condition="!Exists('$(OutputPath)')" />
+  </Target>
 </Project>
