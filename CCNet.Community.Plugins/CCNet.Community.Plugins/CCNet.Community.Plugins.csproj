@@ -63,10 +63,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tasks\MbUnitArgument.cs" />
     <Compile Include="Tasks\MbUnitFilters.cs" />
     <Compile Include="Tasks\MbUnitTask.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Properties\placeholder.txt" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Labellers\" />
@@ -81,10 +83,10 @@
     <CallTarget Targets="PrepareBuild" />
   </Target>
   <Target Name="AssemblyInfo" Outputs="$(MSBuildProjectDirectory)\Properties\AssemblyInfo.cs" Condition=" '$(CCNetLabel)' != '' ">
-    <CreateItem Include="Properties\AssemblyInfo.cs" Condition=" '$(CCNetLabel)' != '' ">
+    <!--CreateItem Include="Properties\AssemblyInfo.cs" Condition=" '$(CCNetLabel)' != '' ">
       <Output TaskParameter="Include" ItemName="Compile" />
     </CreateItem>
-    <AssemblyInfo CodeLanguage="CS" AssemblyCompany="Camalot Designs" AssemblyCopyright="Copyright © Ryan Conrad 2006-2008. All Rights Reserved." AssemblyDescription="Community contributed plugins for CruiseControl.NET" AssemblyProduct="CCNet.Community.Plugins" AssemblyTitle="CCNet.Community.Plugins" AssemblyFileVersion="$(CCNetLabel)" AssemblyVersion="$(CCNetLabel)" ComVisible="false" CLSCompliant="true" OutputFile="$(MSBuildProjectDirectory)\Properties\AssemblyInfo.cs" Guid="A91B2548-D533-11DC-BED7-23BF55D89593" />
+    <AssemblyInfo CodeLanguage="CS" AssemblyCompany="Camalot Designs" AssemblyCopyright="Copyright © Ryan Conrad 2006-2008. All Rights Reserved." AssemblyDescription="Community contributed plugins for CruiseControl.NET" AssemblyProduct="CCNet.Community.Plugins" AssemblyTitle="CCNet.Community.Plugins" AssemblyFileVersion="$(CCNetLabel)" AssemblyVersion="$(CCNetLabel)" ComVisible="false" CLSCompliant="true" OutputFile="$(MSBuildProjectDirectory)\Properties\AssemblyInfo.cs" Guid="A91B2548-D533-11DC-BED7-23BF55D89593" /-->
   </Target>
   <Target Name="PrepareBuild" DependsOnTargets="AssemblyInfo" Condition=" '$(CCNetLabel)' != '' ">
     <MakeDir Directories="$(OutputPath)" Condition="!Exists('$(OutputPath)')" />
