@@ -13,6 +13,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3rdParty", "3rdParty", "{E9
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CCNet.Community.Plugins.Tests", "CCNet.Community.Plugins.Tests\CCNet.Community.Plugins.Tests.csproj", "{66AC52EC-7B71-4014-932A-D4D8139A2BBE}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{37DBE681-EEE2-4158-B285-38E576A21E51}"
+	ProjectSection(SolutionItems) = preProject
+		build.msbuild = build.msbuild
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
 		SccNumberOfProjects = 3

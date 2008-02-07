@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build" ToolsVersion="3.5">
+  <PropertyGroup>
+    <Configuration Condition="'$(CCNetBuildCondition)' == 'ForceBuild'">Release</Configuration>
+    <Configuration Condition="'$(CCNetBuildCondition)' != 'ForceBuild'">Debug</Configuration>
+    <BuildAllDependsOn>CleanBuild;CoreBuild;ZipRelease;ReleaseCleanup</BuildAllDependsOn>
+    <OutputPath>$(CCNetArtifactDirectory)\$(Configuration)\$(CCNetLabel)\</OutputPath>
+    <CompileDependsOn>PrepareBuild;$(CompileDependsOn)</CompileDependsOn>
+    <MSBuildExtendedTasksTargets>$(MSBuildExtensionsPath)\MSBuildExtendedTasks\MSBuild.Extended.Tasks.Targets</MSBuildExtendedTasksTargets>
+    <MSBuildProperties>Configuration=$(Configuration);OutputPath=$(OutputPath);CCNetLabel=$(CCNetLabel);CCNetIntegrationStatus=$(CCNetIntegrationStatus);CCNetBuildCondition=$(CCNetBuildCondition);CCNetProject=$(CCNetProject);CCNetBuildDate=$(CCNetBuildDate);CCNetLastIntegrationStatus=$(CCNetLastIntegrationStatus);CCNetBuildTime=$(CCNetBuildTime);CCNetArtifactDirectory=$(CCNetArtifactDirectory);CCNetWorkingDirectory=$(CCNetWorkingDirectory);CCNetRequestSource=$(CCNetRequestSource)</MSBuildProperties>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectsToBuild Include="**\*csproj" Exclude="**\CCNet.Community.Plugins.Tests.csproj;" />
+    <InstallProjectToBuild Include="**\*.wix.msbuild" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <SourceFiles Include="$(CCNetWorkingDirectory)\$(CCNetProject)\**\*.*" Exclude="$(CCNetWorkingDirectory)\$(CCNetProject)\*.dll" />
+  </ItemGroup>
+
+  <Import Project="$(MSBuildExtensionsPath)\MSBuildCommunityTasks\MSBuild.Community.Tasks.Targets" Condition="'$(MSBuildCommunityTasksPath)' == ''"/>
+  <Import Project="$(MSBuildExtendedTasksTargets)" Condition="Exists($(MSBuildExtendedTasksTargets))" />
+
+  <Target Name="CleanBuild">
+    <RemoveDir Directories="$(OutputPath)" Condition="Exists('$(OutputPath)')" ContinueOnError="true" />
+    <MakeDir Directories="$(OutputPath)" Condition="!Exists('$(OutputPath)')" />
+  </Target>
+
+  <Target Name="CoreBuild">
+    <MSBuild Projects ="@(ProjectsToBuild)" ContinueOnError="false"
+             Properties="$(MSBuildProperties)">
+      <Output ItemName="OutputFiles" TaskParameter="TargetOutputs"/>
+    </MSBuild>
+  </Target>
+
+  <Target Name="ZipRelease" DependsOnTargets="">
+    <CreateItem Include="$(OutputPath)*.*;$(OutputPath)Data\*.*" Exclude="$(OutputPath)*.zip;$(OutputPath)Help\**\*.*">
+      <Output ItemName="ZipFiles" TaskParameter="Include" />
+    </CreateItem>
+
+    <Zip Comment="$(CCNetBuildDate) $(CCNetBuildTime) $(CCNetProject) version $(CCNetLabel)" Files="@(ZipFiles)"
+         WorkingDirectory="$(OutputPath)"
+         ZipFileName="$(OutputPath)$(CCNetProject).$(CCNetLabel).zip" ZipLevel="9" Flatten="False" />
+
+    <Zip Comment="$(CCNetBuildDate) $(CCNetBuildTime) $(CCNetProject) version $(CCNetLabel) Source"
+      Files="@(SourceFiles)" WorkingDirectory="$(CCNetWorkingDirectory)\$(CCNetProject)\"
+      ZipFileName="$(OutputPath)$(CCNetProject).$(CCNetLabel).src.zip" Flatten="False" ZipLevel="9" />
+
+    <!--CallTarget Targets="BuildInstall" ContinueOnError="false" />
+
+    <CreateItem Include="$(OutputPath)\*.msi">
+      <Output ItemName="MSIFile" TaskParameter="Include" />
+    </CreateItem>
+
+    <Zip Comment="$(CCNetBuildDate) $(CCNetBuildTime) $(CCNetProject) version $(CCNetLabel) Installer"
+      Files="@(MSIFile)" WorkingDirectory="$(OutputPath)"
+      ZipFileName="$(OutputPath)$(CCNetProject).$(CCNetLabel).msi.zip" Flatten="True" ZipLevel="9" /-->
+  </Target>
+
+  <Target Name="ReleaseCleanup" DependsOnTargets="ZipRelease">
+    <CreateItem Include="$(OutputPath)**\*.*" Exclude="$(OutputPath)*.zip">
+      <Output ItemName="DeadFiles" TaskParameter="Include" />
+    </CreateItem>
+    <CreateItem Include="$(OutputPath)**\">
+      <Output ItemName="DeadFolders" TaskParameter="Include" />
+    </CreateItem>
+    <Delete Files="@(DeadFiles)" ContinueOnError="true" />
+    <RemoveDir Directories="@(DeadFolders)" ContinueOnError="true" />
+    <RemoveDir Directories="$(OutputPath)Data" Condition="Exists('$(OutputPath)')" ContinueOnError="true" />
+  </Target>
+
+  <Target Name="Build" DependsOnTargets="CleanBuild;CoreBuild;ReleaseCleanup;CopyDefaultAspxPage">
+  </Target>
+
+  <Target Name="CopyDefaultAspxPage">
+    <Copy SourceFiles="$(CCNetArtifactDirectory)\Default.aspx" DestinationFolder="$(OutputPath)" />
+  </Target>
+</Project>
