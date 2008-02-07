@@ -14,6 +14,7 @@ namespace CCNet.Community.Plugins.Tasks {
     Html,
     Xml,
   }
+
   [ReflectorType ( "mbunit" )]
   public class MbUnitTask : ITask {
 
