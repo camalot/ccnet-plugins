@@ -36,6 +36,7 @@
 
   <!-- Zips releases up -->
   <Target Name="ZipRelease" DependsOnTargets="">
+    <
     <CreateItem Include="$(OutputPath)*.*;$(OutputPath)Data\*.*" Exclude="$(OutputPath)*.zip;$(OutputPath)Help\**\*.*">
       <Output ItemName="ZipFiles" TaskParameter="Include" />
     </CreateItem>
