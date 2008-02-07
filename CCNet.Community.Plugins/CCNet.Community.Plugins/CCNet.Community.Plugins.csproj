@@ -68,8 +68,10 @@
     <Compile Include="Tasks\MbUnitTask.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Properties\placeholder.txt" />
+  </ItemGroup>
+  <ItemGroup>
     <Folder Include="Labellers\" />
-    <Folder Include="Properties\" />
     <Folder Include="Publishers\" />
     <Folder Include="SourceControls\" />
     <Folder Include="States\" />
