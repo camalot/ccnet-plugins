@@ -33,7 +33,7 @@
       <Output ItemName="OutputFiles" TaskParameter="TargetOutputs"/>
     </MSBuild>
   </Target>
-<!-- WTF -->
+
   <!-- Zips releases up -->
   <Target Name="ZipRelease" DependsOnTargets="">
     <
