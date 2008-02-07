@@ -86,7 +86,7 @@
     <CreateItem Include="Properties\AssemblyInfo.cs" Condition=" '$(CCNetLabel)' != '' ">
       <Output TaskParameter="Include" ItemName="Compile" />
     </CreateItem>
-    <AssemblyInfo CodeLanguage="CS" AssemblyCompany="Camalot Designs" AssemblyCopyright="Copyright © Ryan Conrad 2006. All Rights Reserved." AssemblyDescription="A GUI Configuration Tool for CruiseControl.Net" AssemblyProduct="CCNetConfig" AssemblyTitle="CCNetConfig" AssemblyFileVersion="$(CCNetLabel)" AssemblyVersion="$(CCNetLabel)" ComVisible="false" CLSCompliant="true" OutputFile="$(MSBuildProjectDirectory)\Properties\AssemblyInfo.cs" Guid="2351f08c-1dce-4cd9-b0d7-ec7adce69010" />
+    <AssemblyInfo CodeLanguage="CS" AssemblyCompany="Camalot Designs" AssemblyCopyright="Copyright © Ryan Conrad 2006. All Rights Reserved." AssemblyDescription="Community contributed plugins for CruiseControl.NET" AssemblyProduct="CCNet.Community.Plugins" AssemblyTitle="CCNet.Community.Plugins" AssemblyFileVersion="$(CCNetLabel)" AssemblyVersion="$(CCNetLabel)" ComVisible="false" CLSCompliant="true" OutputFile="$(MSBuildProjectDirectory)\Properties\AssemblyInfo.cs" Guid="A91B2548-D533-11DC-BED7-23BF55D89593" />
   </Target>
   <Target Name="PrepareBuild" DependsOnTargets="AssemblyInfo" Condition=" '$(CCNetLabel)' != '' ">
     <MakeDir Directories="$(OutputPath)" Condition="!Exists('$(OutputPath)')" />
