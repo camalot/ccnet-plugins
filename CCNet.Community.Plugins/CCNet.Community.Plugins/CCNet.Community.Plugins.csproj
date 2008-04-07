@@ -63,17 +63,18 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Labellers\LastChangeVersionLabeller.cs" />
+    <Compile Include="SourceControls\FtpClient.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="SourceControls\FtpSourceControl.cs" />
     <Compile Include="Tasks\MbUnitArgument.cs" />
     <Compile Include="Tasks\MbUnitFilters.cs" />
     <Compile Include="Tasks\MbUnitTask.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Properties\placeholder.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Labellers\" />
+    <Folder Include="Properties\" />
     <Folder Include="Publishers\" />
-    <Folder Include="SourceControls\" />
     <Folder Include="States\" />
     <Folder Include="Triggers\" />
   </ItemGroup>

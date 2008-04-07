@@ -61,6 +61,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="FtpClientTests.cs" />
+    <Compile Include="FtpSourceControlTests.cs" />
     <Compile Include="MbUnitTasksTests.cs" />
   </ItemGroup>
   <ItemGroup>
