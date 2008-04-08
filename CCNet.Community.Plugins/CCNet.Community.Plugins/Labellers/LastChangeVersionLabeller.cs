@@ -74,7 +74,7 @@ namespace CCNet.Community.Plugins.Labellers {
     /// <param name="lastChange">The last change.</param>
     /// <returns></returns>
     private string GetVersionLabel ( int lastChange ) {
-      return string.Format ( "{1}{0}{2}{0}{4}{0}{3}", this.Separator, this.Major, this.Minor, this.GetYearMonthDay ( ), lastChange );
+      return string.Format ( "{1}{0}{2}{0}{3}{0}{4}", this.Separator, this.Major, this.Minor, this.GetYearMonthDay ( ), lastChange );
     }
 
     /// <summary>
@@ -83,9 +83,9 @@ namespace CCNet.Community.Plugins.Labellers {
     /// <returns></returns>
     private int GetYearMonthDay ( ) {
       DateTime time = DateTime.Now;
-      string longYear = time.Year.ToString ( );
-      int shortYear = int.Parse ( longYear.Substring ( longYear.Length - 2 ) );
-      string timeString = string.Format ( "{2}{0}{1}", PaddedValue ( time.Month ), PaddedValue ( time.Day ), PaddedValue ( shortYear ) );
+      //string longYear = time.Year.ToString ( );
+      //int shortYear = int.Parse ( longYear.Substring ( longYear.Length - 2 ) );
+      string timeString = string.Format ( "{0}{1}", PaddedValue ( time.Month ), PaddedValue ( time.Day ) );
       return Convert.ToInt32 ( timeString );
     }
 
