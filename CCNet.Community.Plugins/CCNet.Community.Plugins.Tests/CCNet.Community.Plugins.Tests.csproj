@@ -60,9 +60,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="FtpClientTests.cs" />
     <Compile Include="FtpSourceControlTests.cs" />
+    <Compile Include="LastChangeVersionLabellerTests.cs" />
     <Compile Include="MbUnitTasksTests.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -70,9 +71,6 @@
       <Project>{327A7C9D-76EB-4318-86F1-191E2445906D}</Project>
       <Name>CCNet.Community.Plugins</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

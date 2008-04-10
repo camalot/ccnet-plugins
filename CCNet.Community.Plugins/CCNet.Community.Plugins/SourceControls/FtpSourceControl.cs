@@ -72,6 +72,15 @@ namespace CCNet.Community.Plugins.SourceControls {
       this.UsePassive = false;
     }
 
+    public override string ToString ( ) {
+      return new Uri ( string.Format ( "{4}{0}{1}{2}{3}{5}",
+        this.FtpServer, this.Port != 21 ? ":" + this.Port : string.Empty,
+        !this.RepositoryRoot.StartsWith("/") ? "/" : string.Empty, this.RepositoryRoot ,
+        !this.FtpServer.StartsWith ( "ftp://" ) && !this.UseSecuredFtp ? "ftp://" : 
+        !this.FtpServer.StartsWith ( "sftp://" ) && this.UseSecuredFtp  ? "sftp://" : 
+        string.Empty,!this.RepositoryRoot.EndsWith("/") ? "/" : string.Empty) ).ToString ( );
+    }
+
     /// <summary>
     /// Creates the modification.
     /// </summary>

@@ -70,6 +70,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="Publishers\TfsWorkItemPublisher.cs" />
     <Compile Include="SourceControls\FtpClient.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -85,7 +86,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Publishers\" />
     <Folder Include="States\" />
     <Folder Include="Triggers\" />
   </ItemGroup>
@@ -98,9 +98,19 @@
     <CreateItem Include="Properties\AssemblyInfo.cs" Condition=" '$(CCNetLabel)' != '' ">
       <Output TaskParameter="Include" ItemName="Compile" />
     </CreateItem>
-    <AssemblyInfo CodeLanguage="CS" AssemblyCompany="Camalot Designs" AssemblyCopyright="Copyright © Ryan Conrad 2006-2008. All Rights Reserved." AssemblyDescription="Community contributed plugins for CruiseControl.NET" AssemblyProduct="CCNet.Community.Plugins" AssemblyTitle="CCNet.Community.Plugins" AssemblyFileVersion="$(CCNetLabel)" AssemblyVersion="$(CCNetLabel)" ComVisible="false" CLSCompliant="true" OutputFile="$(MSBuildProjectDirectory)\Properties\AssemblyInfo.cs" Guid="A91B2548-D533-11DC-BED7-23BF55D89593" />
+    <AssemblyInfo CodeLanguage="CS" AssemblyCompany="Ryan Conrad" 
+                  AssemblyCopyright="Copyright © Ryan Conrad 2006-2008. All Rights Reserved." 
+                  AssemblyDescription="Community contributed plugins for CruiseControl.NET" 
+                  AssemblyProduct="CCNet.Community.Plugins" 
+                  AssemblyTitle="CCNet.Community.Plugins" 
+                  AssemblyFileVersion="$(CCNetLabel)" 
+                  AssemblyVersion="$(CCNetLabel)" 
+                  ComVisible="false" 
+                  CLSCompliant="true" 
+                  OutputFile="$(MSBuildProjectDirectory)\Properties\AssemblyInfo.cs" 
+                  Guid="91b2548-d533-11dc-bed7-23bf55d89593" />
   </Target>
-  <Target Name="PrepareBuild" DependsOnTargets="" Condition=" '$(CCNetLabel)' != '' ">
+  <Target Name="PrepareBuild" DependsOnTargets="AssemblyInfo" Condition=" '$(CCNetLabel)' != '' ">
     <MakeDir Directories="$(OutputPath)" Condition="!Exists('$(OutputPath)')" />
   </Target>
 </Project>
