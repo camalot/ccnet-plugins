@@ -5,7 +5,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CCNet.Community.Plugins", "
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3rdParty", "3rdParty", "{E9CBCCE5-3DFF-4C25-B749-F467F156B8BB}"
 	ProjectSection(SolutionItems) = preProject
-		..\3rdParty\log4net.dll = ..\3rdParty\log4net.dll
 		..\3rdParty\NetReflector.dll = ..\3rdParty\NetReflector.dll
 		..\3rdParty\ThoughtWorks.CruiseControl.Core.dll = ..\3rdParty\ThoughtWorks.CruiseControl.Core.dll
 		..\3rdParty\ThoughtWorks.CruiseControl.Remote.dll = ..\3rdParty\ThoughtWorks.CruiseControl.Remote.dll
