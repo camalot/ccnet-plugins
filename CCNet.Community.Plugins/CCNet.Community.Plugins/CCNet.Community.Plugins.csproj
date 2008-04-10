@@ -99,7 +99,7 @@
   </Target>
   <Target Name="AssemblyInfo" Outputs="$(MSBuildProjectDirectory)\Properties\AssemblyInfo.cs" Condition=" '$(CCNetLabel)' != '' ">
     <MakeDir Directories="$(MSBuildProjectDirectory)\Properties\" Condition="!Exists('$(MSBuildProjectDirectory)\Properties\')" />
-    <AssemblyInfo CodeLanguage="CS" AssemblyCompany="Ryan Conrad" AssemblyCopyright="Copyright © Ryan Conrad 2006-2008. All Rights Reserved." AssemblyDescription="Community contributed plugins for CruiseControl.NET" AssemblyProduct="CCNet.Community.Plugins" AssemblyTitle="CCNet.Community.Plugins" AssemblyFileVersion="$(CCNetLabel)" AssemblyVersion="$(CCNetLabel)" ComVisible="false" CLSCompliant="true" OutputFile="$(MSBuildProjectDirectory)\Properties\AssemblyInfo.cs" Guid="91b2548-d533-11dc-bed7-23bf55d89593" />
+    <AssemblyInfo CodeLanguage="CS" AssemblyCompany="Ryan Conrad" AssemblyCopyright="Copyright © Ryan Conrad 2006-2008. All Rights Reserved." AssemblyDescription="Community contributed plugins for CruiseControl.NET" AssemblyProduct="CCNet.Community.Plugins" AssemblyTitle="CCNet.Community.Plugins" AssemblyFileVersion="$(CCNetLabel)" AssemblyVersion="$(CCNetLabel)" ComVisible="false" CLSCompliant="true" OutputFile="$(MSBuildProjectDirectory)\Properties\AssemblyInfo.cs" Guid="a91b2548-d533-11dc-bed7-23bf55d89593" />
     <CreateItem Include="Properties\AssemblyInfo.cs" Condition=" '$(CCNetLabel)' != '' ">
       <Output TaskParameter="Include" ItemName="Compile" />
     </CreateItem>
