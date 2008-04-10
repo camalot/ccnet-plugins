@@ -10,7 +10,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>CCNet.Community.Plugins</RootNamespace>
-    <AssemblyName>ccnet.community.plugin</AssemblyName>
+    <AssemblyName>$(RootNamespace)</AssemblyName>
     <TargetFrameworkVersion>v3.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
@@ -33,7 +33,6 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\bin\Debug\ccnet.community.plugin.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -91,14 +90,15 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\MSBuildCommunityTasks\MSBuild.Community.Tasks.Targets" Condition=" '$(CCNetLabel)' != '' " />
+
   <Target Name="BeforeBuild" Condition=" '$(CCNetLabel)' != '' ">
     <CallTarget Targets="PrepareBuild" />
   </Target>
+
   <Target Name="AssemblyInfo" Outputs="$(MSBuildProjectDirectory)\Properties\AssemblyInfo.cs" Condition=" '$(CCNetLabel)' != '' ">
-    <CreateItem Include="Properties\AssemblyInfo.cs" Condition=" '$(CCNetLabel)' != '' ">
-      <Output TaskParameter="Include" ItemName="Compile" />
-    </CreateItem>
-    <AssemblyInfo CodeLanguage="CS" AssemblyCompany="Ryan Conrad" 
+    <MakeDir Directories="$(MSBuildProjectDirectory)\Properties\" Condition="!Exists('$(MSBuildProjectDirectory)\Properties\')" />
+    <AssemblyInfo CodeLanguage="CS" 
+                  AssemblyCompany="Ryan Conrad" 
                   AssemblyCopyright="Copyright © Ryan Conrad 2006-2008. All Rights Reserved." 
                   AssemblyDescription="Community contributed plugins for CruiseControl.NET" 
                   AssemblyProduct="CCNet.Community.Plugins" 
@@ -109,6 +109,10 @@
                   CLSCompliant="true" 
                   OutputFile="$(MSBuildProjectDirectory)\Properties\AssemblyInfo.cs" 
                   Guid="91b2548-d533-11dc-bed7-23bf55d89593" />
+    
+    <CreateItem Include="Properties\AssemblyInfo.cs" Condition=" '$(CCNetLabel)' != '' ">
+      <Output TaskParameter="Include" ItemName="Compile" />
+    </CreateItem>
   </Target>
   <Target Name="PrepareBuild" DependsOnTargets="AssemblyInfo" Condition=" '$(CCNetLabel)' != '' ">
     <MakeDir Directories="$(OutputPath)" Condition="!Exists('$(OutputPath)')" />
