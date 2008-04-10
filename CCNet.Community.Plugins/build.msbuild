@@ -36,25 +36,20 @@
 
   <!-- Zips releases up -->
   <Target Name="ZipRelease" DependsOnTargets="">
-    
     <CreateItem Include="$(OutputPath)*.*;$(OutputPath)Data\*.*" Exclude="$(OutputPath)*.zip;$(OutputPath)Help\**\*.*">
       <Output ItemName="ZipFiles" TaskParameter="Include" />
     </CreateItem>
-
     <Zip Comment="$(CCNetBuildDate) $(CCNetBuildTime) $(CCNetProject) version $(CCNetLabel)" Files="@(ZipFiles)"
          WorkingDirectory="$(OutputPath)"
          ZipFileName="$(OutputPath)$(CCNetProject).$(CCNetLabel).zip" ZipLevel="9" Flatten="False" />
-
     <Zip Comment="$(CCNetBuildDate) $(CCNetBuildTime) $(CCNetProject) version $(CCNetLabel) Source"
       Files="@(SourceFiles)" WorkingDirectory="$(CCNetWorkingDirectory)\$(CCNetProject)\"
       ZipFileName="$(OutputPath)$(CCNetProject).$(CCNetLabel).src.zip" Flatten="False" ZipLevel="9" />
-
     <!--CallTarget Targets="BuildInstall" ContinueOnError="false" />
 
     <CreateItem Include="$(OutputPath)\*.msi">
       <Output ItemName="MSIFile" TaskParameter="Include" />
     </CreateItem>
-
     <Zip Comment="$(CCNetBuildDate) $(CCNetBuildTime) $(CCNetProject) version $(CCNetLabel) Installer"
       Files="@(MSIFile)" WorkingDirectory="$(OutputPath)"
       ZipFileName="$(OutputPath)$(CCNetProject).$(CCNetLabel).msi.zip" Flatten="True" ZipLevel="9" /-->
@@ -71,10 +66,10 @@
     <RemoveDir Directories="@(DeadFolders)" ContinueOnError="true" />
     <RemoveDir Directories="$(OutputPath)Data" Condition="Exists('$(OutputPath)')" ContinueOnError="true" />
   </Target>
-
+  
   <Target Name="Build" DependsOnTargets="CleanBuild;CoreBuild;ReleaseCleanup;CopyDefaultAspxPage">
   </Target>
-
+  
   <Target Name="CopyDefaultAspxPage">
     <Copy SourceFiles="$(CCNetArtifactDirectory)\Default.aspx" DestinationFolder="$(OutputPath)" />
   </Target>
