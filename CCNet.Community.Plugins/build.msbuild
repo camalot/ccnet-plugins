@@ -19,6 +19,7 @@
     <SourceFiles Include="$(CCNetWorkingDirectory)\$(CCNetProject)\**\*.*" Exclude="$(CCNetWorkingDirectory)\$(CCNetProject)\*.dll" />
   </ItemGroup>
 
+  
   <Import Project="$(MSBuildExtensionsPath)\MSBuildCommunityTasks\MSBuild.Community.Tasks.Targets" Condition="'$(MSBuildCommunityTasksPath)' == ''"/>
   <Import Project="$(MSBuildExtendedTasksTargets)" Condition="Exists($(MSBuildExtendedTasksTargets))" />
 
