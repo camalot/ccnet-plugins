@@ -70,19 +70,23 @@ namespace CCNet.Community.Plugins.Tests {
     [Test]
     public void LoadWithAssembly ( ) {
       string xml = @"<xunit>
-  <assembly>c:\foo.bar.dll</assembly>
+  <assemblies>  
+    <assembly>c:\foo.bar.dll</assembly>
+  </assemblies>
 </xunit>";
       XUnitTask task = NetReflector.Read ( xml ) as XUnitTask;
-      Assert.AreEqual ( "c:\\foo.bar.dll", task.Assembly );
+      Assert.AreEqual ( "c:\\foo.bar.dll", task.Assemblies[0] );
     }
 
     [Test]
     public void XUnitArgumentTest ( ) {
       string xml = @"<xunit>
-  <assembly>c:\foo.bar.dll</assembly>
+  <assemblies>  
+    <assembly>c:\foo.bar.dll</assembly>
+  </assemblies>
 </xunit>";
       XUnitTask task = NetReflector.Read ( xml ) as XUnitTask;
-      XUnitArgument arg = new XUnitArgument ( task, null );
+      XUnitArgument arg = new XUnitArgument ( task, null , task.Assemblies[0]);
 
       Assert.AreEqual ( "foo.bar.dll.xml", task.OutputFile );
 

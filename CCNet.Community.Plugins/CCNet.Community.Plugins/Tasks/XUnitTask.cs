@@ -58,7 +58,7 @@ namespace CCNet.Community.Plugins.Tasks {
   /// <summary>
   /// 
   /// </summary>
-  [ReflectorType("xunit")]
+  [ReflectorType ( "xunit" )]
   public class XUnitTask : ITask {
     public enum XUnitOutputType {
       Xml = 0,
@@ -72,7 +72,8 @@ namespace CCNet.Community.Plugins.Tasks {
     /// <summary>
     /// Initializes a new instance of the <see cref="XUnitTask"/> class.
     /// </summary>
-    public XUnitTask ( ): this(new ProcessExecutor()) {
+    public XUnitTask ( )
+      : this ( new ProcessExecutor ( ) ) {
     }
 
     /// <summary>
@@ -94,46 +95,46 @@ namespace CCNet.Community.Plugins.Tasks {
     /// <value>
     /// 	<c>true</c> if [shadow copy assemblies]; otherwise, <c>false</c>.
     /// </value>
-    [ReflectorProperty("shadowCopyAssemblies",Required=false)]
+    [ReflectorProperty ( "shadowCopyAssemblies", Required = false )]
     public bool ShadowCopyAssemblies { get; set; }
     /// <summary>
     /// Gets or sets the configuration file.
     /// </summary>
     /// <value>The configuration file.</value>
-    [ReflectorProperty("configFile",Required=false)]
+    [ReflectorProperty ( "configFile", Required = false )]
     public string ConfigurationFile { get; set; }
     /// <summary>
     /// Gets or sets the output file.
     /// </summary>
     /// <value>The output file.</value>
-    [ReflectorProperty("outputfile",Required=false)]
+    [ReflectorProperty ( "outputfile", Required = false )]
     public string OutputFile { get; set; }
     /// <summary>
     /// Gets or sets the assembly.
     /// </summary>
     /// <value>The assembly.</value>
-    [ReflectorProperty("assembly",Required=true)]
-    public string Assembly { get; set; }
+    [ReflectorArray ( "assemblies", Required = true )]
+    public string[ ] Assemblies { get; set; }
 
     /// <summary>
     /// Gets or sets the timeout.
     /// </summary>
     /// <value>The timeout.</value>
-    [ReflectorProperty("timeout",Required=false)]
+    [ReflectorProperty ( "timeout", Required = false )]
     public int Timeout { get; set; }
 
     /// <summary>
     /// Gets or sets the executable.
     /// </summary>
     /// <value>The executable.</value>
-    [ReflectorProperty("executable",Required=false)]
+    [ReflectorProperty ( "executable", Required = false )]
     public string Executable { get; set; }
 
     /// <summary>
     /// Gets or sets the type of the output.
     /// </summary>
     /// <value>The type of the output.</value>
-    [ReflectorProperty("outputtype",Required=false)]
+    [ReflectorProperty ( "outputtype", Required = false )]
     public XUnitOutputType OutputType { get; set; }
 
     /// <summary>
@@ -142,8 +143,8 @@ namespace CCNet.Community.Plugins.Tasks {
     /// <param name="outputFile">The output file.</param>
     /// <param name="result">The result.</param>
     /// <returns></returns>
-    private ProcessInfo NewProcessInfo ( string outputFile, IIntegrationResult result ) {
-      string str = new XUnitArgument ( this, result ).ToString ( );
+    private ProcessInfo NewProcessInfo ( string outputFile, string assembly, IIntegrationResult result ) {
+      string str = new XUnitArgument ( this, result, assembly ).ToString ( );
       Log.Debug ( string.Format ( "Running unit tests: {0} {1}", this.Executable, str ) );
       ProcessInfo info = new ProcessInfo ( this.Executable, str, result.WorkingDirectory );
       info.TimeOut = this.Timeout * 1000;
@@ -157,15 +158,18 @@ namespace CCNet.Community.Plugins.Tasks {
     /// </summary>
     /// <param name="result">The result.</param>
     public void Run ( IIntegrationResult result ) {
-      ListenerFile.WriteInfo ( result.ListenerFile, "Executing XUnit" );
-      string outputFile = result.BaseFromArtifactsDirectory ( this.OutputFile );
-      ProcessResult result2 = this._processExecutor.Execute ( this.NewProcessInfo ( outputFile, result ), ProcessMonitor.GetProcessMonitorByProject ( result.ProjectName ) );
-      result.AddTaskResult ( new ProcessTaskResult ( result2 ) );
-      if ( File.Exists ( outputFile ) ) {
-        result.AddTaskResult ( new FileTaskResult ( outputFile ) );
-      } else {
-        Log.Warning ( string.Format ( "MbUnit test output file {0} was not created", outputFile ) );
+      foreach ( string assembly in this.Assemblies ) {
+        ListenerFile.WriteInfo ( result.ListenerFile, string.Format ( "Executing XUnit for assembly: {0}", assembly ) );
+        string outputFile = result.BaseFromArtifactsDirectory ( this.OutputFile );
+        ProcessResult result2 = this._processExecutor.Execute ( this.NewProcessInfo ( outputFile,assembly, result ), ProcessMonitor.GetProcessMonitorByProject ( result.ProjectName ) );
+        result.AddTaskResult ( new ProcessTaskResult ( result2 ) );
+        if ( File.Exists ( outputFile ) ) {
+          result.AddTaskResult ( new FileTaskResult ( outputFile ) );
+        } else {
+          Log.Warning ( string.Format ( "MbUnit test output file {0} was not created", outputFile ) );
+        }
       }
+
       ListenerFile.RemoveListenerFile ( result.ListenerFile );
     }
 

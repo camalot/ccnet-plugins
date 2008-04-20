@@ -63,16 +63,19 @@ namespace CCNet.Community.Plugins.Tasks {
     /// <param name="xunit">The xunit.</param>
     /// <param name="result">The result.</param>
     /// <returns></returns>
-    public XUnitArgument ( XUnitTask xunit, IIntegrationResult result ) {
-      if ( string.IsNullOrEmpty(xunit.Assembly) ) {
-        throw new CruiseControlException ( "No unit test assemblies are specified. Please use the <assemblies> element to specify the test assemblies to run." );
+    public XUnitArgument ( XUnitTask xunit, IIntegrationResult result, string assembly ) {
+      if ( string.IsNullOrEmpty ( assembly ) ) {
+        throw new CruiseControlException ( "No unit test assembly was specified. Please use the <assemblies> element to specify the test assemblies to run." );
       }
       if ( string.IsNullOrEmpty ( xunit.OutputFile ) ) {
-        xunit.OutputFile = Path.GetFileName ( xunit.Assembly + ".xml" );
+        xunit.OutputFile = Path.GetFileName ( assembly + ".xml" );
       }
       this.XUnit = xunit;
       this.IntegrationResult = result;
+      this.Assembly = assembly;
     }
+
+    public string Assembly { get; set; }
 
     /// <summary>
     /// Gets or sets the xunit.
@@ -93,7 +96,7 @@ namespace CCNet.Community.Plugins.Tasks {
     /// </returns>
     public override string ToString ( ) {
       ProcessArgumentBuilder builder = new ProcessArgumentBuilder ( );
-      builder.AddArgument ( XUnit.Assembly );
+      builder.AddArgument ( this.Assembly );
 
       if ( !string.IsNullOrEmpty ( XUnit.ConfigurationFile ) ) {
         builder.AddArgument ( XUnit.ConfigurationFile );
