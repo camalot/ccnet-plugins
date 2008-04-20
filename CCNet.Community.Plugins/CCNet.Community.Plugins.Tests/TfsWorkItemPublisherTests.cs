@@ -48,40 +48,91 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using NUnit.Framework;
+using CCNet.Community.Plugins.Publishers;
+using ThoughtWorks.CruiseControl.Core.Tasks;
 using ThoughtWorks.CruiseControl.Core;
+using ThoughtWorks.CruiseControl.Remote;
 using Exortech.NetReflector;
 
-namespace CCNet.Community.Plugins.Publishers {
-  [ReflectorType ( "workitemPublisher", Description = "Publishes results to a TFS WorkItem when build fails." )]
-  public class TfsWorkItemPublisher : ITask {
-    [ReflectorProperty ( "server", Required = true )]
-    public string TfsServer { get; set; }
-    [ReflectorProperty ( "username", Required = false )]
-    public string UserName { get; set; }
-    [ReflectorProperty ( "password", Required = false )]
-    public string Password { get; set; }
-    [ReflectorProperty ( "domain", Required = false )]
-    public string Domain { get; set; }
-    [ReflectorProperty ( "project", Required = true )]
-    public string ProjectName { get; set; }
-    [ReflectorProperty ( "titleprefix", Required = false )]
-    public string TitlePrefix { get; set; }
+namespace CCNet.Community.Plugins.Tests {
+  internal class TestTaskResult : ITaskResult{
+    private string _data = string.Empty;
+    public TestTaskResult ( string data ) {
+      this._data = data;
+    }
+    #region ITaskResult Members
 
-    #region ITask Members
+    public string Data {
+      get { return this._data; }
+    }
 
-    public void Run ( IIntegrationResult result ) {
-      if ( result.Failed ) {
-        try {
-          TfsServerConnection connection = new TfsServerConnection ( this, result );
-          connection.Publish ( );
-        } catch ( CruiseControlException cce ) {
-          throw;
-        } catch ( Exception ex ) {
-          throw;
-        }
-      }
+    public bool Failed ( ) {
+      return true;
+    }
+
+    public bool Succeeded ( ) {
+      return false;
     }
 
     #endregion
+  }
+
+
+  [TestFixture]
+  public class TfsWorkItemPublisherTests {
+    [Test]
+    public void PublishFailedBuildTest ( ) {
+      // the user name and password have been removed so this test will fail.
+      return;
+      try {
+        TfsWorkItemPublisher tfsp = new TfsWorkItemPublisher ( );
+        tfsp.Domain = "snd";
+        tfsp.UserName = "_cp";
+        tfsp.Password = "";
+        tfsp.TfsServer = "https://tfs05.codeplex.com";
+        tfsp.ProjectName = "ccnetplugins";
+        tfsp.TitlePrefix = "[Test]";
+
+        IntegrationResult result = new IntegrationResult (
+          "ccnetplugins", "./", "./", new IntegrationRequest ( BuildCondition.IfModificationExists, "Test" ),
+            new IntegrationSummary ( IntegrationStatus.Success, "0.0.0.2", "0.0.0.1", DateTime.Now ) );
+
+        for ( int i = 0; i < 10; i++ ) {
+          if ( i % 3 == 0 ) {
+            result.AddTaskResult ( new DataTaskResult ( "Successfull result" ) );
+          } else {
+            TestTaskResult ttr = new TestTaskResult ( "Test " + i );
+            result.AddTaskResult ( ttr );
+          }
+        }
+
+        TfsServerConnection conn = new TfsServerConnection ( tfsp, result );
+        conn.Publish ( );
+      } catch ( Exception ex ) {
+        Assert.Fail ( ex.Message );
+      }
+    }
+
+    [Test]
+    public void TfsWorkItemCreationTest ( ) {
+      string xml = @"<workitemPublisher>
+							 <server>https://tfs05.codeplex.com</server>
+				       <domain>snd</domain>
+               <username>foo_cp</username>
+               <password>foo</password>
+               <project>ccnetplugins</project>
+               <titleprefix>[Test]</titleprefix>
+						 </workitemPublisher>";
+
+      TfsWorkItemPublisher task = NetReflector.Read ( xml ) as TfsWorkItemPublisher;
+      Assert.AreEqual ( "https://tfs05.codeplex.com", task.TfsServer );
+      Assert.AreEqual ( "snd", task.Domain );
+      Assert.AreEqual ( "foo_cp", task.UserName );
+      Assert.AreEqual ( "foo", task.Password );
+      Assert.AreEqual ( "ccnetplugins", task.ProjectName );
+      Assert.AreEqual ( "[Test]", task.TitlePrefix );
+    }
+
   }
 }
