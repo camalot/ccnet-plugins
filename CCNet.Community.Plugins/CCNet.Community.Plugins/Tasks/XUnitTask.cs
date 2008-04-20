@@ -50,93 +50,91 @@ using System.Collections.Generic;
 using System.Text;
 using Exortech.NetReflector;
 using ThoughtWorks.CruiseControl.Core;
-using System.ComponentModel;
 using ThoughtWorks.CruiseControl.Core.Util;
-using System.IO;
 using ThoughtWorks.CruiseControl.Core.Tasks;
+using System.IO;
 
 namespace CCNet.Community.Plugins.Tasks {
- /* public enum MbUnitReportTypes {
-    Text,
-    Html,
-    Xml,
-  }*/
-
-  [ReflectorType ( "mbunit" )]
-  public class MbUnitTask : ITask {
-
+  /// <summary>
+  /// 
+  /// </summary>
+  [ReflectorType("xunit")]
+  public class XUnitTask : ITask {
+    public enum XUnitOutputType {
+      Xml = 0,
+      Nunit
+    }
+    /// <summary>
+    /// 
+    /// </summary>
     private ProcessExecutor _processExecutor = null;
-    
-    /// <summary>
-    /// Initializes a new instance of the <see cref="MbUnitTask"/> class.
-    /// </summary>
-    public MbUnitTask ( )
-      : this ( new ProcessExecutor ( ) ) {
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="XUnitTask"/> class.
+    /// </summary>
+    public XUnitTask ( ): this(new ProcessExecutor()) {
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="MbUnitTask"/> class.
+    /// Initializes a new instance of the <see cref="XUnitTask"/> class.
     /// </summary>
-    /// <param name="exec">The exec.</param>
-    public MbUnitTask ( ProcessExecutor exec ) {
-      this._processExecutor = exec;
+    /// <param name="pe">The pe.</param>
+    public XUnitTask ( ProcessExecutor pe ) {
+      this.ShadowCopyAssemblies = true;
+      this._processExecutor = pe;
       this.Timeout = 600;
-      this.Assemblies = new string[0];
-      this.Filters = new MbUnitFilters();
-      this.OutputFile = "mbunit-results.xml";
-      this.Executable = string.Empty;
-      this.AssemblyPath = string.Empty;
-      this.TransformFile = string.Empty;
+      this.Executable = "xunit.console.exe";
+      this.OutputFile = string.Empty;
+      this.OutputType = XUnitOutputType.Xml;
     }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether [shadow copy assemblies].
+    /// </summary>
+    /// <value>
+    /// 	<c>true</c> if [shadow copy assemblies]; otherwise, <c>false</c>.
+    /// </value>
+    [ReflectorProperty("shadowCopyAssemblies",Required=false)]
+    public bool ShadowCopyAssemblies { get; set; }
+    /// <summary>
+    /// Gets or sets the configuration file.
+    /// </summary>
+    /// <value>The configuration file.</value>
+    [ReflectorProperty("configFile",Required=false)]
+    public string ConfigurationFile { get; set; }
+    /// <summary>
+    /// Gets or sets the output file.
+    /// </summary>
+    /// <value>The output file.</value>
+    [ReflectorProperty("outputfile",Required=false)]
+    public string OutputFile { get; set; }
+    /// <summary>
+    /// Gets or sets the assembly.
+    /// </summary>
+    /// <value>The assembly.</value>
+    [ReflectorProperty("assembly",Required=true)]
+    public string Assembly { get; set; }
 
     /// <summary>
     /// Gets or sets the timeout.
     /// </summary>
     /// <value>The timeout.</value>
-    [ReflectorProperty ( "timeout", Required = false )]
+    [ReflectorProperty("timeout",Required=false)]
     public int Timeout { get; set; }
 
-    /// <summary>
-    /// Gets or sets the assemblies.
-    /// </summary>
-    /// <value>The assemblies.</value>
-    [ReflectorArray ( "assemblies" )]
-    public string[ ] Assemblies { get; set; }
     /// <summary>
     /// Gets or sets the executable.
     /// </summary>
     /// <value>The executable.</value>
-    [ReflectorProperty ( "executable", Required = true )]
+    [ReflectorProperty("executable",Required=false)]
     public string Executable { get; set; }
 
     /// <summary>
-    /// Gets or sets the assembly path.
+    /// Gets or sets the type of the output.
     /// </summary>
-    /// <value>The assembly path.</value>
-    [ReflectorProperty ( "assemblypath", Required=false )]
-    public string AssemblyPath { get; set; }
-
-    /// <summary>
-    /// Gets or sets the report.
-    /// </summary>
-    /// <value>The report.</value>
-    [ReflectorProperty ( "outputfile", Required = false )]
-    public string OutputFile { get; set; }
-
-    /// <summary>
-    /// Gets or sets the filters.
-    /// </summary>
-    /// <value>The filters.</value>
-    [ReflectorProperty ( "filters", Required = false )]
-    public MbUnitFilters Filters { get; set; }
-
-    /// <summary>
-    /// Gets or sets the transform file.
-    /// </summary>
-    /// <value>The transform file.</value>
-    [ReflectorProperty ( "transformfile", Required = false )]
-    public string TransformFile { get; set; }
+    /// <value>The type of the output.</value>
+    [ReflectorProperty("outputtype",Required=false)]
+    public XUnitOutputType OutputType { get; set; }
 
     /// <summary>
     /// News the process info.
@@ -145,13 +143,12 @@ namespace CCNet.Community.Plugins.Tasks {
     /// <param name="result">The result.</param>
     /// <returns></returns>
     private ProcessInfo NewProcessInfo ( string outputFile, IIntegrationResult result ) {
-      string str = new MbUnitArgument ( this, result ).ToString ( );
+      string str = new XUnitArgument ( this, result ).ToString ( );
       Log.Debug ( string.Format ( "Running unit tests: {0} {1}", this.Executable, str ) );
       ProcessInfo info = new ProcessInfo ( this.Executable, str, result.WorkingDirectory );
       info.TimeOut = this.Timeout * 1000;
       return info;
     }
-
 
     #region ITask Members
 
@@ -160,7 +157,7 @@ namespace CCNet.Community.Plugins.Tasks {
     /// </summary>
     /// <param name="result">The result.</param>
     public void Run ( IIntegrationResult result ) {
-      ListenerFile.WriteInfo ( result.ListenerFile, "Executing NUnit" );
+      ListenerFile.WriteInfo ( result.ListenerFile, "Executing XUnit" );
       string outputFile = result.BaseFromArtifactsDirectory ( this.OutputFile );
       ProcessResult result2 = this._processExecutor.Execute ( this.NewProcessInfo ( outputFile, result ), ProcessMonitor.GetProcessMonitorByProject ( result.ProjectName ) );
       result.AddTaskResult ( new ProcessTaskResult ( result2 ) );
@@ -170,8 +167,8 @@ namespace CCNet.Community.Plugins.Tasks {
         Log.Warning ( string.Format ( "MbUnit test output file {0} was not created", outputFile ) );
       }
       ListenerFile.RemoveListenerFile ( result.ListenerFile );
-
     }
+
     #endregion
   }
 }

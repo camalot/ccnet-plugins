@@ -48,78 +48,71 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using NUnit.Framework;
-using CCNet.Community.Plugins.SourceControls;
-using Exortech.NetReflector;
+using ThoughtWorks.CruiseControl.Core.Util;
+using ThoughtWorks.CruiseControl.Core;
+using System.IO;
 
-namespace CCNet.Community.Plugins.Tests {
-  [TestFixture]
-  public class FtpSourceControlTests {
-    [Test]
-    public void LoadWithUriNoPort ( ) {
-        string xml = @"<sourcecontrol type=""ftp"">
-	<server>ftp://ftp.google.com/my/code/path</server>
-</sourcecontrol>";
-        FtpSourceControl task = new FtpSourceControl ( );
-          NetReflector.Read ( xml, task ) ;
-        Assert.AreEqual ( task.ToString ( ), "ftp://ftp.google.com/my/code/path/" );
+namespace CCNet.Community.Plugins.Tasks {
+  /// <summary>
+  /// 
+  /// </summary>
+  public class XUnitArgument {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="XUnitArgument"/> class.
+    /// </summary>
+    /// <param name="xunit">The xunit.</param>
+    /// <param name="result">The result.</param>
+    /// <returns></returns>
+    public XUnitArgument ( XUnitTask xunit, IIntegrationResult result ) {
+      if ( string.IsNullOrEmpty(xunit.Assembly) ) {
+        throw new CruiseControlException ( "No unit test assemblies are specified. Please use the <assemblies> element to specify the test assemblies to run." );
+      }
+      if ( string.IsNullOrEmpty ( xunit.OutputFile ) ) {
+        xunit.OutputFile = Path.GetFileName ( xunit.Assembly + ".xml" );
+      }
+      this.XUnit = xunit;
+      this.IntegrationResult = result;
     }
 
-    [Test]
-    public void LoadWithUriDefaultPort ( ) {
-      string xml = @"<sourcecontrol type=""ftp"">
-	<server>ftp://ftp.google.com:21/my/code/path</server>
-</sourcecontrol>";
-      FtpSourceControl task = new FtpSourceControl ( );
-      NetReflector.Read ( xml, task );
-      Assert.AreEqual ( task.ToString ( ), "ftp://ftp.google.com/my/code/path/" );
-    }
+    /// <summary>
+    /// Gets or sets the xunit.
+    /// </summary>
+    /// <value>The xunit.</value>
+    public XUnitTask XUnit { get; set; }
+    /// <summary>
+    /// Gets or sets the integration result.
+    /// </summary>
+    /// <value>The integration result.</value>
+    public IIntegrationResult IntegrationResult { get; set; }
 
-    [Test]
-    public void LoadWithUriNonDefaultPort ( ) {
-      string xml = @"<sourcecontrol type=""ftp"">
-	<server>ftp://ftp.google.com:2111/my/code/path</server>
-</sourcecontrol>";
-      FtpSourceControl task = new FtpSourceControl ( );
-      NetReflector.Read ( xml, task );
-      Assert.AreEqual ( task.ToString ( ), "ftp://ftp.google.com:2111/my/code/path/" );
-    }
+    /// <summary>
+    /// Returns a <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
+    /// </summary>
+    /// <returns>
+    /// A <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
+    /// </returns>
+    public override string ToString ( ) {
+      ProcessArgumentBuilder builder = new ProcessArgumentBuilder ( );
+      builder.AddArgument ( XUnit.Assembly );
 
-    [Test]
-    public void LoadWithValuesNonDefaultPort ( ) {
-      string xml = @"<sourcecontrol type=""ftp"">
-	<server>ftp.google.com</server>
-  <port>2111</port>
-  <repositoryRoot>my/code/path</repositoryRoot>
-</sourcecontrol>";
-      FtpSourceControl task = new FtpSourceControl ( );
-      NetReflector.Read ( xml, task );
-      Assert.AreEqual ( task.ToString ( ), "ftp://ftp.google.com:2111/my/code/path/" );
-    }
+      if ( !string.IsNullOrEmpty ( XUnit.ConfigurationFile ) ) {
+        builder.AddArgument ( XUnit.ConfigurationFile );
+      }
 
-    [Test]
-    public void LoadWithValuesNonDefaultPortSecured ( ) {
-      string xml = @"<sourcecontrol type=""ftp"">
-	<server>ftp.google.com</server>
-  <port>2111</port>
-  <repositoryRoot>my/code/path</repositoryRoot>
-  <useSecuredFtp>true</useSecuredFtp>
-</sourcecontrol>";
-      FtpSourceControl task = new FtpSourceControl ( );
-      NetReflector.Read ( xml, task );
-      Assert.AreEqual ( task.ToString ( ), "sftp://ftp.google.com:2111/my/code/path/" );
-    }
+      if ( !XUnit.ShadowCopyAssemblies ) {
+        builder.AddArgument ( "/noshadow" );
+      }
 
-    [Test]
-    public void GetSource ( ) {
-      string xml = @"<sourcecontrol type=""ftp"">
-	<server>ftp.ccnetconfig.org</server>
-  <port>21</port>
-  <repositoryRoot>/sources/CCNet.Community.Plugins</repositoryRoot>
-</sourcecontrol>";
-      FtpSourceControl task = new FtpSourceControl ( );
-      NetReflector.Read ( xml, task );
-      task.GetSource ( null );
+      switch ( this.XUnit.OutputType ) {
+        case XUnitTask.XUnitOutputType.Xml:
+          builder.AddArgument ( "/xml", " ", this.XUnit.OutputFile );
+          break;
+        case XUnitTask.XUnitOutputType.Nunit:
+          builder.AddArgument ( "/nunit", " ", this.XUnit.OutputFile );
+          break;
+      }
+
+      return builder.ToString ( );
     }
   }
 }

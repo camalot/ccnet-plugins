@@ -65,6 +65,7 @@
     <Compile Include="FtpSourceControlTests.cs" />
     <Compile Include="LastChangeVersionLabellerTests.cs" />
     <Compile Include="MbUnitTasksTests.cs" />
+    <Compile Include="XUnitTaskTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CCNet.Community.Plugins\CCNet.Community.Plugins.csproj">

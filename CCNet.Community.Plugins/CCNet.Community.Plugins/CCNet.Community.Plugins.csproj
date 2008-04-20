@@ -81,6 +81,9 @@
     <Compile Include="Tasks\MbUnitArgument.cs" />
     <Compile Include="Tasks\MbUnitFilters.cs" />
     <Compile Include="Tasks\MbUnitTask.cs" />
+    <Compile Include="Tasks\NCoverTask.cs" />
+    <Compile Include="Tasks\XUnitArgument.cs" />
+    <Compile Include="Tasks\XUnitTask.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Properties\Settings.settings">
