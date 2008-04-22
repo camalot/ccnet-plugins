@@ -4,18 +4,28 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CCNet.Community.Plugins", "CCNet.Community.Plugins\CCNet.Community.Plugins.csproj", "{327A7C9D-76EB-4318-86F1-191E2445906D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3rdParty", "3rdParty", "{E9CBCCE5-3DFF-4C25-B749-F467F156B8BB}"
-	ProjectSection(SolutionItems) = preProject
-		3rdParty\log4net.dll = 3rdParty\log4net.dll
-		3rdParty\NetReflector.dll = 3rdParty\NetReflector.dll
-		3rdParty\ThoughtWorks.CruiseControl.Core.dll = 3rdParty\ThoughtWorks.CruiseControl.Core.dll
-		3rdParty\ThoughtWorks.CruiseControl.Remote.dll = 3rdParty\ThoughtWorks.CruiseControl.Remote.dll
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CCNet.Community.Plugins.Tests", "CCNet.Community.Plugins.Tests\CCNet.Community.Plugins.Tests.csproj", "{66AC52EC-7B71-4014-932A-D4D8139A2BBE}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{37DBE681-EEE2-4158-B285-38E576A21E51}"
 	ProjectSection(SolutionItems) = preProject
 		build.msbuild = build.msbuild
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Licenses", "Licenses", "{B9C33939-D90C-45B1-B25A-E5AA6ECAB2F6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "XML-RPC", "XML-RPC", "{B363BEF1-3C57-429A-989A-240CD1461D3E}"
+	ProjectSection(SolutionItems) = preProject
+		3rdParty\CookComputing.XmlRpcV2.dll = 3rdParty\CookComputing.XmlRpcV2.dll
+		3rdParty\xml-rpc-license.txt = 3rdParty\xml-rpc-license.txt
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CC.NET", "CC.NET", "{8F0448B9-3626-40AC-ACC4-C3C65E06D993}"
+	ProjectSection(SolutionItems) = preProject
+		3rdParty\log4net.dll = 3rdParty\log4net.dll
+		3rdParty\NetReflector.dll = 3rdParty\NetReflector.dll
+		3rdParty\ThoughtWorks.CruiseControl.Core.dll = 3rdParty\ThoughtWorks.CruiseControl.Core.dll
+		3rdParty\ThoughtWorks.CruiseControl.Remote.dll = 3rdParty\ThoughtWorks.CruiseControl.Remote.dll
 	EndProjectSection
 EndProject
 Global
@@ -47,5 +57,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B363BEF1-3C57-429A-989A-240CD1461D3E} = {E9CBCCE5-3DFF-4C25-B749-F467F156B8BB}
+		{8F0448B9-3626-40AC-ACC4-C3C65E06D993} = {E9CBCCE5-3DFF-4C25-B749-F467F156B8BB}
 	EndGlobalSection
 EndGlobal
