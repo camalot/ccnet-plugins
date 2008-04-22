@@ -48,26 +48,25 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using NUnit.Framework;
 using CCNet.Community.Plugins.Tasks;
 using ThoughtWorks.CruiseControl.Core;
 using Exortech.NetReflector;
+using Xunit;
 
 
 namespace CCNet.Community.Plugins.Tests {
-  [TestFixture]
   public class XUnitTaskTests {
-    [Test]
+    [Fact]
     public void LoadWithNoAssembly( ) {
       try {
         string xml = @"<xunit></xunit>";
         XUnitTask task = NetReflector.Read ( xml ) as XUnitTask;
-        Assert.Fail ( "Expected an exception." );
+        Assert.True (false, "Expected an exception." );
       } catch ( Exception ex ) {
 
       }
     }
-    [Test]
+    [Fact]
     public void LoadWithAssembly ( ) {
       string xml = @"<xunit>
   <assemblies>  
@@ -75,10 +74,10 @@ namespace CCNet.Community.Plugins.Tests {
   </assemblies>
 </xunit>";
       XUnitTask task = NetReflector.Read ( xml ) as XUnitTask;
-      Assert.AreEqual ( "c:\\foo.bar.dll", task.Assemblies[0] );
+      Assert.Equal<String> ( "c:\\foo.bar.dll", task.Assemblies[0] );
     }
 
-    [Test]
+    [Fact]
     public void XUnitArgumentTest ( ) {
       string xml = @"<xunit>
   <assemblies>  
@@ -88,7 +87,7 @@ namespace CCNet.Community.Plugins.Tests {
       XUnitTask task = NetReflector.Read ( xml ) as XUnitTask;
       XUnitArgument arg = new XUnitArgument ( task, null , task.Assemblies[0]);
 
-      Assert.AreEqual ( "foo.bar.dll.xml", task.OutputFile );
+      Assert.Equal<String> ( "foo.bar.dll.xml", task.OutputFile );
 
       Console.WriteLine ( arg.ToString ( ) );
     }

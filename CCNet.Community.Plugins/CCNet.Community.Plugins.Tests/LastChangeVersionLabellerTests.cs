@@ -48,14 +48,13 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using NUnit.Framework;
 using CCNet.Community.Plugins.Labellers;
 using Exortech.NetReflector;
+using Xunit;
 
 namespace CCNet.Community.Plugins.Tests {
-  [TestFixture]
   public class LastChangeVersionLabellerTests {
-    [Test]
+    [Fact]
     public void LoadDefaults ( ) {
       try {
         string xml = @"<lastChangeVersionLabeller>
@@ -64,7 +63,7 @@ namespace CCNet.Community.Plugins.Tests {
 </lastChangeVersionLabeller>";
         LastChangeVersionLabeller lcvl = NetReflector.Read ( xml ) as LastChangeVersionLabeller;
       } catch {
-        Assert.Fail ( "Required fields where supplied, should not have errored." );
+        Assert.True(false, "Required fields where supplied, should not have errored." );
       }
     }
   }

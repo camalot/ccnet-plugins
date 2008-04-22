@@ -48,12 +48,12 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using NUnit.Framework;
 using CCNet.Community.Plugins.Publishers;
 using ThoughtWorks.CruiseControl.Core.Tasks;
 using ThoughtWorks.CruiseControl.Core;
 using ThoughtWorks.CruiseControl.Remote;
 using Exortech.NetReflector;
+using Xunit;
 
 namespace CCNet.Community.Plugins.Tests {
   internal class TestTaskResult : ITaskResult{
@@ -79,9 +79,8 @@ namespace CCNet.Community.Plugins.Tests {
   }
 
 
-  [TestFixture]
   public class TfsWorkItemPublisherTests {
-    [Test]
+    [Fact]
     public void PublishFailedBuildTest ( ) {
       // the user name and password have been removed so this test will fail.
       return;
@@ -110,11 +109,11 @@ namespace CCNet.Community.Plugins.Tests {
         TfsServerConnection conn = new TfsServerConnection ( tfsp, result );
         conn.Publish ( );
       } catch ( Exception ex ) {
-        Assert.Fail ( ex.Message );
+        Assert.True (false, ex.Message );
       }
     }
 
-    [Test]
+    [Fact]
     public void TfsWorkItemCreationTest ( ) {
       string xml = @"<workitemPublisher>
 							 <server>https://tfs05.codeplex.com</server>
@@ -126,12 +125,12 @@ namespace CCNet.Community.Plugins.Tests {
 						 </workitemPublisher>";
 
       TfsWorkItemPublisher task = NetReflector.Read ( xml ) as TfsWorkItemPublisher;
-      Assert.AreEqual ( "https://tfs05.codeplex.com", task.TfsServer );
-      Assert.AreEqual ( "snd", task.Domain );
-      Assert.AreEqual ( "foo_cp", task.UserName );
-      Assert.AreEqual ( "foo", task.Password );
-      Assert.AreEqual ( "ccnetplugins", task.ProjectName );
-      Assert.AreEqual ( "[Test]", task.TitlePrefix );
+      Assert.Equal<String> ( "https://tfs05.codeplex.com", task.TfsServer );
+      Assert.Equal<String> ( "snd", task.Domain );
+      Assert.Equal<String> ( "foo_cp", task.UserName );
+      Assert.Equal<String> ( "foo", task.Password );
+      Assert.Equal<String> ( "ccnetplugins", task.ProjectName );
+      Assert.Equal<String> ( "[Test]", task.TitlePrefix );
     }
 
   }

@@ -48,27 +48,26 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using NUnit.Framework;
 using CCNet.Community.Plugins.SourceControls;
+using Xunit;
 
 namespace CCNet.Community.Plugins.Tests {
-  [TestFixture]
   public class FtpClientTests {
 
-    [Test]
+    [Fact]
     public void GetDirectories ( ) {
       FtpClient client = CreateFtpClient ( );
       List<string> dirs = client.GetDirectories ( );
       Console.WriteLine ( string.Join ( ",", dirs.ToArray ( ) ) );
-      Assert.Greater ( dirs.Count, 0 );
+      Assert.True ( dirs.Count > 0 );
     }
 
-    [Test]
+    [Fact]
     public void GetFiles ( ) {
       FtpClient client = CreateFtpClient ( );
       List<string> files = client.GetFiles ( );
       Console.WriteLine ( string.Join ( ",", files.ToArray ( ) ) );
-      Assert.Greater ( files.Count, 0 );
+      Assert.True ( files.Count > 0 );
     }
 
 

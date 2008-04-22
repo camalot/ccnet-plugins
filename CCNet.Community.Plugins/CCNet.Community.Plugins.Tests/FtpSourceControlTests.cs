@@ -48,44 +48,43 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using NUnit.Framework;
 using CCNet.Community.Plugins.SourceControls;
 using Exortech.NetReflector;
+using Xunit;
 
 namespace CCNet.Community.Plugins.Tests {
-  [TestFixture]
   public class FtpSourceControlTests {
-    [Test]
+    [Fact]
     public void LoadWithUriNoPort ( ) {
         string xml = @"<sourcecontrol type=""ftp"">
 	<server>ftp://ftp.google.com/my/code/path</server>
 </sourcecontrol>";
         FtpSourceControl task = new FtpSourceControl ( );
           NetReflector.Read ( xml, task ) ;
-        Assert.AreEqual ( task.ToString ( ), "ftp://ftp.google.com/my/code/path/" );
+        Assert.Equal<String> ( task.ToString ( ), "ftp://ftp.google.com/my/code/path/" );
     }
 
-    [Test]
+    [Fact]
     public void LoadWithUriDefaultPort ( ) {
       string xml = @"<sourcecontrol type=""ftp"">
 	<server>ftp://ftp.google.com:21/my/code/path</server>
 </sourcecontrol>";
       FtpSourceControl task = new FtpSourceControl ( );
       NetReflector.Read ( xml, task );
-      Assert.AreEqual ( task.ToString ( ), "ftp://ftp.google.com/my/code/path/" );
+      Assert.Equal<String> ( task.ToString ( ), "ftp://ftp.google.com/my/code/path/" );
     }
 
-    [Test]
+    [Fact]
     public void LoadWithUriNonDefaultPort ( ) {
       string xml = @"<sourcecontrol type=""ftp"">
 	<server>ftp://ftp.google.com:2111/my/code/path</server>
 </sourcecontrol>";
       FtpSourceControl task = new FtpSourceControl ( );
       NetReflector.Read ( xml, task );
-      Assert.AreEqual ( task.ToString ( ), "ftp://ftp.google.com:2111/my/code/path/" );
+      Assert.Equal<String> ( task.ToString ( ), "ftp://ftp.google.com:2111/my/code/path/" );
     }
 
-    [Test]
+    [Fact]
     public void LoadWithValuesNonDefaultPort ( ) {
       string xml = @"<sourcecontrol type=""ftp"">
 	<server>ftp.google.com</server>
@@ -94,10 +93,10 @@ namespace CCNet.Community.Plugins.Tests {
 </sourcecontrol>";
       FtpSourceControl task = new FtpSourceControl ( );
       NetReflector.Read ( xml, task );
-      Assert.AreEqual ( task.ToString ( ), "ftp://ftp.google.com:2111/my/code/path/" );
+      Assert.Equal<String> ( task.ToString ( ), "ftp://ftp.google.com:2111/my/code/path/" );
     }
 
-    [Test]
+    [Fact]
     public void LoadWithValuesNonDefaultPortSecured ( ) {
       string xml = @"<sourcecontrol type=""ftp"">
 	<server>ftp.google.com</server>
@@ -107,10 +106,10 @@ namespace CCNet.Community.Plugins.Tests {
 </sourcecontrol>";
       FtpSourceControl task = new FtpSourceControl ( );
       NetReflector.Read ( xml, task );
-      Assert.AreEqual ( task.ToString ( ), "sftp://ftp.google.com:2111/my/code/path/" );
+      Assert.Equal<String> ( task.ToString ( ), "sftp://ftp.google.com:2111/my/code/path/" );
     }
 
-    [Test]
+    [Fact]
     public void GetSource ( ) {
       string xml = @"<sourcecontrol type=""ftp"">
 	<server>ftp.ccnetconfig.org</server>

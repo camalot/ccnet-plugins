@@ -48,15 +48,14 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using NUnit.Framework;
 using CCNet.Community.Plugins.Tasks;
 using ThoughtWorks.CruiseControl.Core;
 using Exortech.NetReflector;
+using Xunit;
 
 namespace CCNet.Community.Plugins.Tests {
-  [TestFixture]
   public class MbUnitTasksTests {
-    [Test]
+    [Fact]
     public void LoadWithNoAssemblies ( ) {
       try {
         string xml = @"<mbunit>
@@ -84,13 +83,13 @@ namespace CCNet.Community.Plugins.Tests {
 	<timeout>50</timeout>
 </mbunit>";
         MbUnitTask task = NetReflector.Read ( xml ) as MbUnitTask;
-        Assert.Fail ( "Expected an exception." );
+        Assert.True (false, "Expected an exception." );
       }  catch ( Exception ex ) {
 
       }
     }
 
-    [Test]
+    [Fact]
     public void LoadWithSingleAssemblyMbUnitPath ( ) {
       string xml = @"<mbunit>
 	<executable>d:\temp\mbunit-console.exe</executable>
@@ -120,23 +119,23 @@ namespace CCNet.Community.Plugins.Tests {
 	<timeout>50</timeout>
 </mbunit>";
       MbUnitTask task = NetReflector.Read ( xml ) as MbUnitTask;
-      Assert.AreEqual ( @"d:\temp\mbunit-console.exe", task.Executable );
-      Assert.AreEqual ( 1, task.Assemblies.Length );
-      Assert.AreEqual ( "foo.dll", task.Assemblies[ 0 ] );
-      Assert.AreEqual ( "Bar", task.Filters.Categories[ 0 ] );
-      Assert.AreEqual ( "Foo", task.Filters.ExcludeCategories[ 0 ] );
-      Assert.AreEqual ( "Ryan", task.Filters.Author[ 0 ] );
-      Assert.AreEqual ( "Foo.Bar.Blarg", task.Filters.Type[ 0 ] );
-      Assert.AreEqual ( "Foo.Bar", task.Filters.Namespaces[ 0 ] );
-      Assert.AreEqual ( @"c:\testfile.xml", task.OutputFile );
-      Assert.AreEqual ( @"c:\assemblies", task.AssemblyPath );
-      Assert.AreEqual ( @"c:\trans.xsl", task.TransformFile );
-      Assert.AreEqual ( 50, task.Timeout );
+      Assert.Equal<String> ( @"d:\temp\mbunit-console.exe", task.Executable );
+      Assert.Equal ( 1, task.Assemblies.Length );
+      Assert.Equal<String> ( "foo.dll", task.Assemblies[ 0 ] );
+      Assert.Equal<String> ( "Bar", task.Filters.Categories[ 0 ] );
+      Assert.Equal<String> ( "Foo", task.Filters.ExcludeCategories[ 0 ] );
+      Assert.Equal<String> ( "Ryan", task.Filters.Author[ 0 ] );
+      Assert.Equal<String> ( "Foo.Bar.Blarg", task.Filters.Type[ 0 ] );
+      Assert.Equal<String> ( "Foo.Bar", task.Filters.Namespaces[ 0 ] );
+      Assert.Equal<String> ( @"c:\testfile.xml", task.OutputFile );
+      Assert.Equal<String> ( @"c:\assemblies", task.AssemblyPath );
+      Assert.Equal<String> ( @"c:\trans.xsl", task.TransformFile );
+      Assert.Equal ( 50, task.Timeout );
 
       Console.WriteLine ( new MbUnitArgument ( task, new IntegrationResult ( ) ) );
     }
 
-    [Test]
+    [Fact]
     public void LoadWithMultipleAssemblies ( ) {
       string xml = @"<mbunit>
 							 <executable>d:\temp\mbunit-console.exe</executable>
@@ -150,7 +149,7 @@ namespace CCNet.Community.Plugins.Tests {
       AssertEqualArrays ( new string[ ] { "foo.dll", "bar.dll" }, task.Assemblies );
     }
 
-    [Test]
+    [Fact]
     public void HandleMbUnitTaskFailure ( ) {
       /*CreateProcessExecutorMock ( NUnitTask.DefaultPath );
       ExpectToExecuteAndReturnWithMonitor ( SuccessfulProcessResult ( ), new ProcessMonitor ( ) );
@@ -167,10 +166,10 @@ namespace CCNet.Community.Plugins.Tests {
     }
 
     public static void AssertEqualArrays ( Array expected, Array actual ) {
-      Assert.AreEqual ( actual.Length, expected.Length, "Arrays should have same length" );
+      Assert.Equal ( actual.Length, expected.Length );
 
       for ( int i = 0; i < expected.Length; i++ ) {
-        Assert.AreEqual ( expected.GetValue ( i ), actual.GetValue ( i ), "Comparing array index " + i );
+        Assert.Equal ( expected.GetValue ( i ), actual.GetValue ( i ) );
       }
     }
   }
