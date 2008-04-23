@@ -22,5 +22,35 @@ namespace CCNet.Community.Plugins.Properties {
                 return defaultInstance;
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("{6} {2}: {5}")]
+        public string MetaWeblogDefaultTitleFormat {
+            get {
+                return ((string)(this["MetaWeblogDefaultTitleFormat"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("<h4>{6} {2}: {5}</h4><h5>Status</h5>{7}<br /><h5>Modifications</h5>{0}<br /><h5>R" +
+            "esults</h5>{1}<br /><h5>Last Changeset Number</h5>{3}<br /><h5>Total Integration" +
+            " Time</h5>{4}<br />\r\n<div class=\"tags\"><span class=\"tagsLabel\">Tags:</span>{8}</" +
+            "div>")]
+        public string MetaWeblogDefaultDescriptionFormat {
+            get {
+                return ((string)(this["MetaWeblogDefaultDescriptionFormat"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("[ <a rel=\"tag\" href=\"http://technorati.com/tag/{0}\">{0}</a> ]")]
+        public string MetaWeblogDefaultTagFormat {
+            get {
+                return ((string)(this["MetaWeblogDefaultTagFormat"]));
+            }
+        }
     }
 }

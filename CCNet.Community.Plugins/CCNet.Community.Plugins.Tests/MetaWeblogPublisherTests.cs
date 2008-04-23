@@ -61,33 +61,34 @@ namespace CCNet.Community.Plugins.Tests {
   public class MetaWeblogPublisherTests {
     [Fact]
     public void PublishBuildTest ( ) {
-      
+
       string xml = @"<metaweblog>
-  <xmlrpcurl>http://yourdomain.com/services/metablogapi.aspx</xmlrpcurl>
-  <username>someUser</username>
-  <password>p@ssVV0rd!</password>
-  <titleformat>[Test]{6} {2}: {5}</titleformat>
-  <descriptionformat><![CDATA[[Test]<br /><h4>{6} {2}: {5}</h4><h5>Status</h5>{7}<br /><h5>Modifications</h5>{0}<br /><h5>Results</h5>{1}<br /><h5>Last Changeset Number</h5>{3}<br /><h5>Total Integration Time</h5>{4}<br />]]></descriptionformat>
+  <url>http://yourdomain.com/services/metablogapi.aspx</url>
+  <username>someuser</username>
+  <password>somepassword</password>
   <continueOnFailure>false</continueOnFailure>
+  <tags>
+    <tag>ccnetcommunityplugins</tag>
+    <tag>test</tag>
+  </tags>
 </metaweblog>";
 
       MetaWeblogPublisher publisher = NetReflector.Read ( xml ) as MetaWeblogPublisher;
 
-      Assert.True ( string.Compare ( publisher.Username, "someUser", false ) == 0 );
-
+      Assert.True ( string.Compare ( publisher.Username, "someuser", false ) == 0 );
       return;
-      // remove the return line and change the xmlrpcurl, username and password to fully test this. 
-      // I have tested it and changed those values to protect the server and account.
+      // to fully test, remove the return line above and set the url to your metaweblog api url
+      // change the username and password to your login credentials.
       IntegrationResult result = new IntegrationResult ( "test", "c:\\source", "c:\\builds", new ThoughtWorks.CruiseControl.Remote.IntegrationRequest ( ThoughtWorks.CruiseControl.Remote.BuildCondition.ForceBuild, "foo" ), new IntegrationSummary ( ThoughtWorks.CruiseControl.Remote.IntegrationStatus.Success, "0.1.2.3", "0.1.2.2", DateTime.Now.Subtract ( new TimeSpan ( 0, 5, 30 ) ) ) );
       result.MarkStartTime ( );
       result.Modifications = new Modification[ 2 ];
       result.Modifications[ 0 ] = new Modification ( );
-      result.Modifications[ 0 ].UserName = "someUser";
+      result.Modifications[ 0 ].UserName = "someuser";
       result.Modifications[ 0 ].Comment = "fooy fooy booy hooy gluey";
       result.Modifications[ 0 ].FileName = "foo.cs";
 
       result.Modifications[ 1 ] = new Modification ( );
-      result.Modifications[ 1 ].UserName = "someUser";
+      result.Modifications[ 1 ].UserName = "someuser";
       result.Modifications[ 1 ].Comment = "fooy fooy booy hooy gluey";
       result.Modifications[ 1 ].FileName = "bar.cs";
       result.Label = "0.1.2.3";

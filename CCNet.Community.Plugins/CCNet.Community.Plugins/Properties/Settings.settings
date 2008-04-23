@@ -1,6 +1,16 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
-<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="CCNet.Community.Plugins.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="MetaWeblogDefaultTitleFormat" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">{6} {2}: {5}</Value>
+    </Setting>
+    <Setting Name="MetaWeblogDefaultDescriptionFormat" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">&lt;h4&gt;{6} {2}: {5}&lt;/h4&gt;&lt;h5&gt;Status&lt;/h5&gt;{7}&lt;br /&gt;&lt;h5&gt;Modifications&lt;/h5&gt;{0}&lt;br /&gt;&lt;h5&gt;Results&lt;/h5&gt;{1}&lt;br /&gt;&lt;h5&gt;Last Changeset Number&lt;/h5&gt;{3}&lt;br /&gt;&lt;h5&gt;Total Integration Time&lt;/h5&gt;{4}&lt;br /&gt;
+&lt;div class="tags"&gt;&lt;span class="tagsLabel"&gt;Tags:&lt;/span&gt;{8}&lt;/div&gt;</Value>
+    </Setting>
+    <Setting Name="MetaWeblogDefaultTagFormat" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">[ &lt;a rel="tag" href="http://technorati.com/tag/{0}"&gt;{0}&lt;/a&gt; ]</Value>
+    </Setting>
+  </Settings>
 </SettingsFile>

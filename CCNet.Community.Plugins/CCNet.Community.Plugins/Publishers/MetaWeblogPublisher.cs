@@ -6,30 +6,33 @@ using Exortech.NetReflector;
 using CCNet.Community.Plugins.Components.XmlRpc;
 using System.Net;
 using CCNet.Community.Plugins.XmlRpc;
+using ThoughtWorks.CruiseControl.Remote;
 
 namespace CCNet.Community.Plugins.Publishers {
   [ReflectorType ( "metaweblog" )]
   public class MetaWeblogPublisher : ITask {
-    [ReflectorProperty ( "xmlrpcurl", Required = true )]
+    [ReflectorProperty ( "url", Required = true )]
     public string MetaWeblogApiUrl { get; set; }
     [ReflectorProperty ( "username", Required = true )]
     public string Username { get; set; }
     [ReflectorProperty ( "password", Required = true )]
     public string Password { get; set; }
-    //[ReflectorArray("categories")]
-    //public string[] Categories { get; set; }
-    [ReflectorProperty ( "titleformat" )]
+    [ReflectorProperty ( "titleformat" , Required = false) ]
     public string TitleFormat { get; set; }
-    [ReflectorProperty ( "descriptionformat" )]
+    [ReflectorProperty ( "descriptionformat", Required = false )]
     public string DescriptionFormat { get; set; }
-    [ReflectorProperty ( "continueOnFailure" )]
+    [ReflectorProperty ( "continueOnFailure", Required = false )]
     public bool ContinueOnFailure { get; set; }
+    [ReflectorArray ( "tags", Required = false )]
+    public string[ ] Tags { get; set; }
 
     public MetaWeblogPublisher ( ) {
       this.ContinueOnFailure = false;
-      this.DescriptionFormat = "<h4>{6} {2}: {5}</h4><h5>Status</h5>{7}<br /><h5>Modifications</h5>{0}<br /><h5>Results</h5>{1}<br /><h5>Last Changeset Number</h5>{3}<br /><h5>Total Integration Time</h5>{4}<br />";
-      this.TitleFormat = "{6} {2}: {5}";
+      this.DescriptionFormat = Properties.Settings.Default.MetaWeblogDefaultDescriptionFormat;
+      this.TitleFormat = Properties.Settings.Default.MetaWeblogDefaultTitleFormat;
+      this.Tags = new string[ 0 ];
     }
+
     #region ITask Members
 
     public void Run ( IIntegrationResult result ) {
@@ -54,34 +57,38 @@ namespace CCNet.Community.Plugins.Publishers {
           return;
         }
       }
-      
+
       try {
         Post post = new Post ( );
         post.categories = null;
         post.dateCreated = DateTime.Now;
         StringBuilder mods = new StringBuilder ( );
-        mods.Append ( "<dl>" );
         foreach ( Modification mod in result.Modifications ) {
-          mods.Append ( "<dt>" );
+          mods.Append ( "<div class=\"Modification\"><cite>" );
           mods.Append ( mod.FileName );
           mods.Append ( " : " );
           mods.Append ( mod.UserName );
-          mods.Append ( "</dt>" );
-          mods.Append ( "<dd>" );
-          mods.Append ( "<br />" );
+          mods.Append ( "</cite>" );
           mods.AppendFormat ( "<blockquote>{0}</blockquote>", mod.Comment );
-          mods.Append ( "</dd>" );
+          mods.Append ( "</div>" );
         }
-        mods.Append ( "</dl>" );
 
         StringBuilder results = new StringBuilder ( );
         foreach ( ITaskResult item in result.TaskResults ) {
-          results.AppendFormat ( "<blockquote cite=\"{1}\">{0}</blockquote>",item.Data,item.Succeeded() );
-          results.Append ( "<br />" );
+          results.Append ( "<div class=\"TaskResult\">" );
+          results.AppendFormat ( "<blockquote cite=\"{1}\">{0}</blockquote>", item.Data, item.Succeeded ( ) );
+          results.Append ( "</div>" );
         }
 
-        post.description = string.Format ( this.DescriptionFormat, mods.ToString ( ), results, result.Label, result.LastChangeNumber, result.TotalIntegrationTime, result.Status, result.ProjectName, result.BuildCondition );
-        post.title = string.Format ( this.TitleFormat, mods.ToString ( ), results, result.Label, result.LastChangeNumber, result.TotalIntegrationTime, result.Status, result.ProjectName, result.BuildCondition );
+        StringBuilder tags = new StringBuilder ( );
+        if ( this.Tags != null && this.Tags.Length > 0 ) {
+          foreach ( string tag in this.Tags ) {
+            tags.AppendFormat ( Properties.Settings.Default.MetaWeblogDefaultTagFormat, tag );
+          }
+        }
+
+        post.description = string.Format ( this.DescriptionFormat, mods.ToString ( ), results, result.Label, result.LastChangeNumber, result.TotalIntegrationTime, result.Status, result.ProjectName, result.BuildCondition,tags.ToString() );
+        post.title = string.Format ( this.TitleFormat, mods.ToString ( ), results, result.Label, result.LastChangeNumber, result.TotalIntegrationTime, result.Status, result.ProjectName, result.BuildCondition,tags.ToString() );
 
         client.newPost ( blogId, creds.UserName, creds.Password, post, true );
       } catch ( Exception ex ) {
