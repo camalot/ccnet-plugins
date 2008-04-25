@@ -10,7 +10,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>CCNet.Community.Plugins</RootNamespace>
-    <AssemblyName>$(RootNamespace)</AssemblyName>
+    <AssemblyName>CCNet.Community.Plugin</AssemblyName>
     <TargetFrameworkVersion>v3.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
@@ -33,6 +33,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>..\bin\Debug\CCNet.Community.Plugin.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -40,6 +41,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>..\bin\Release\CCNet.Community.Plugin.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="CookComputing.XmlRpcV2, Version=2.3.1.0, Culture=neutral, processorArchitecture=MSIL">
@@ -84,6 +86,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Components\Ftp\FtpDirectoryInfo.cs" />
+    <Compile Include="Components\Ftp\FtpFileInfo.cs" />
+    <Compile Include="Components\Ftp\FtpSystemInfo.cs" />
+    <Compile Include="Components\Ftp\FtpSystemInfoPermission.cs" />
+    <Compile Include="Components\Ftp\FtpWebRequest.cs" />
+    <Compile Include="Components\Ftp\FtpWebResponse.cs" />
+    <Compile Include="Components\Ftp\WebRequest.cs" />
+    <Compile Include="Components\Ftp\WebResponse.cs" />
     <Compile Include="Components\Twitter\TwitterService.cs" />
     <Compile Include="Util.cs" />
     <Compile Include="Components\XmlRpc\MetaWeblogAPI.cs" />
