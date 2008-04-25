@@ -7,6 +7,7 @@ using CCNet.Community.Plugins.Components.XmlRpc;
 using System.Net;
 using CCNet.Community.Plugins.XmlRpc;
 using ThoughtWorks.CruiseControl.Remote;
+using ThoughtWorks.CruiseControl.Core.Util;
 
 namespace CCNet.Community.Plugins.Publishers {
   [ReflectorType ( "metaweblog" )]
@@ -51,9 +52,10 @@ namespace CCNet.Community.Plugins.Publishers {
         }
       } catch ( Exception ex ) {
         if ( !this.ContinueOnFailure ) {
-          ThoughtWorks.CruiseControl.Core.Util.Log.Error ( ex );
+          Log.Error ( ex );
           throw;
         } else {
+          Log.Warning ( ex );
           return;
         }
       }
@@ -95,6 +97,8 @@ namespace CCNet.Community.Plugins.Publishers {
         if ( !this.ContinueOnFailure ) {
           ThoughtWorks.CruiseControl.Core.Util.Log.Error ( ex );
           throw ex;
+        } else {
+          Log.Warning ( ex );
         }
       }
     }

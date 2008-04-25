@@ -13,6 +13,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{37DBE681
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Licenses", "Licenses", "{B9C33939-D90C-45B1-B25A-E5AA6ECAB2F6}"
+	ProjectSection(SolutionItems) = preProject
+		License.txt = License.txt
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "XML-RPC", "XML-RPC", "{B363BEF1-3C57-429A-989A-240CD1461D3E}"
 	ProjectSection(SolutionItems) = preProject

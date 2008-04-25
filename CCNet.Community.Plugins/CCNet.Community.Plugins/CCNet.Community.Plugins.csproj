@@ -51,10 +51,18 @@
       <HintPath>..\3rdParty\log4net.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Microsoft.TeamFoundation, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-    <Reference Include="Microsoft.TeamFoundation.Client, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-    <Reference Include="Microsoft.TeamFoundation.Common, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-    <Reference Include="Microsoft.TeamFoundation.WorkItemTracking.Client, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.TeamFoundation, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Microsoft.TeamFoundation.Client, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Microsoft.TeamFoundation.Common, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Microsoft.TeamFoundation.WorkItemTracking.Client, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
     <Reference Include="NetReflector, Version=1.0.0.120, Culture=neutral, PublicKeyToken=2f4dd8b32acbcd8e">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\3rdParty\NetReflector.dll</HintPath>
@@ -62,6 +70,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
     <Reference Include="ThoughtWorks.CruiseControl.Core, Version=1.4.0.3154, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -75,6 +84,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Components\Twitter\TwitterService.cs" />
+    <Compile Include="Util.cs" />
     <Compile Include="Components\XmlRpc\MetaWeblogAPI.cs" />
     <Compile Include="Components\XmlRpc\MetaWeblogClient.cs">
       <SubType>Component</SubType>
@@ -88,6 +99,7 @@
     <Compile Include="Publishers\MetaWeblogPublisher.cs" />
     <Compile Include="Publishers\TfsServerConnection.cs" />
     <Compile Include="Publishers\TfsWorkItemPublisher.cs" />
+    <Compile Include="Publishers\TwitterPublisher.cs" />
     <Compile Include="SourceControls\FtpClient.cs">
       <SubType>Component</SubType>
     </Compile>
