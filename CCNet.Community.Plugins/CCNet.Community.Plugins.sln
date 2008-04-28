@@ -31,9 +31,18 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CC.NET", "CC.NET", "{8F0448
 		3rdParty\ThoughtWorks.CruiseControl.Remote.dll = 3rdParty\ThoughtWorks.CruiseControl.Remote.dll
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CCNet.Community.Plugins.CCNetConfig", "CCNet.Community.Plugins.CCNetConfig\CCNet.Community.Plugins.CCNetConfig.csproj", "{4556604B-F441-4E42-ADFA-5FDD5DD4243F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CCNetConfig", "CCNetConfig", "{F7E427E7-17E0-48C7-8AE2-F7D409DA96BC}"
+	ProjectSection(SolutionItems) = preProject
+		3rdParty\CCNetConfig.Core.dll = 3rdParty\CCNetConfig.Core.dll
+		3rdParty\CCNetConfig.Core.pdb = 3rdParty\CCNetConfig.Core.pdb
+		3rdParty\CCNetConfig.Core.XML = 3rdParty\CCNetConfig.Core.XML
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 3
+		SccNumberOfProjects = 4
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs05.codeplex.com/
 		SccLocalPath0 = .
@@ -43,6 +52,9 @@ Global
 		SccProjectUniqueName2 = CCNet.Community.Plugins.Tests\\CCNet.Community.Plugins.Tests.csproj
 		SccProjectName2 = CCNet.Community.Plugins.Tests
 		SccLocalPath2 = CCNet.Community.Plugins.Tests
+		SccProjectUniqueName3 = CCNet.Community.Plugins.CCNetConfig\\CCNet.Community.Plugins.CCNetConfig.csproj
+		SccProjectName3 = CCNet.Community.Plugins.CCNetConfig
+		SccLocalPath3 = CCNet.Community.Plugins.CCNetConfig
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,6 +69,10 @@ Global
 		{66AC52EC-7B71-4014-932A-D4D8139A2BBE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{66AC52EC-7B71-4014-932A-D4D8139A2BBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{66AC52EC-7B71-4014-932A-D4D8139A2BBE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4556604B-F441-4E42-ADFA-5FDD5DD4243F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4556604B-F441-4E42-ADFA-5FDD5DD4243F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4556604B-F441-4E42-ADFA-5FDD5DD4243F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4556604B-F441-4E42-ADFA-5FDD5DD4243F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -64,5 +80,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{B363BEF1-3C57-429A-989A-240CD1461D3E} = {E9CBCCE5-3DFF-4C25-B749-F467F156B8BB}
 		{8F0448B9-3626-40AC-ACC4-C3C65E06D993} = {E9CBCCE5-3DFF-4C25-B749-F467F156B8BB}
+		{F7E427E7-17E0-48C7-8AE2-F7D409DA96BC} = {E9CBCCE5-3DFF-4C25-B749-F467F156B8BB}
 	EndGlobalSection
 EndGlobal
