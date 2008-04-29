@@ -131,7 +131,7 @@ namespace CCNet.Community.Plugins.CCNetConfig.Publishers {
     /// <value>The documentation URI.</value>
     [ReflectorIgnore, Browsable ( false ), EditorBrowsable ( EditorBrowsableState.Never )]
     public Uri DocumentationUri {
-      get { return new Uri ( "http://www.codeplex.com/ccnetplugins/Wiki/View.aspx?title=MetaWeblogPublisher&referringTitle=Home" ); }
+      get { return new Uri ( "http://www.codeplex.com/ccnetplugins/Wiki/Print.aspx?title=MetaWeblogPublisher" ); }
     }
 
     #endregion

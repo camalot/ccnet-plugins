@@ -124,7 +124,7 @@ namespace CCNet.Community.Plugins.CCNetConfig.Publishers {
 
     [Browsable ( false ), EditorBrowsable ( EditorBrowsableState.Never ), ReflectorIgnore]
     public Uri DocumentationUri {
-      get { return new Uri ( "http://www.codeplex.com/ccnetplugins/Wiki/View.aspx?title=TwitterPublisher&referringTitle=Home" ); }
+      get { return new Uri ( "http://www.codeplex.com/ccnetplugins/Wiki/Print.aspx?title=TwitterPublisher&referringTitle=Home" ); }
     }
 
     #endregion

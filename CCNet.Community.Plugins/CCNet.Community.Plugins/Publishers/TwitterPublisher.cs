@@ -78,8 +78,19 @@ namespace CCNet.Community.Plugins.Publishers {
     [ReflectorProperty ( "password" )]
     public string Password { get; set; }
 
+    /// <summary>
+    /// Gets or sets a value indicating whether [continue on failure].
+    /// </summary>
+    /// <value><c>true</c> if [continue on failure]; otherwise, <c>false</c>.</value>
     [ReflectorProperty("continueOnFailure",Required=false)]
     public bool ContinueOnFailure { get; set; }
+
+    /// <summary>
+    /// Gets or sets the project URL, used if you don't want to use the default url.
+    /// </summary>
+    /// <value>The project URL.</value>
+    [ReflectorProperty("projectUrl",Required=false)]
+    public string ProjectUrl { get; set; }
 
     #region ITask Members
 
@@ -106,15 +117,15 @@ namespace CCNet.Community.Plugins.Publishers {
     /// </summary>
     /// <param name="result">The result.</param>
     /// <returns></returns>
-    private static string CreateStatus ( IIntegrationResult result ) {
+    private string CreateStatus ( IIntegrationResult result ) {
       if ( result.Status == IntegrationStatus.Success ) {
         if ( result.LastIntegrationStatus != result.Status ) {
-          return String.Format ( "{0} Build Fixed: Build {1}. See {2}", result.ProjectName, result.Label, result.ProjectUrl );
+          return String.Format ( "{0} Build Fixed: Build {1}. See {2}", result.ProjectName, result.Label, ProjectUrl ?? result.ProjectUrl  );
         } else {
-          return String.Format ( "{0} Build Successful: Build {1}. See {2}", result.ProjectName, result.Label, result.ProjectUrl );
+          return String.Format ( "{0} Build Successful: Build {1}. See {2}", result.ProjectName, result.Label, ProjectUrl ?? result.ProjectUrl );
         }
       } else {
-        return String.Format ( "{0} Build Failed. See {1}", result.ProjectName, result.ProjectUrl );
+        return String.Format ( "{0} Build Failed. See {1}", result.ProjectName, ProjectUrl ?? result.ProjectUrl );
       }
     }
   }
