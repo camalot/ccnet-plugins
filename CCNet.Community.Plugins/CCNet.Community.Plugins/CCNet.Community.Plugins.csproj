@@ -76,7 +76,9 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.EnterpriseServices" />
     <Reference Include="System.Web" />
+    <Reference Include="System.Web.Services" />
     <Reference Include="System.Xml" />
     <Reference Include="ThoughtWorks.CruiseControl.Core, Version=1.4.0.3154, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -98,7 +100,33 @@
     <Compile Include="Components\Ftp\FtpWebResponse.cs" />
     <Compile Include="Components\Ftp\WebRequest.cs" />
     <Compile Include="Components\Ftp\WebResponse.cs" />
+    <Compile Include="Components\Macros\BuildConditionToConfiguration.cs" />
+    <Compile Include="Components\Macros\BuildConditionToReleaseType.cs" />
+    <Compile Include="Components\Macros\DateTimeToString.cs" />
+    <Compile Include="Components\Macros\GetFileSize.cs" />
+    <Compile Include="Components\Macros\IMacro.cs" />
+    <Compile Include="Components\Macros\IMacroRunner.cs" />
+    <Compile Include="Components\Macros\MacroEngine.cs" />
     <Compile Include="Components\Twitter\TwitterService.cs" />
+    <Compile Include="Enums.cs" />
+    <Compile Include="Publishers\CodePlexReleasePublisher.cs" />
+    <Compile Include="Publishers\CodePlexReleaseTaskResult.cs" />
+    <Compile Include="Publishers\CodePlexRelease\ReleaseBase.cs" />
+    <Compile Include="Publishers\CodePlexRelease\ReleaseFile.cs" />
+    <Compile Include="Publishers\CodePlexRelease\ReleaseItem.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Publishers\RssBuildsPublisher.cs" />
+    <Compile Include="Publishers\RssBuilds\Category.cs" />
+    <Compile Include="Publishers\RssBuilds\FeedImage.cs" />
+    <Compile Include="Publishers\RssBuilds\Namespace.cs" />
+    <Compile Include="Publishers\RssBuilds\PingElement.cs" />
+    <Compile Include="Publishers\RssBuilds\RssElement.cs" />
+    <Compile Include="Publishers\RssBuilds\RssElementAttribute.cs" />
+    <Compile Include="Publishers\RssBuilds\RssNode.cs" />
     <Compile Include="Util.cs" />
     <Compile Include="Components\XmlRpc\MetaWeblogAPI.cs" />
     <Compile Include="Components\XmlRpc\MetaWeblogClient.cs">
@@ -124,6 +152,11 @@
     <Compile Include="Tasks\NCoverTask.cs" />
     <Compile Include="Tasks\XUnitArgument.cs" />
     <Compile Include="Tasks\XUnitTask.cs" />
+    <Compile Include="Web References\CodePlexApi\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.map</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -131,6 +164,37 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <None Include="Web References\CodePlexApi\ReleaseService.wsdl" />
+  </ItemGroup>
+  <ItemGroup>
+    <WebReferences Include="Web References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <WebReferenceUrl Include="https://codeplex.com/Services/ReleaseService.asmx">
+      <UrlBehavior>Dynamic</UrlBehavior>
+      <RelPath>Web References\CodePlexApi\</RelPath>
+      <UpdateFromURL>https://codeplex.com/Services/ReleaseService.asmx</UpdateFromURL>
+      <ServiceLocationURL>
+      </ServiceLocationURL>
+      <CachedDynamicPropName>
+      </CachedDynamicPropName>
+      <CachedAppSettingsObjectName>Settings</CachedAppSettingsObjectName>
+      <CachedSettingsPropName>ccnet_Community_plugin_CodePlexApi_ReleaseService</CachedSettingsPropName>
+    </WebReferenceUrl>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Web References\CodePlexApi\Reference.map">
+      <Generator>MSDiscoCodeGenerator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <None Include="Web References\CodePlexApi\ReleaseService.disco" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="States\" />

@@ -48,110 +48,85 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Exortech.NetReflector;
-using ThoughtWorks.CruiseControl.Core;
-using ThoughtWorks.CruiseControl.Remote;
-using ThoughtWorks.CruiseControl.Core.Label;
 
-namespace CCNet.Community.Plugins.Labellers {
+namespace CCNet.Community.Plugins {
   /// <summary>
-  /// 
+  /// The status of the release
   /// </summary>
-  [ReflectorType ( "lastChangeVersionLabeller" )]
-  public class LastChangeVersionLabeller : ILabeller, ITask {
+  public enum ReleaseStatus {
     /// <summary>
-    /// Initializes a new instance of the <see cref="LastChangeVersionLabeller"/> class.
+    /// The release is a planned release.
     /// </summary>
-    public LastChangeVersionLabeller ( ) {
-      this.Major = 1;
-      this.Minor = 0;
-      this.IncrementOnFailure = false;
-      this.Separator = ".";
-    }
+    Planned,
     /// <summary>
-    /// Gets or sets the major.
+    /// The release is an available release
     /// </summary>
-    /// <value>The major.</value>
-    [ReflectorProperty ( "major", Required = true )]
-    public int Major { get; set; }
+    Released
+  }
+
+  /// <summary>
+  /// The file type
+  /// </summary>
+  public enum ReleaseFileType {
     /// <summary>
-    /// Gets or sets the minor.
+    /// Binary file
     /// </summary>
-    /// <value>The minor.</value>
-    [ReflectorProperty ( "minor", Required = true )]
-    public int Minor { get; set; }
+    RuntimeBinary,
     /// <summary>
-    /// Gets or sets the separator.
+    /// Source Code file
     /// </summary>
-    /// <value>The separator.</value>
-    [ReflectorProperty ( "separator", Required = false )]
-    public string Separator { get; set; }
+    SourceCode,
     /// <summary>
-    /// Gets or sets a value indicating whether [increment on failed].
+    /// Documentation file
     /// </summary>
-    /// <value><c>true</c> if [increment on failed]; otherwise, <c>false</c>.</value>
-    [ReflectorProperty ( "incrementOnFailure", Required = false )]
-    public bool IncrementOnFailure { get; set; }
-
-    #region ILabeller Members
-
+    Documentation,
     /// <summary>
-    /// Generates the specified integration result.
+    /// Example file
     /// </summary>
-    /// <param name="integrationResult">The integration result.</param>
-    /// <returns></returns>
-    public string Generate ( IIntegrationResult integrationResult ) {
-      IntegrationSummary lastIntegration = integrationResult.LastIntegration;
-      if ( ( lastIntegration.Label == null ) || lastIntegration.IsInitial ( ) ) {
-        return GetVersionLabel ( 0 );
-      }
+    Example
+  }
 
-      if ( ( lastIntegration.Status != IntegrationStatus.Success ) && !this.IncrementOnFailure ) {
-        return lastIntegration.Label;
-      }
-      int lastChangeNumber = integrationResult.LastChangeNumber;
-      return GetVersionLabel ( lastChangeNumber );
-    }
-
-    #endregion
-
+  /// <summary>
+  /// The type of release
+  /// </summary>
+  public enum ReleaseType {
     /// <summary>
-    /// Gets the version label.
+    /// No specified release type
     /// </summary>
-    /// <param name="lastChange">The last change.</param>
-    /// <returns></returns>
-    private string GetVersionLabel ( int lastChange ) {
-      return string.Format ( "{1}{0}{2}{0}{4}{0}{3}", this.Separator, this.Major, this.Minor, this.CalculateFractionalPartOfDay ( ), lastChange );
-    }
-
+    None,
     /// <summary>
-    /// calculate the value for the revision. The calculation is the same that is used in the MSBuild Community Tasks
+    /// An alpha release
     /// </summary>
-    /// <returns></returns>
-    private int CalculateFractionalPartOfDay ( ) {
-      float factor = ( float ) ( UInt16.MaxValue - 1 ) / ( 24 * 60 * 60 );
-      return ( int ) ( DateTime.Now.TimeOfDay.TotalSeconds * factor );
-    }
-
+    Alpha,
     /// <summary>
-    /// Paddeds the value.
+    /// A beta release
     /// </summary>
-    /// <param name="value">The value.</param>
-    /// <returns></returns>
-    private string PaddedValue ( int value ) {
-      return string.Format ( "{0}{1}", value < 10 ? "0" : string.Empty, value );
-    }
-
-    #region ITask Members
-
+    Beta,
     /// <summary>
-    /// Runs the specified result.
+    /// A nightly release
     /// </summary>
-    /// <param name="result">The result.</param>
-    public void Run ( IIntegrationResult result ) {
-      result.Label = this.Generate ( result );
-    }
+    Nightly,
+    /// <summary>
+    /// A production release
+    /// </summary>
+    Production
+  }
 
-    #endregion
+  /// <summary>
+  /// Supported Build Conditions
+  /// </summary>
+  public enum PublishBuildCondition : int {
+    /// <summary>
+    /// Build because of modifications
+    /// </summary>
+    IfModificationExists = 0,
+    /// <summary>
+    /// Forced Build
+    /// </summary>
+    ForceBuild,
+    /// <summary>
+    /// Any Build type.
+    /// </summary>
+    AllBuildConditions
   }
 }

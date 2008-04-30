@@ -40,6 +40,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CCNetConfig", "CCNetConfig"
 		3rdParty\CCNetConfig.Core.XML = 3rdParty\CCNetConfig.Core.XML
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Example", "Example", "{EB055F5C-E530-4894-9C5B-6FB800A310E5}"
+	ProjectSection(SolutionItems) = preProject
+		ccnet.example.config = ccnet.example.config
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
 		SccNumberOfProjects = 4

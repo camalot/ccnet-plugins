@@ -12,5 +12,8 @@
     <Setting Name="MetaWeblogDefaultTagFormat" Type="System.String" Scope="Application">
       <Value Profile="(Default)">[ &lt;a rel="tag" href="http://technorati.com/tag/{0}"&gt;{0}&lt;/a&gt; ]</Value>
     </Setting>
+    <Setting Name="ccnet_Community_plugin_CodePlexApi_ReleaseService" Type="(Web Service URL)" Scope="Application">
+      <Value Profile="(Default)">https://codeplex.com/Services/ReleaseService.asmx</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

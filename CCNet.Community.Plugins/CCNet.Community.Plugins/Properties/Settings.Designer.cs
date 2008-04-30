@@ -52,5 +52,15 @@ namespace CCNet.Community.Plugins.Properties {
                 return ((string)(this["MetaWeblogDefaultTagFormat"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.WebServiceUrl)]
+        [global::System.Configuration.DefaultSettingValueAttribute("https://codeplex.com/Services/ReleaseService.asmx")]
+        public string ccnet_Community_plugin_CodePlexApi_ReleaseService {
+            get {
+                return ((string)(this["ccnet_Community_plugin_CodePlexApi_ReleaseService"]));
+            }
+        }
     }
 }

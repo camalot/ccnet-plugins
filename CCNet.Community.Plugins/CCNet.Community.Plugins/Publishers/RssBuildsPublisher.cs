@@ -1,0 +1,822 @@
+/*
+ * http://www.codeplex.com/ccnetplugins/
+ * 
+ * Microsoft Public License (Ms-PL)
+ * This license governs use of the accompanying software. If you use the software, you accept this license. If you do not 
+ * accept the license, do not use the software.
+ * 
+ * 1. Definitions
+ * The terms "reproduce," "reproduction," "derivative works," and "distribution" have the same meaning here as under U.S. 
+ * copyright law.
+ * 
+ * A "contribution" is the original software, or any additions or changes to the software.
+ * 
+ * A "contributor" is any person that distributes its contribution under this license.
+ * 
+ * "Licensed patents" are a contributor's patent claims that read directly on its contribution.
+ * 
+ * 2. Grant of Rights
+ * 
+ * (A) Copyright Grant- Subject to the terms of this license, including the license conditions and limitations in section 3, 
+ * each contributor grants you a non-exclusive, worldwide, royalty-free copyright license to reproduce its contribution, 
+ * prepare derivative works of its contribution, and distribute its contribution or any derivative works that you create.
+ * 
+ * (B) Patent Grant- Subject to the terms of this license, including the license conditions and limitations in section 3, each 
+ * contributor grants you a non-exclusive, worldwide, royalty-free license under its licensed patents to make, have made, use, 
+ * sell, offer for sale, import, and/or otherwise dispose of its contribution in the software or derivative works of the 
+ * contribution in the software.
+ * 
+ * 3. Conditions and Limitations
+ * 
+ * (A) No Trademark License- This license does not grant you rights to use any contributors' name, logo, or trademarks.
+ * 
+ * (B) If you bring a patent claim against any contributor over patents that you claim are infringed by the software, your 
+ * patent license from such contributor to the software ends automatically.
+ * 
+ * (C) If you distribute any portion of the software, you must retain all copyright, patent, trademark, and attribution notices 
+ * that are present in the software.
+ * 
+ * (D) If you distribute any portion of the software in source code form, you may do so only under this license by including a 
+ * complete copy of this license with your distribution. If you distribute any portion of the software in compiled or object code 
+ * form, you may only do so under a license that complies with this license.
+ * 
+ * (E) The software is licensed "as-is." You bear the risk of using it. The contributors give no express warranties, guarantees 
+ * or conditions. You may have additional consumer rights under your local laws which this license cannot change. To the extent 
+ * permitted under your local laws, the contributors exclude the implied warranties of merchantability, fitness for a particular 
+ * purpose and non-infringement.
+ */
+using System;
+using System.Collections.Generic;
+using System.Text;
+using ThoughtWorks.CruiseControl.Core;
+using Exortech.NetReflector;
+using System.IO;
+using ThoughtWorks.CruiseControl.Remote;
+using System.Xml;
+using System.Xml.XPath;
+using System.Reflection;
+using System.Text.RegularExpressions;
+using CCNet.Community.Plugins.Components.Macros;
+
+
+namespace CCNet.Community.Plugins.Publishers {
+  /// <summary>
+  /// An Rss Builds publisher for CruiseControl.NET
+  /// </summary>
+  /// <example>
+  /// <code language="xml" title="RssBuildsPublisher Example" htmlDecode="true">
+  /// <![CDATA[<rssBuilds encoding="utf-8" fileName="$(ProjectName)Nightly" 
+  ///       buildCondition="IfModificationExists"
+  ///       addEnclosure="true">
+  /// <!-- Collection of namespaces added to the feed -->
+  /// <rssExtensions>
+  ///   <namespace prefix="slash" namespaceURI="http://purl.org/rss/1.0/modules/slash/" />
+  /// </rssExtensions>
+  /// <!-- the feed image -->
+  /// <feedImage url="http://mydomain.com/images/logo.png" title="$(ProjectName)" link="$(ProjectUrl)" />
+  /// <maxHistory>25</maxHistory>
+  /// <channelUrl>$(ProjectUrl)</channelUrl>
+  /// <itemUrl>http://mydomain.com/builds/$(Label)/$(ProjectName).$(Label).zip</itemUrl>
+  /// <enclosureUrl>http://mydomain.com/builds/$(Label)/$(ProjectName).$(Label).zip</enclosureUrl>
+  /// <feedTitle>Nightly Builds for {0}</feedTitle>
+  /// <feedDescription>Build Report for $(ProjectName)</feedDescription>
+  /// <itemTitle>$(ProjectName) $(Label)</itemTitle>
+  /// <feedElements>
+  ///   <rssElement name="webmaster" value="my.email@address.com" />
+  /// </feedElements>
+  /// <itemElements>
+  ///   <rssElement prefix="dc" name="creator" value="Ryan" />
+  /// </itemElements>
+  /// <categories>
+  ///   <category name="NightlyBuilds" />
+  ///   <category name="CC.NET" />
+  ///   <category name="Publisher" />
+  ///   <category name="$(ProjectName)" />
+  ///   <category name="$(ProjectName) $(Label)" />
+  /// </categories>
+  /// <descriptionHeader>&lt;p&gt;</descriptionHeader>
+  /// <descriptionFooter>&lt;/p&gt;
+  /// &lt;p&gt;&lt;a href="http://mydomain.com/builds/$(Label)/$(ProjectName).$(Label).zip"&gt;$(ProjectName) $(Label) Binaries&lt;/a&gt;&lt;br /&gt;
+  /// &lt;a href="http://mydomain.com/builds/$(Label)/$(ProjectName).$(Label).src.zip"&gt;$(ProjectName) $(Label) Source&lt;/a&gt;&lt;br /&gt;
+  /// &lt;a href="http://mydomain.com/builds/$(Label)/$(ProjectName).$(Label).msi.zip"&gt;$(ProjectName) $(Label) Installer&lt;/a&gt;&lt;br /&gt;
+  /// &lt;/p&gt;</descriptionFooter>
+  /// </rssBuilds>]]>
+  /// </code>
+  /// </example>
+  [ReflectorType ( "rssBuilds" )]
+  public class RssBuildsPublisher : ITask, IMacroRunner {
+    #region Private Members
+    /// <summary>
+    /// the path where the feed is saved.
+    /// </summary>
+    private string _outputPath = string.Empty;
+    /// <summary>
+    /// The max number of items to store in the main feed.
+    /// </summary>
+    private int _maxHistory = 25;
+
+    private string _encoding = string.Empty;
+    /// <summary>
+    /// The filename of the Xml Document without the extension.
+    /// </summary>
+    private string _fileName = string.Empty;
+    /// <summary>
+    /// The format string used to create the item url.
+    /// </summary>
+    private string _urlFormat = string.Empty;
+    /// <summary>
+    /// indicator if an enclosure should be added to the feed item
+    /// </summary>
+    private bool _addEnclosure = false;
+    /// <summary>
+    /// The string format used to generate the enclosure url
+    /// </summary>
+    private string _enclosureFormat = string.Empty;
+    /// <summary>
+    /// The string format used to create the link of the channel.
+    /// </summary>
+    private string _channelUrlFormat = string.Empty;
+    /// <summary>
+    /// Format string used to create the feed title
+    /// </summary>
+    private string _feedTitleFormat = string.Empty;
+    /// <summary>
+    /// Format string used to create the feed description
+    /// </summary>
+    private string _feedDescriptionFormat = string.Empty;
+    /// <summary>
+    /// The feed image.
+    /// </summary>
+    private FeedImage _feedImage = null;
+    /// <summary>
+    /// Collection of namespaces that are added to the feed.
+    /// </summary>
+    private List<Namespace> _namespaces = null;
+    /// <summary>
+    /// Collection of additional xml elements that are added to the feed channel.
+    /// </summary>
+    private List<RssElement> _feedItems = null;
+    /// <summary>
+    /// Collection of additional xml elements that are added to each feed item.
+    /// </summary>
+    private List<RssElement> _itemItems = null;
+    /// <summary>
+    /// The string format used to generate the title of the item.
+    /// </summary>
+    private string _itemTitleFormat = string.Empty;
+    /// <summary>
+    /// Collection of categories for the feed item.
+    /// </summary>
+    private List<Category> _categories = null;
+    /// <summary>
+    /// string used in the description before the change comments.
+    /// </summary>
+    private string _descriptionHeader = string.Empty;
+    /// <summary>
+    /// string used in the description after the change comments.
+    /// </summary>
+    private string _descriptionFooter = string.Empty;
+
+    private List<PingElement> _pings = null;
+
+    /// <summary>
+    /// the Rss Feed XmlDocument
+    /// </summary>
+    private XmlDocument rssDoc = null;
+
+    /// <summary>
+    /// Contains the modification comments
+    /// </summary>
+    private string _modificationComments = string.Empty;
+
+    /// <summary>
+    /// namespace manager used for added elements to the feed.
+    /// </summary>
+    private XmlNamespaceManager namespaceManager = null;
+
+    private MacroEngine _macroEngine = null;
+    #endregion
+
+    #region Constructor
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RssBuildsPublisher"/> class.
+    /// </summary>
+    public RssBuildsPublisher () {
+      _maxHistory = 25;
+      _outputPath = string.Empty;
+      Encoding = "UTF-8";
+      _fileName = "rss";
+      _enclosureFormat = "http://localhost/builds/{0}/{1}/Debug/{0}.{1}.zip";
+      _urlFormat = "http://localhost/builds/{0}/{1}";
+      _channelUrlFormat = "http://localhost/builds/";
+      _itemTitleFormat = "{0} {1}";
+      _namespaces = new List<Namespace> ();
+      _feedTitleFormat = "{0} Builds";
+      _feedDescriptionFormat = "{2} Build Feed";
+      _feedImage = new FeedImage ();
+      _feedItems = new List<RssElement> ();
+      _itemItems = new List<RssElement> ();
+      _categories = new List<Category> ();
+      _descriptionFooter = string.Empty;
+      _descriptionHeader = string.Empty;
+      _pings = new List<PingElement> ();
+      // need to add some default namespaces.
+      AddDefaultNamespaces ();
+      _macroEngine = new MacroEngine ();
+    }
+    #endregion
+
+    #region Public Reflector Properties
+    /// <summary>
+    /// Gets or sets the output path.
+    /// </summary>
+    /// <value>The output path.</value>
+    [ReflectorProperty ( "outputPath", Required = false )]
+    public string OutputPath { get; set; }
+    /// <summary>
+    /// Gets or sets the RSS extensions.
+    /// </summary>
+    /// <value>The RSS extensions.</value>
+    [ReflectorArray ( "rssExtensions", Required = false )]
+    public List<Namespace> RssExtensions {
+      get { return this._namespaces; }
+      set {
+        this._namespaces.Clear ();
+        AddDefaultNamespaces ();
+        this._namespaces.AddRange ( value );
+      }
+    }
+
+    /// <summary>
+    /// Gets or sets the ping items.
+    /// </summary>
+    /// <value>The ping items.</value>
+    [ ReflectorArray( "pingItems",Required=false ) ]
+    public List<PingElement> PingItems { get; set; }
+    /// <summary>
+    /// Gets or sets the feed image.
+    /// </summary>
+    /// <value>The feed image.</value>
+    [ReflectorProperty ( "feedImage", Required = false )]
+    public FeedImage FeedImage { get; set; }
+    /// <summary>
+    /// Gets or sets the max history.
+    /// </summary>
+    /// <value>The max history.</value>
+    [ReflectorProperty ( "maxHistory", Required = false )]
+    public int MaxHistory {
+      get { return this._maxHistory; }
+      set { this._maxHistory = value > 0 ? value : 25; }
+    }
+    /// <summary>
+    /// Gets or sets the channel URL format.
+    /// </summary>
+    /// <value>The channel URL format.</value>
+    [ReflectorProperty ( "channelUrl", Required = false )]
+    public string ChannelUrl { get; set; }
+    /// <summary>
+    /// Gets or sets the encoding.
+    /// </summary>
+    /// <value>The encoding.</value>
+    [ReflectorProperty ( "encoding", Required = false )]
+    public string Encoding {
+      get { return this._encoding; }
+      set {
+        Encoding encode = System.Text.Encoding.GetEncoding ( value );
+        if ( encode == null )
+          this._encoding = "UTF-8";
+        else
+          this._encoding = value;
+      }
+    }
+    /// <summary>
+    /// Gets or sets the URL format.
+    /// </summary>
+    /// <value>The URL format.</value>
+    [ReflectorProperty ( "itemUrl", Required = false )]
+    public string ItemUrl { get; set; }
+    /// <summary>
+    /// Gets or sets the name of the file.
+    /// </summary>
+    /// <value>The name of the file.</value>
+    [ReflectorProperty ( "fileName", Required = false )]
+    public string FileName {
+      get { return this._fileName; }
+      set { this._fileName = string.IsNullOrEmpty ( value ) ? "rss" : value; }
+    }
+    /// <summary>
+    /// Gets or sets the build condition.
+    /// </summary>
+    /// <value>The build condition.</value>
+    [ReflectorProperty ( "buildCondition", Required = false )]
+    public PublishBuildCondition BuildCondition { get; set;}
+    /// <summary>
+    /// Gets or sets a value indicating whether [add enclosure].
+    /// </summary>
+    /// <value><c>true</c> if [add enclosure]; otherwise, <c>false</c>.</value>
+    [ReflectorProperty ( "addEnclosure", Required = false )]
+    public bool AddEnclosure { get; set; }
+    /// <summary>
+    /// Gets or sets a value indicating whether [add enclosure].
+    /// </summary>
+    /// <value><c>true</c> if [add enclosure]; otherwise, <c>false</c>.</value>
+    [ReflectorProperty ( "enclosureUrl", Required = false)]
+    public string EnclosureUrl { get; set; }
+    /// <summary>
+    /// Gets or sets the feed title.
+    /// </summary>
+    /// <value>The feed title.</value>
+    [ReflectorProperty ( "feedTitle", Required = false )]
+    public string FeedTitle { get; set; }
+    /// <summary>
+    /// Gets or sets the item title format.
+    /// </summary>
+    /// <value>The item title format.</value>
+    [ReflectorProperty ( "itemTitle", Required = false )]
+    public string ItemTitle { get; set; }
+    /// <summary>
+    /// Gets or sets the feed description format.
+    /// </summary>
+    /// <value>The feed description format.</value>
+    [ReflectorProperty ( "feedDescription", Required = false)]
+    public string FeedDescription { get; set; }
+    /// <summary>
+    /// Gets or sets the feed elements.
+    /// </summary>
+    /// <value>The feed elements.</value>
+    [ReflectorProperty ( "feedElements", Required = false )]
+    public List<RssElement> FeedElements { get; set; }
+    /// <summary>
+    /// Gets or sets the item elements.
+    /// </summary>
+    /// <value>The item elements.</value>
+    [ReflectorProperty ( "itemElements", Required = false )]
+    public List<RssElement> ItemElements { get; set; }
+    /// <summary>
+    /// Gets or sets the categories.
+    /// </summary>
+    /// <value>The categories.</value>
+    [ReflectorCollection ( "categories", Required = false )]
+    public List<Category> Categories { get; set; }
+    /// <summary>
+    /// Gets or sets the description header.
+    /// </summary>
+    /// <value>The description header.</value>
+    [ReflectorProperty ( "descriptionHeader", Required = false )]
+    public string DescriptionHeader { get; set; }
+    /// <summary>
+    /// Gets or sets the description footer.
+    /// </summary>
+    /// <value>The description footer.</value>
+    [ReflectorProperty ( "descriptionFooter", Required = false )]
+    public string DescriptionFooter { get; set; }
+
+    /// <summary>
+    /// Gets the modification comments.
+    /// </summary>
+    /// <value>The modification comments.</value>
+    public string ModificationComments {
+      get { return _modificationComments; }
+    }
+
+    /// <summary>
+    /// Gets the macro engine.
+    /// </summary>
+    /// <value>The macro engine.</value>
+    public MacroEngine MacroEngine { get { return this._macroEngine; } }
+    #endregion
+
+    #region ITask Members
+
+    /// <summary>
+    /// Runs the task.
+    /// </summary>
+    /// <param name="result">The result.</param>
+    public void Run ( IIntegrationResult result ) {
+      string outputPath = Path.Combine ( result.ArtifactDirectory, this.OutputPath );
+
+      if ( result.Status != IntegrationStatus.Success )
+        return;
+
+      // using a custom enum allows for supporting AllBuildConditions
+      if ( this.BuildCondition != PublishBuildCondition.AllBuildConditions && string.Compare ( this.BuildCondition.ToString (), result.BuildCondition.ToString (), true ) != 0 )
+        return;
+
+      ReadModidicationComments ( result );
+
+      string fileNameFormat = "{0}.xml";
+      string fileName = string.Format ( fileNameFormat, Util.GetCCNetPropertyString<IMacroRunner> ( this, result, this.FileName ) );
+      FileInfo rssFile = new FileInfo ( Path.Combine ( outputPath, fileName ) );
+      rssDoc = new XmlDocument ();
+      if ( !rssFile.Exists )
+        rssDoc = BuildBaseFeedDocument ( result, rssFile );
+      else {
+        rssDoc.Load ( rssFile.FullName );
+        namespaceManager = CreateXmlNamespaceManager ( rssDoc );
+        XmlElement chan = rssDoc.DocumentElement.SelectSingleNode ( "channel" ) as XmlElement;
+        UpdateGeneratorTag ( chan );
+        if ( chan != null )
+          AddBuildItemsToChannel ( result, chan );
+      }
+      ThoughtWorks.CruiseControl.Core.Util.Log.Debug ( string.Format ( "Saving {0}", rssFile.FullName ) );
+      rssDoc.Save ( rssFile.FullName );
+
+      ThoughtWorks.CruiseControl.Core.Util.Log.Debug ("Pinging Defined Urls" );
+      foreach ( PingElement pe in this.PingItems ) {
+        pe.PingUrl = Util.GetCCNetPropertyString<IMacroRunner> ( this, result, pe.PingUrl );
+        pe.FeedName = Util.GetCCNetPropertyString<IMacroRunner> ( this, result, pe.FeedName );
+        pe.FeedUrl = Util.GetCCNetPropertyString<IMacroRunner> ( this, result, pe.FeedUrl );
+        pe.Send ();
+      }
+    }
+
+    #endregion
+
+    #region Private Methods
+
+    /// <summary>
+    /// sets the modidication comments to a public accessable read only property.
+    /// </summary>
+    /// <param name="result">The result.</param>
+    private void ReadModidicationComments ( IIntegrationResult result ) {
+      DateTime lastDate = DateTime.MinValue;
+      StringBuilder descText = new StringBuilder ();
+      foreach ( Modification mod in result.Modifications ) {
+        if ( lastDate.CompareTo ( mod.ModifiedTime ) != 0 ) {
+          lastDate = mod.ModifiedTime;
+          if ( !string.IsNullOrEmpty ( mod.Comment ) ) {
+            descText.AppendLine ( "<p class=\"modComment\">" );
+            descText.AppendLine ( mod.Comment );
+            descText.AppendLine ( "</p>" );
+          }
+        }
+      }
+      this._modificationComments = descText.ToString ();
+    }
+
+    /// <summary>
+    /// Builds the base feed document.
+    /// </summary>
+    /// <param name="result">The result.</param>
+    /// <param name="rssFile">The RSS file.</param>
+    /// <returns></returns>
+    private XmlDocument BuildBaseFeedDocument ( IIntegrationResult result, FileInfo rssFile ) {
+      XmlDocument doc = BuildEmptyFeedDocument ( result, rssFile );
+      XmlElement chan = CreateChannel ( result, doc );
+      UpdateGeneratorTag ( chan );
+      doc.DocumentElement.AppendChild ( chan );
+      return doc;
+    }
+
+    /// <summary>
+    /// Builds the empty feed document.
+    /// </summary>
+    /// <param name="result">The result.</param>
+    /// <param name="file">The file.</param>
+    /// <returns></returns>
+    private XmlDocument BuildEmptyFeedDocument ( IIntegrationResult result, FileInfo file ) {
+      XmlDocument doc = new XmlDocument ();
+      doc.AppendChild ( doc.CreateXmlDeclaration ( "1.0", this.Encoding, string.Empty ) );
+      doc.AppendChild ( doc.CreateElement ( "rss" ) );
+
+      foreach ( Namespace ns in RssExtensions ) {
+        XmlAttribute attr = doc.CreateAttribute ( "xmlns", ns.Prefix, "http://www.w3.org/2000/xmlns/" );
+        attr.Value = ns.NamespaceUri.ToString ();
+        doc.DocumentElement.SetAttributeNode ( attr );
+      }
+
+      doc.DocumentElement.SetAttribute ( "version", "2.0" );
+      namespaceManager = CreateXmlNamespaceManager ( doc );
+
+      return doc;
+    }
+
+    /// <summary>
+    /// Creates the channel.
+    /// </summary>
+    /// <param name="result">The result.</param>
+    /// <param name="doc">The doc.</param>
+    /// <returns></returns>
+    private XmlElement CreateChannel ( IIntegrationResult result, XmlDocument doc ) {
+      XmlElement channel = CreateEmptyChannel ( result, doc );
+      AddBuildItemsToChannel ( result, channel );
+      return channel;
+    }
+
+    /// <summary>
+    /// Creates the empty channel.
+    /// </summary>
+    /// <param name="result">The result.</param>
+    /// <param name="doc">The doc.</param>
+    /// <returns></returns>
+    private XmlElement CreateEmptyChannel ( IIntegrationResult result, XmlDocument doc ) {
+      XmlElement channel = doc.CreateElement ( "channel" );
+      XmlElement ele = doc.CreateElement ( "title" );
+      ele.InnerText = string.Format ( Util.GetCCNetPropertyString<IMacroRunner> ( this, result, FeedTitle ), result.ProjectName, result.Status, result.BuildCondition );
+      channel.AppendChild ( ele );
+
+      if ( !string.IsNullOrEmpty ( result.ProjectUrl ) ) {
+        ele = doc.CreateElement ( "link" );
+        ele.InnerText = string.Format ( Util.GetCCNetPropertyString<IMacroRunner> ( this, result, this.ChannelUrl ), result.ProjectName, result.Label );
+        channel.AppendChild ( ele );
+      }
+
+      ele = doc.CreateElement ( "description" );
+      ele.InnerText = string.Format ( Util.GetCCNetPropertyString<IMacroRunner> ( this, result, FeedDescription ), result.ProjectName, result.Status, result.BuildCondition );
+      channel.AppendChild ( ele );
+
+
+      if ( FeedImage != null && !string.IsNullOrEmpty ( FeedImage.Image ) ) {
+        ele = doc.CreateElement ( "image" );
+        XmlElement tele = doc.CreateElement ( "link" );
+        tele.InnerText = string.Format ( Util.GetCCNetPropertyString<IMacroRunner> ( this, result, this.FeedImage.Link ), result.ProjectName );
+        ele.AppendChild ( tele );
+
+        tele = doc.CreateElement ( "url" );
+        tele.InnerText = string.Format ( Util.GetCCNetPropertyString<IMacroRunner> ( this, result, this.FeedImage.Image ), result.ProjectName );
+        ele.AppendChild ( tele );
+
+        tele = doc.CreateElement ( "title" );
+        tele.InnerText = string.Format ( Util.GetCCNetPropertyString<IMacroRunner> ( this, result, this.FeedImage.Title ), result.ProjectName );
+        ele.AppendChild ( tele );
+
+        channel.AppendChild ( ele );
+      }
+
+      AddCustomElements ( result, this.FeedElements, channel );
+
+      return channel;
+    }
+
+    /// <summary>
+    /// Adds the custom elements.
+    /// </summary>
+    /// <param name="result">The result.</param>
+    /// <param name="elements">The elements.</param>
+    /// <param name="parent">The parent.</param>
+    private void AddCustomElements ( IIntegrationResult result, List<RssElement> elements, XmlElement parent ) {
+      foreach ( RssElement element in elements ) {
+        if ( !string.IsNullOrEmpty ( element.Prefix ) ) {
+          if ( string.IsNullOrEmpty ( namespaceManager.LookupNamespace ( element.Prefix ) ) )
+            continue;
+        }
+
+        XmlElement ele = parent.OwnerDocument.CreateElement ( element.Prefix, element.Name, namespaceManager.LookupNamespace ( element.Prefix ) );
+
+        foreach ( RssElementAttribute attribute in element.Attributes )
+          ele.SetAttribute ( attribute.Name, string.IsNullOrEmpty ( namespaceManager.LookupNamespace ( attribute.Prefix ) ) ? string.Empty :
+            namespaceManager.LookupNamespace ( attribute.Prefix ), Util.GetCCNetPropertyString<IMacroRunner> ( this, result, attribute.Value ) );
+
+        if ( string.IsNullOrEmpty ( element.Value ) && element.ChildElements.Count > 0 )
+          AddCustomElements ( result, element.ChildElements, ele );
+        else {
+          if ( !element.IsCData )
+            ele.InnerText = Util.GetCCNetPropertyString<IMacroRunner> ( this, result, element.Value );
+          else
+            ele.AppendChild ( parent.OwnerDocument.CreateCDataSection ( Util.GetCCNetPropertyString<IMacroRunner> ( this, result, element.Value ) ) );
+        }
+
+
+        parent.AppendChild ( ele );
+      }
+    }
+
+    /// <summary>
+    /// Adds the build items to channel.
+    /// </summary>
+    /// <param name="result">The result.</param>
+    /// <param name="channel">The channel.</param>
+    private void AddBuildItemsToChannel ( IIntegrationResult result, XmlElement channel ) {
+      XmlDocument doc = channel.OwnerDocument;
+      FileInfo historyFile = new FileInfo ( Path.Combine ( Path.Combine ( result.ArtifactDirectory, this.OutputPath ), string.Format ( "{0}.history.xml", Util.GetCCNetPropertyString<IMacroRunner> ( this, result, this.FileName ) ) ) );
+      XmlDocument docHistory = new XmlDocument ();
+
+      if ( !historyFile.Exists ) {
+        docHistory = BuildEmptyFeedDocument ( result, historyFile );
+        docHistory.DocumentElement.AppendChild ( CreateEmptyChannel ( result, docHistory ) );
+      } else
+        docHistory.Load ( historyFile.FullName );
+      XmlElement histChannel = docHistory.DocumentElement.SelectSingleNode ( "channel" ) as XmlElement;
+
+      XmlNodeList oldItems = channel.SelectNodes ( "//item" );
+      if ( oldItems.Count > this.MaxHistory ) {
+        for ( int x = 0; x < oldItems.Count - this.MaxHistory; x++ ) {
+          histChannel.AppendChild ( docHistory.ImportNode ( oldItems[x], true ) );
+          oldItems[x].ParentNode.RemoveChild ( oldItems[x] );
+        }
+      }
+
+      docHistory.Save ( historyFile.FullName );
+
+      XmlElement itemElement = doc.CreateElement ( "item" );
+
+      channel.AppendChild ( itemElement );
+
+      XmlElement ele = doc.CreateElement ( "title" );
+      ele.InnerText = string.Format ( Util.GetCCNetPropertyString<IMacroRunner> ( this, result, ItemTitle ), result.ProjectName, result.Label );
+      itemElement.AppendChild ( ele );
+
+      ele = doc.CreateElement ( "guid" );
+      ele.SetAttribute ( "isPermaLink", "true" );
+      ele.InnerText = string.Format ( Util.GetCCNetPropertyString<IMacroRunner> ( this, result, this.ItemUrl ), result.ProjectName, result.Label );
+      itemElement.AppendChild ( ele );
+
+      ele = doc.CreateElement ( "link" );
+      ele.InnerText = string.Format ( Util.GetCCNetPropertyString<IMacroRunner> ( this, result, this.ItemUrl ), result.ProjectName, result.Label );
+      itemElement.AppendChild ( ele );
+
+      ele = doc.CreateElement ( "pubDate" );
+      ele.InnerText = result.EndTime.ToString ( "r" );
+      itemElement.AppendChild ( ele );
+
+      if ( AddEnclosure ) {
+        ele = doc.CreateElement ( "enclosure" );
+        ele.SetAttribute ( "url", string.Format ( Util.GetCCNetPropertyString<IMacroRunner> ( this, result, this.EnclosureUrl ), result.ProjectName, result.Label ) );
+        itemElement.AppendChild ( ele );
+      }
+
+      ele = doc.CreateElement ( "ci", "BuildCondition", namespaceManager.LookupNamespace ( "ci" ) );
+      ele.InnerText = Enum.GetName ( typeof ( BuildCondition ), result.BuildCondition );
+      itemElement.AppendChild ( ele );
+
+      ele = doc.CreateElement ( "ci", "IntegrationRequest", namespaceManager.LookupNamespace ( "ci" ) );
+      ele.InnerText = result.IntegrationRequest.ToString ();
+      itemElement.AppendChild ( ele );
+
+      ele = doc.CreateElement ( "ci", "IntegrationProperties", namespaceManager.LookupNamespace ( "ci" ) );
+      foreach ( string s in result.IntegrationProperties.Keys ) {
+        string val = result.IntegrationProperties[s] as string;
+        XmlElement tele = doc.CreateElement ( "ci", "Property", namespaceManager.LookupNamespace ( "ci" ) );
+        tele.SetAttribute ( "key", s );
+        tele.InnerText = val;
+        if ( !string.IsNullOrEmpty ( val ) )
+          ele.AppendChild ( tele );
+      }
+      itemElement.AppendChild ( ele );
+
+      ele = doc.CreateElement ( "ci", "Label", namespaceManager.LookupNamespace ( "ci" ) );
+      ele.InnerText = result.Label;
+      itemElement.AppendChild ( ele );
+
+      ele = doc.CreateElement ( "ci", "LastChangeNumber", namespaceManager.LookupNamespace ( "ci" ) );
+      ele.InnerText = result.LastChangeNumber.ToString ();
+      itemElement.AppendChild ( ele );
+
+      ele = doc.CreateElement ( "ci", "LastIntegrationStatus", namespaceManager.LookupNamespace ( "ci" ) );
+      ele.InnerText = result.LastIntegrationStatus.ToString ();
+      itemElement.AppendChild ( ele );
+
+      ele = doc.CreateElement ( "ci", "LastModificationDate", namespaceManager.LookupNamespace ( "ci" ) );
+      ele.InnerText = result.LastModificationDate.ToString ( "r" );
+      itemElement.AppendChild ( ele );
+
+      ele = doc.CreateElement ( "ci", "LastSuccessfulIntegrationLabel", namespaceManager.LookupNamespace ( "ci" ) );
+      ele.InnerText = result.LastSuccessfulIntegrationLabel;
+      itemElement.AppendChild ( ele );
+
+      ele = doc.CreateElement ( "ci", "ProjectName", namespaceManager.LookupNamespace ( "ci" ) );
+      ele.InnerText = result.ProjectName;
+      itemElement.AppendChild ( ele );
+
+      if ( !string.IsNullOrEmpty ( result.ProjectUrl ) ) {
+        ele = doc.CreateElement ( "ci", "ProjectUrl", namespaceManager.LookupNamespace ( "ci" ) );
+        ele.InnerText = result.ProjectUrl;
+        itemElement.AppendChild ( ele );
+      }
+
+      ele = doc.CreateElement ( "ci", "Status", namespaceManager.LookupNamespace ( "ci" ) );
+      ele.InnerText = result.Status.ToString ();
+      itemElement.AppendChild ( ele );
+
+      ele = doc.CreateElement ( "ci", "TotalIntegrationTime", namespaceManager.LookupNamespace ( "ci" ) );
+      ele.InnerText = result.TotalIntegrationTime.ToString ();
+      itemElement.AppendChild ( ele );
+
+      ele = doc.CreateElement ( "ci", "Modifications", namespaceManager.LookupNamespace ( "ci" ) );
+      foreach ( Modification mod in result.Modifications ) {
+        XmlElement tmod = doc.CreateElement ( "ci", "Modification", namespaceManager.LookupNamespace ( "ci" ) );
+        XmlElement tele = doc.CreateElement ( "ci", "ChangeNumber", namespaceManager.LookupNamespace ( "ci" ) );
+        tele.InnerText = mod.ChangeNumber.ToString ();
+        tmod.AppendChild ( tele );
+
+        if ( !string.IsNullOrEmpty ( mod.Comment ) ) {
+          tele = doc.CreateElement ( "ci", "Comment", namespaceManager.LookupNamespace ( "ci" ) );
+          tele.InnerText = mod.Comment;
+          tmod.AppendChild ( tele );
+        }
+
+        if ( !string.IsNullOrEmpty ( mod.EmailAddress ) ) {
+          tele = doc.CreateElement ( "ci", "ChangeNumber", namespaceManager.LookupNamespace ( "ci" ) );
+          tele.InnerText = mod.EmailAddress;
+          tmod.AppendChild ( tele );
+        }
+
+        if ( !string.IsNullOrEmpty ( mod.FileName ) ) {
+          tele = doc.CreateElement ( "ci", "FileName", namespaceManager.LookupNamespace ( "ci" ) );
+          tele.InnerText = mod.FileName;
+          tmod.AppendChild ( tele );
+        }
+
+        if ( !string.IsNullOrEmpty ( mod.FolderName ) ) {
+          tele = doc.CreateElement ( "ci", "FolderName", namespaceManager.LookupNamespace ( "ci" ) );
+          tele.InnerText = mod.FolderName;
+          tmod.AppendChild ( tele );
+        }
+
+        tele = doc.CreateElement ( "ci", "ModifiedTime", namespaceManager.LookupNamespace ( "ci" ) );
+        tele.InnerText = mod.ModifiedTime.ToString ( "r" );
+        tmod.AppendChild ( tele );
+
+        if ( !string.IsNullOrEmpty ( mod.Type ) ) {
+          tele = doc.CreateElement ( "ci", "Type", namespaceManager.LookupNamespace ( "ci" ) );
+          tele.InnerText = mod.Type;
+          tmod.AppendChild ( tele );
+        }
+
+        if ( !string.IsNullOrEmpty ( mod.Url ) ) {
+          tele = doc.CreateElement ( "ci", "Url", namespaceManager.LookupNamespace ( "ci" ) );
+          tele.InnerText = mod.Url;
+          tmod.AppendChild ( tele );
+        }
+
+        if ( !string.IsNullOrEmpty ( mod.UserName ) ) {
+          tele = doc.CreateElement ( "ci", "UserName", namespaceManager.LookupNamespace ( "ci" ) );
+          tele.InnerText = mod.UserName;
+          tmod.AppendChild ( tele );
+        }
+
+        if ( !string.IsNullOrEmpty ( mod.Version ) ) {
+          tele = doc.CreateElement ( "ci", "Version", namespaceManager.LookupNamespace ( "ci" ) );
+          tele.InnerText = mod.Version;
+          tmod.AppendChild ( tele );
+        }
+
+        ele.AppendChild ( tmod );
+      }
+      itemElement.AppendChild ( ele );
+
+      // add description.
+      ele = doc.CreateElement ( "description" );
+      XmlCDataSection cdata = doc.CreateCDataSection ( string.Format ( "{0}{1}{2}",
+        Util.GetCCNetPropertyString<IMacroRunner> ( this, result, this.DescriptionHeader ),
+        this.ModificationComments,
+        Util.GetCCNetPropertyString<IMacroRunner> ( this, result, this.DescriptionFooter ) ) );
+      ele.AppendChild ( cdata );
+      itemElement.AppendChild ( ele );
+
+      // add "conent encoded" element
+      /*ele = doc.CreateElement ( "dc", "contentEncoded", namespaceManager.LookupNamespace ( "dc" ) );
+      cdata = doc.CreateCDataSection ( string.Format ( "{0}{1}{2}", GetCCNetPropertyString ( result, this.DescriptionHeader ), descText.ToString ( ), GetCCNetPropertyString ( result, this.DescriptionFooter ) ) );
+      ele.AppendChild ( cdata );
+      itemElement.AppendChild ( ele );*/
+
+      // add categories.
+      foreach ( Category cat in this.Categories ) {
+        ele = doc.CreateElement ( "category" );
+        ele.InnerText = Util.GetCCNetPropertyString<IMacroRunner> ( this, result, cat.Name );
+        itemElement.AppendChild ( ele );
+      }
+
+      AddCustomElements ( result, this.ItemElements, itemElement );
+
+    }
+
+    /// <summary>
+    /// Updates the generator tag.
+    /// </summary>
+    /// <param name="channel">The channel.</param>
+    private void UpdateGeneratorTag ( XmlElement channel ) {
+      XmlElement ele = channel.SelectSingleNode ( "generator" ) as XmlElement;
+      if ( ele == null ) {
+        ele = channel.OwnerDocument.CreateElement ( "generator" );
+        channel.AppendChild ( ele );
+      }
+      ele.InnerText = string.Format ( Properties.Resources.GeneratorString, this.GetType ().Assembly.GetName ().Version.ToString () );
+    }
+
+
+    /// <summary>
+    /// Creates the XML namespace manager.
+    /// </summary>
+    /// <param name="doc">The doc.</param>
+    /// <returns></returns>
+    private XmlNamespaceManager CreateXmlNamespaceManager ( XmlDocument doc ) {
+      XmlNamespaceManager nsmgr = new XmlNamespaceManager ( doc.NameTable );
+      foreach ( XmlAttribute attr in doc.SelectSingleNode ( "/*" ).Attributes )
+        if ( string.Compare ( attr.Prefix, "xmlns" ) == 0 )
+          nsmgr.AddNamespace ( attr.LocalName, attr.Value );
+      return nsmgr;
+    }
+
+    /// <summary>
+    /// Adds the default namespaces.
+    /// </summary>
+    private void AddDefaultNamespaces () {
+      this.RssExtensions.Add ( new Namespace ( "dc", "http://purl.org/dc/elements/1.1/" ) );
+      this.RssExtensions.Add ( new Namespace ( "ci", "http://ccnetconfig.org/2007/CCNetInfo" ) );
+    }
+    #endregion
+
+
+  }
+}
