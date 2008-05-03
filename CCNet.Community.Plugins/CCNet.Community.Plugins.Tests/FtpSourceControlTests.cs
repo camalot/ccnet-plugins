@@ -102,11 +102,11 @@ namespace CCNet.Community.Plugins.Tests {
 	<server>ftp.google.com</server>
   <port>2111</port>
   <repositoryRoot>my/code/path</repositoryRoot>
-  <useSecuredFtp>true</useSecuredFtp>
+  <useSsl>true</useSsl>
 </sourcecontrol>";
       FtpSourceControl task = new FtpSourceControl ( );
       NetReflector.Read ( xml, task );
-      Assert.Equal<String> ( task.ToString ( ), "sftp://ftp.google.com:2111/my/code/path/" );
+      Assert.Equal<String> ( task.ToString ( ), "ftps://ftp.google.com:2111/my/code/path/" );
     }
 
     [Fact]

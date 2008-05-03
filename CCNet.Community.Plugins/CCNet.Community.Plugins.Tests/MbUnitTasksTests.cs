@@ -99,10 +99,10 @@ namespace CCNet.Community.Plugins.Tests {
 	<outputfile>c:\testfile.xml</outputfile>
   <filters>
     <filterCategories>
-      <category>Bar</category>
+      <category name=""Bar"" />
     </filterCategories>
     <excludeCategories>
-      <category>Foo</category>
+      <category name=""Foo"" />
     </excludeCategories>
     <authors>
       <author>Ryan</author>
@@ -111,7 +111,7 @@ namespace CCNet.Community.Plugins.Tests {
       <type>Foo.Bar.Blarg</type>
     </types>
     <namespaces>
-      <namespace>Foo.Bar</namespace>
+      <ns>Foo.Bar</ns>
     </namespaces>
   </filters>
   <assemblypath>c:\assemblies</assemblypath>
@@ -122,8 +122,10 @@ namespace CCNet.Community.Plugins.Tests {
       Assert.Equal<String> ( @"d:\temp\mbunit-console.exe", task.Executable );
       Assert.Equal ( 1, task.Assemblies.Length );
       Assert.Equal<String> ( "foo.dll", task.Assemblies[ 0 ] );
-      Assert.Equal<String> ( "Bar", task.Filters.Categories[ 0 ] );
-      Assert.Equal<String> ( "Foo", task.Filters.ExcludeCategories[ 0 ] );
+      Assert.Equal<String> ( "Bar", task.Filters.Categories[ 0 ].Name );
+      Assert.Equal<String> ( task.Filters.Categories[ 0 ].ToString(), task.Filters.Categories[ 0 ].Name );
+      Assert.Equal<String> ( "Foo", task.Filters.ExcludeCategories[ 0 ].Name );
+      Assert.Equal<String> ( task.Filters.ExcludeCategories[ 0 ].ToString(), task.Filters.ExcludeCategories[ 0 ].Name );
       Assert.Equal<String> ( "Ryan", task.Filters.Author[ 0 ] );
       Assert.Equal<String> ( "Foo.Bar.Blarg", task.Filters.Type[ 0 ] );
       Assert.Equal<String> ( "Foo.Bar", task.Filters.Namespaces[ 0 ] );

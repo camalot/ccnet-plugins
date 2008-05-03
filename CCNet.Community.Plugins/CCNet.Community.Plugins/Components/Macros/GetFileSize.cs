@@ -87,16 +87,24 @@ namespace CCNet.Community.Plugins.Components.Macros {
       if ( string.IsNullOrEmpty ( args ) )
         throw new ArgumentNullException ( "Argument can not be empty" );
       try {
-        FileInfo file = new FileInfo ( Path.Combine ( result.ArtifactDirectory, args ) );
-        if ( !file.Exists )
-          throw new FileNotFoundException ( string.Format ( "File '{0}' was not found.", file.FullName ) );
-        else
-          return file.Length.ToString ( );
+        FileInfo file = GetFileFromPaths ( result, args );
+        return file.Length.ToString ( );
       } catch ( Exception ex ) {
         return string.Format ( "MacroException: {0}", ex.Message );
       }
     }
 
     #endregion
+
+    private FileInfo GetFileFromPaths ( ThoughtWorks.CruiseControl.Core.IIntegrationResult result, string fileName ) {
+      FileInfo file = new FileInfo ( result.BaseFromWorkingDirectory ( fileName ) );
+      if ( !file.Exists )
+        file = new FileInfo ( result.BaseFromArtifactsDirectory ( fileName ) );
+      if ( !file.Exists )
+        file = new FileInfo ( fileName );
+      if ( !file.Exists )
+        throw new FileNotFoundException ( string.Format ( "File '{0}' was not found.", file.FullName ) );
+      return file;
+    }
   }
 }

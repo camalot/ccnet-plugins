@@ -54,66 +54,55 @@ using System.Net;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
 using CCNet.Community.Plugins.CodePlexApi;
+using CCNet.Community.Plugins.Components.Macros;
 
 namespace CCNet.Community.Plugins.Publishers {
   [ReflectorType ( "codeplexRelease" )]
-  public class CodePlexReleasePublisher : ITask {
-    private List<ReleaseItem> releases = null;
-    private ReleaseService releaseService = null;
-    private string projectName = string.Empty;
-    private string userName = string.Empty;
-    private string password = string.Empty;
-
-    private string _modificationComments = string.Empty;
+  public class CodePlexReleasePublisher : ITask, IMacroRunner {
     /// <summary>
     /// Initializes a new instance of the <see cref="CodePlexReleasePublisher"/> class.
     /// </summary>
     public CodePlexReleasePublisher ( ) {
-      releases = new List<ReleaseItem> ( );
+      Releases = new List<ReleaseItem> ( );
+      MacroEngine = new MacroEngine ( );
     }
 
     #region reflector properties
+
+    private ReleaseService ReleaseService { get; set; }
     /// <summary>
     /// Sets the username.
     /// </summary>
     /// <value>The username.</value>
     [ReflectorProperty ( "username", Required = true )]
-    public string Username {
-      get { return this.userName; }
-      set { this.userName = value; }
-    }
+    public string Username { get; set; }
 
     /// <summary>
     /// Sets the password.
     /// </summary>
     /// <value>The password.</value>
     [ReflectorProperty ( "password", Required = true )]
-    public string Password {
-      get { return this.password; }
-      set { this.password = value; }
-    }
+    public string Password { get; set; }
 
     /// <summary>
     /// Gets or sets the name of the project.
     /// </summary>
     /// <value>The name of the project.</value>
     [ReflectorProperty ( "projectName", Required = false )]
-    public string ProjectName { get { return this.projectName; } set { this.projectName = value; } }
+    public string ProjectName { get; set; }
 
     /// <summary>
     /// Gets or sets the releases.
     /// </summary>
     /// <value>The releases.</value>
     [ReflectorArray ( "releases", Required = true )]
-    public List<ReleaseItem> Releases { get { return this.releases; } set { this.releases = value; } }
+    public List<ReleaseItem> Releases { get; set; }
 
     /// <summary>
     /// Gets the modification comments.
     /// </summary>
     /// <value>The modification comments.</value>
-    public string ModificationComments {
-      get { return _modificationComments; }
-    }
+    public string ModificationComments { get; private set; }
 
 #endregion
     #region ITask Members
@@ -137,8 +126,10 @@ namespace CCNet.Community.Plugins.Publishers {
           return false;
       };
 
+      this.ModificationComments = Util.GetModidicationCommentsString ( result );
+
       // loop each release item
-      foreach ( ReleaseItem item in this.releases ) {
+      foreach ( ReleaseItem item in this.Releases ) {
         CodePlexReleaseTaskResult taskResult = new CodePlexReleaseTaskResult ( GetPropertyString<ReleaseItem> ( item, result, item.ReleaseName ) );
         try {
           if ( ( item.BuildCondition == PublishBuildCondition.ForceBuild &&
@@ -149,18 +140,18 @@ namespace CCNet.Community.Plugins.Publishers {
             continue;
           }
 
-          this.releaseService = new ReleaseService ( );
+          this.ReleaseService = new ReleaseService ( );
           string tProjectName = string.IsNullOrEmpty ( this.ProjectName ) ? result.ProjectName.ToLower ( ).Trim ( ) : this.ProjectName;
           ThoughtWorks.CruiseControl.Core.Util.Log.Debug ( string.Format ( "Creating release {1} for {0}",
             GetPropertyString<ReleaseItem> ( item, result, tProjectName ),
             GetPropertyString<ReleaseItem> ( item, result, item.ReleaseName ) ) );
-          this.releaseService.Credentials = new NetworkCredential ( this.userName, this.password );
+          this.ReleaseService.Credentials = new NetworkCredential ( this.Username, this.Password );
 
           string releaseName = string.Format("{0}{1}", 
             GetPropertyString<ReleaseItem> ( item, result, item.ReleaseName ),
             item.ReleaseType != ReleaseType.None ? string.Format(" {0}",item.ReleaseType.ToString() ) : string.Empty);
 
-          int releaseId = this.releaseService.CreateRelease (
+          int releaseId = this.ReleaseService.CreateRelease (
             GetPropertyString<ReleaseItem> ( item, result, tProjectName ).ToLower ( ).Trim ( ),
             releaseName.Trim(),
             GetPropertyString<ReleaseItem> ( item, result, item.Description ),
@@ -198,7 +189,7 @@ namespace CCNet.Community.Plugins.Publishers {
           }
           // upload the release files if there are any.
           if ( item.Files.Count > 0 ) {
-            this.releaseService.UploadReleaseFiles (
+            this.ReleaseService.UploadReleaseFiles (
               GetPropertyString<ReleaseItem> ( item, result, tProjectName ).ToLower ( ).Trim ( ),
               releaseName.Trim ( ),
               releaseFiles.ToArray ( ),
@@ -219,25 +210,6 @@ namespace CCNet.Community.Plugins.Publishers {
     #endregion
 
     /// <summary>
-    /// Reads the modidication comments.
-    /// </summary>
-    /// <param name="result">The result.</param>
-    private void ReadModidicationComments ( IIntegrationResult result ) {
-      DateTime lastDate = DateTime.MinValue;
-      StringBuilder descText = new StringBuilder ( );
-      foreach ( Modification mod in result.Modifications ) {
-        if ( lastDate.CompareTo ( mod.ModifiedTime ) != 0 ) {
-          lastDate = mod.ModifiedTime;
-          if ( !string.IsNullOrEmpty ( mod.Comment ) ) {
-            descText.AppendLine ( mod.Comment );
-          }
-        }
-      }
-      this._modificationComments = descText.ToString ( );
-    }
-
-
-    /// <summary>
     /// Gets the property string.
     /// </summary>
     /// <param name="sender">The sender.</param>
@@ -245,9 +217,18 @@ namespace CCNet.Community.Plugins.Publishers {
     /// <param name="input">The input.</param>
     /// <returns></returns>
     private string GetPropertyString<T> ( T sender, IIntegrationResult result, string input ) {
-      string ret = Util.GetCCNetPropertyString<CodePlexReleasePublisher> ( this, result, input );
-      ret = Util.GetCCNetPropertyString<T> ( sender, result, ret );
+      string ret = this.GetPropertyString<CodePlexReleasePublisher> ( this, result, input );
+      ret = this.GetPropertyString<T> ( sender, result, ret );
       return ret;
     }
+
+    #region IMacroRunner Members
+
+    public MacroEngine MacroEngine {
+      get;
+      private set;
+    }
+
+    #endregion
   }
 }

@@ -65,8 +65,8 @@ namespace CCNet.Community.Plugins.Components.XmlRpc {
     }
 
     [XmlRpcMethod ( "metaWeblog.getCategories" )]
-    public Category[ ] getCategories ( string blogid, string username, string password ) {
-      return (Category[ ])this.Invoke ( "getCategories", new object[ ] { blogid, username, password } );
+    public CCNet.Community.Plugins.XmlRpc.Category[ ] getCategories ( string blogid, string username, string password ) {
+      return ( CCNet.Community.Plugins.XmlRpc.Category[ ] ) this.Invoke ( "getCategories", new object[ ] { blogid, username, password } );
     }
 
     [XmlRpcMethod ( "wpLinkMentor.getLinks" )]

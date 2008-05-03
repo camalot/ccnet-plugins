@@ -57,6 +57,8 @@ using System.Xml.XPath;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using CCNet.Community.Plugins.Components.Macros;
+using CCNet.Community.Plugins.Components;
+using CCNet.Community.Plugins.Common;
 
 
 namespace CCNet.Community.Plugins.Publishers {
@@ -107,10 +109,6 @@ namespace CCNet.Community.Plugins.Publishers {
   public class RssBuildsPublisher : ITask, IMacroRunner {
     #region Private Members
     /// <summary>
-    /// the path where the feed is saved.
-    /// </summary>
-    private string _outputPath = string.Empty;
-    /// <summary>
     /// The max number of items to store in the main feed.
     /// </summary>
     private int _maxHistory = 25;
@@ -121,80 +119,16 @@ namespace CCNet.Community.Plugins.Publishers {
     /// </summary>
     private string _fileName = string.Empty;
     /// <summary>
-    /// The format string used to create the item url.
-    /// </summary>
-    private string _urlFormat = string.Empty;
-    /// <summary>
-    /// indicator if an enclosure should be added to the feed item
-    /// </summary>
-    private bool _addEnclosure = false;
-    /// <summary>
-    /// The string format used to generate the enclosure url
-    /// </summary>
-    private string _enclosureFormat = string.Empty;
-    /// <summary>
-    /// The string format used to create the link of the channel.
-    /// </summary>
-    private string _channelUrlFormat = string.Empty;
-    /// <summary>
-    /// Format string used to create the feed title
-    /// </summary>
-    private string _feedTitleFormat = string.Empty;
-    /// <summary>
-    /// Format string used to create the feed description
-    /// </summary>
-    private string _feedDescriptionFormat = string.Empty;
-    /// <summary>
-    /// The feed image.
-    /// </summary>
-    private FeedImage _feedImage = null;
-    /// <summary>
-    /// Collection of namespaces that are added to the feed.
-    /// </summary>
-    private List<Namespace> _namespaces = null;
-    /// <summary>
-    /// Collection of additional xml elements that are added to the feed channel.
-    /// </summary>
-    private List<RssElement> _feedItems = null;
-    /// <summary>
-    /// Collection of additional xml elements that are added to each feed item.
-    /// </summary>
-    private List<RssElement> _itemItems = null;
-    /// <summary>
-    /// The string format used to generate the title of the item.
-    /// </summary>
-    private string _itemTitleFormat = string.Empty;
-    /// <summary>
-    /// Collection of categories for the feed item.
-    /// </summary>
-    private List<Category> _categories = null;
-    /// <summary>
-    /// string used in the description before the change comments.
-    /// </summary>
-    private string _descriptionHeader = string.Empty;
-    /// <summary>
-    /// string used in the description after the change comments.
-    /// </summary>
-    private string _descriptionFooter = string.Empty;
-
-    private List<PingElement> _pings = null;
-
-    /// <summary>
     /// the Rss Feed XmlDocument
     /// </summary>
     private XmlDocument rssDoc = null;
 
-    /// <summary>
-    /// Contains the modification comments
-    /// </summary>
-    private string _modificationComments = string.Empty;
+    List<Namespace> _namespaces = null;
 
     /// <summary>
     /// namespace manager used for added elements to the feed.
     /// </summary>
     private XmlNamespaceManager namespaceManager = null;
-
-    private MacroEngine _macroEngine = null;
     #endregion
 
     #region Constructor
@@ -203,26 +137,18 @@ namespace CCNet.Community.Plugins.Publishers {
     /// </summary>
     public RssBuildsPublisher () {
       _maxHistory = 25;
-      _outputPath = string.Empty;
+      OutputPath = string.Empty;
       Encoding = "UTF-8";
       _fileName = "rss";
-      _enclosureFormat = "http://localhost/builds/{0}/{1}/Debug/{0}.{1}.zip";
-      _urlFormat = "http://localhost/builds/{0}/{1}";
-      _channelUrlFormat = "http://localhost/builds/";
-      _itemTitleFormat = "{0} {1}";
-      _namespaces = new List<Namespace> ();
-      _feedTitleFormat = "{0} Builds";
-      _feedDescriptionFormat = "{2} Build Feed";
-      _feedImage = new FeedImage ();
-      _feedItems = new List<RssElement> ();
-      _itemItems = new List<RssElement> ();
-      _categories = new List<Category> ();
-      _descriptionFooter = string.Empty;
-      _descriptionHeader = string.Empty;
-      _pings = new List<PingElement> ();
+      RssExtensions = new List<Namespace> ( );
+      FeedImage = new FeedImage ();
+      FeedElements = new List<RssElement> ( );
+      ItemElements = new List<RssElement> ( );
+      Categories = new List<Category> ();
+      this.PingItems = new List<PingElement> ( );
       // need to add some default namespaces.
       AddDefaultNamespaces ();
-      _macroEngine = new MacroEngine ();
+      MacroEngine = new MacroEngine ();
     }
     #endregion
 
@@ -376,14 +302,15 @@ namespace CCNet.Community.Plugins.Publishers {
     /// </summary>
     /// <value>The modification comments.</value>
     public string ModificationComments {
-      get { return _modificationComments; }
+      get;
+      private set;
     }
 
     /// <summary>
     /// Gets the macro engine.
     /// </summary>
     /// <value>The macro engine.</value>
-    public MacroEngine MacroEngine { get { return this._macroEngine; } }
+    public MacroEngine MacroEngine { get; private set; }
     #endregion
 
     #region ITask Members
@@ -402,10 +329,10 @@ namespace CCNet.Community.Plugins.Publishers {
       if ( this.BuildCondition != PublishBuildCondition.AllBuildConditions && string.Compare ( this.BuildCondition.ToString (), result.BuildCondition.ToString (), true ) != 0 )
         return;
 
-      ReadModidicationComments ( result );
+      this.ModificationComments = Util.GetModidicationCommentsString ( result );
 
       string fileNameFormat = "{0}.xml";
-      string fileName = string.Format ( fileNameFormat, Util.GetCCNetPropertyString<IMacroRunner> ( this, result, this.FileName ) );
+      string fileName = string.Format ( fileNameFormat, this.GetPropertyString<IMacroRunner> ( this, result, this.FileName ) );
       FileInfo rssFile = new FileInfo ( Path.Combine ( outputPath, fileName ) );
       rssDoc = new XmlDocument ();
       if ( !rssFile.Exists )
@@ -423,9 +350,9 @@ namespace CCNet.Community.Plugins.Publishers {
 
       ThoughtWorks.CruiseControl.Core.Util.Log.Debug ("Pinging Defined Urls" );
       foreach ( PingElement pe in this.PingItems ) {
-        pe.PingUrl = Util.GetCCNetPropertyString<IMacroRunner> ( this, result, pe.PingUrl );
-        pe.FeedName = Util.GetCCNetPropertyString<IMacroRunner> ( this, result, pe.FeedName );
-        pe.FeedUrl = Util.GetCCNetPropertyString<IMacroRunner> ( this, result, pe.FeedUrl );
+        pe.PingUrl = this.GetPropertyString<IMacroRunner> ( this, result, pe.PingUrl );
+        pe.FeedName = this.GetPropertyString<IMacroRunner> ( this, result, pe.FeedName );
+        pe.FeedUrl = this.GetPropertyString<IMacroRunner> ( this, result, pe.FeedUrl );
         pe.Send ();
       }
     }
@@ -433,25 +360,17 @@ namespace CCNet.Community.Plugins.Publishers {
     #endregion
 
     #region Private Methods
-
     /// <summary>
-    /// sets the modidication comments to a public accessable read only property.
+    /// Gets the property string.
     /// </summary>
+    /// <param name="sender">The sender.</param>
     /// <param name="result">The result.</param>
-    private void ReadModidicationComments ( IIntegrationResult result ) {
-      DateTime lastDate = DateTime.MinValue;
-      StringBuilder descText = new StringBuilder ();
-      foreach ( Modification mod in result.Modifications ) {
-        if ( lastDate.CompareTo ( mod.ModifiedTime ) != 0 ) {
-          lastDate = mod.ModifiedTime;
-          if ( !string.IsNullOrEmpty ( mod.Comment ) ) {
-            descText.AppendLine ( "<p class=\"modComment\">" );
-            descText.AppendLine ( mod.Comment );
-            descText.AppendLine ( "</p>" );
-          }
-        }
-      }
-      this._modificationComments = descText.ToString ();
+    /// <param name="input">The input.</param>
+    /// <returns></returns>
+    private string GetPropertyString<T> ( T sender, IIntegrationResult result, string input ) {
+      string ret = this.MacroEngine.GetPropertyString<RssBuildsPublisher> ( this, result, input );
+      ret = this.GetPropertyString<T> ( sender, result, ret );
+      return ret;
     }
 
     /// <summary>
@@ -512,32 +431,32 @@ namespace CCNet.Community.Plugins.Publishers {
     private XmlElement CreateEmptyChannel ( IIntegrationResult result, XmlDocument doc ) {
       XmlElement channel = doc.CreateElement ( "channel" );
       XmlElement ele = doc.CreateElement ( "title" );
-      ele.InnerText = string.Format ( Util.GetCCNetPropertyString<IMacroRunner> ( this, result, FeedTitle ), result.ProjectName, result.Status, result.BuildCondition );
+      ele.InnerText = string.Format ( this.GetPropertyString<IMacroRunner> ( this, result, FeedTitle ), result.ProjectName, result.Status, result.BuildCondition );
       channel.AppendChild ( ele );
 
       if ( !string.IsNullOrEmpty ( result.ProjectUrl ) ) {
         ele = doc.CreateElement ( "link" );
-        ele.InnerText = string.Format ( Util.GetCCNetPropertyString<IMacroRunner> ( this, result, this.ChannelUrl ), result.ProjectName, result.Label );
+        ele.InnerText = string.Format ( this.GetPropertyString<IMacroRunner> ( this, result, this.ChannelUrl ), result.ProjectName, result.Label );
         channel.AppendChild ( ele );
       }
 
       ele = doc.CreateElement ( "description" );
-      ele.InnerText = string.Format ( Util.GetCCNetPropertyString<IMacroRunner> ( this, result, FeedDescription ), result.ProjectName, result.Status, result.BuildCondition );
+      ele.InnerText = string.Format ( this.GetPropertyString<IMacroRunner> ( this, result, FeedDescription ), result.ProjectName, result.Status, result.BuildCondition );
       channel.AppendChild ( ele );
 
 
       if ( FeedImage != null && !string.IsNullOrEmpty ( FeedImage.Image ) ) {
         ele = doc.CreateElement ( "image" );
         XmlElement tele = doc.CreateElement ( "link" );
-        tele.InnerText = string.Format ( Util.GetCCNetPropertyString<IMacroRunner> ( this, result, this.FeedImage.Link ), result.ProjectName );
+        tele.InnerText = string.Format ( this.GetPropertyString<IMacroRunner> ( this, result, this.FeedImage.Link ), result.ProjectName );
         ele.AppendChild ( tele );
 
         tele = doc.CreateElement ( "url" );
-        tele.InnerText = string.Format ( Util.GetCCNetPropertyString<IMacroRunner> ( this, result, this.FeedImage.Image ), result.ProjectName );
+        tele.InnerText = string.Format ( this.GetPropertyString<IMacroRunner> ( this, result, this.FeedImage.Image ), result.ProjectName );
         ele.AppendChild ( tele );
 
         tele = doc.CreateElement ( "title" );
-        tele.InnerText = string.Format ( Util.GetCCNetPropertyString<IMacroRunner> ( this, result, this.FeedImage.Title ), result.ProjectName );
+        tele.InnerText = string.Format ( this.GetPropertyString<IMacroRunner> ( this, result, this.FeedImage.Title ), result.ProjectName );
         ele.AppendChild ( tele );
 
         channel.AppendChild ( ele );
@@ -565,15 +484,15 @@ namespace CCNet.Community.Plugins.Publishers {
 
         foreach ( RssElementAttribute attribute in element.Attributes )
           ele.SetAttribute ( attribute.Name, string.IsNullOrEmpty ( namespaceManager.LookupNamespace ( attribute.Prefix ) ) ? string.Empty :
-            namespaceManager.LookupNamespace ( attribute.Prefix ), Util.GetCCNetPropertyString<IMacroRunner> ( this, result, attribute.Value ) );
+            namespaceManager.LookupNamespace ( attribute.Prefix ), this.GetPropertyString<IMacroRunner> ( this, result, attribute.Value ) );
 
         if ( string.IsNullOrEmpty ( element.Value ) && element.ChildElements.Count > 0 )
           AddCustomElements ( result, element.ChildElements, ele );
         else {
           if ( !element.IsCData )
-            ele.InnerText = Util.GetCCNetPropertyString<IMacroRunner> ( this, result, element.Value );
+            ele.InnerText = this.GetPropertyString<IMacroRunner> ( this, result, element.Value );
           else
-            ele.AppendChild ( parent.OwnerDocument.CreateCDataSection ( Util.GetCCNetPropertyString<IMacroRunner> ( this, result, element.Value ) ) );
+            ele.AppendChild ( parent.OwnerDocument.CreateCDataSection ( this.GetPropertyString<IMacroRunner> ( this, result, element.Value ) ) );
         }
 
 
@@ -588,7 +507,9 @@ namespace CCNet.Community.Plugins.Publishers {
     /// <param name="channel">The channel.</param>
     private void AddBuildItemsToChannel ( IIntegrationResult result, XmlElement channel ) {
       XmlDocument doc = channel.OwnerDocument;
-      FileInfo historyFile = new FileInfo ( Path.Combine ( Path.Combine ( result.ArtifactDirectory, this.OutputPath ), string.Format ( "{0}.history.xml", Util.GetCCNetPropertyString<IMacroRunner> ( this, result, this.FileName ) ) ) );
+      FileInfo historyFile = new FileInfo ( Path.Combine ( Path.Combine ( result.ArtifactDirectory, this.OutputPath ), 
+        string.Format ( "{0}.history.xml", 
+        this.GetPropertyString<IMacroRunner> ( this, result, this.FileName ) ) ) );
       XmlDocument docHistory = new XmlDocument ();
 
       if ( !historyFile.Exists ) {
@@ -613,16 +534,16 @@ namespace CCNet.Community.Plugins.Publishers {
       channel.AppendChild ( itemElement );
 
       XmlElement ele = doc.CreateElement ( "title" );
-      ele.InnerText = string.Format ( Util.GetCCNetPropertyString<IMacroRunner> ( this, result, ItemTitle ), result.ProjectName, result.Label );
+      ele.InnerText = string.Format ( this.GetPropertyString<IMacroRunner> ( this, result, ItemTitle ), result.ProjectName, result.Label );
       itemElement.AppendChild ( ele );
 
       ele = doc.CreateElement ( "guid" );
       ele.SetAttribute ( "isPermaLink", "true" );
-      ele.InnerText = string.Format ( Util.GetCCNetPropertyString<IMacroRunner> ( this, result, this.ItemUrl ), result.ProjectName, result.Label );
+      ele.InnerText = string.Format ( this.GetPropertyString<IMacroRunner> ( this, result, this.ItemUrl ), result.ProjectName, result.Label );
       itemElement.AppendChild ( ele );
 
       ele = doc.CreateElement ( "link" );
-      ele.InnerText = string.Format ( Util.GetCCNetPropertyString<IMacroRunner> ( this, result, this.ItemUrl ), result.ProjectName, result.Label );
+      ele.InnerText = string.Format ( this.GetPropertyString<IMacroRunner> ( this, result, this.ItemUrl ), result.ProjectName, result.Label );
       itemElement.AppendChild ( ele );
 
       ele = doc.CreateElement ( "pubDate" );
@@ -631,7 +552,7 @@ namespace CCNet.Community.Plugins.Publishers {
 
       if ( AddEnclosure ) {
         ele = doc.CreateElement ( "enclosure" );
-        ele.SetAttribute ( "url", string.Format ( Util.GetCCNetPropertyString<IMacroRunner> ( this, result, this.EnclosureUrl ), result.ProjectName, result.Label ) );
+        ele.SetAttribute ( "url", string.Format ( this.GetPropertyString<IMacroRunner> ( this, result, this.EnclosureUrl ), result.ProjectName, result.Label ) );
         itemElement.AppendChild ( ele );
       }
 
@@ -758,22 +679,16 @@ namespace CCNet.Community.Plugins.Publishers {
       // add description.
       ele = doc.CreateElement ( "description" );
       XmlCDataSection cdata = doc.CreateCDataSection ( string.Format ( "{0}{1}{2}",
-        Util.GetCCNetPropertyString<IMacroRunner> ( this, result, this.DescriptionHeader ),
+        this.GetPropertyString<IMacroRunner> ( this, result, this.DescriptionHeader ),
         this.ModificationComments,
-        Util.GetCCNetPropertyString<IMacroRunner> ( this, result, this.DescriptionFooter ) ) );
+        this.GetPropertyString<IMacroRunner> ( this, result, this.DescriptionFooter ) ) );
       ele.AppendChild ( cdata );
       itemElement.AppendChild ( ele );
-
-      // add "conent encoded" element
-      /*ele = doc.CreateElement ( "dc", "contentEncoded", namespaceManager.LookupNamespace ( "dc" ) );
-      cdata = doc.CreateCDataSection ( string.Format ( "{0}{1}{2}", GetCCNetPropertyString ( result, this.DescriptionHeader ), descText.ToString ( ), GetCCNetPropertyString ( result, this.DescriptionFooter ) ) );
-      ele.AppendChild ( cdata );
-      itemElement.AppendChild ( ele );*/
 
       // add categories.
       foreach ( Category cat in this.Categories ) {
         ele = doc.CreateElement ( "category" );
-        ele.InnerText = Util.GetCCNetPropertyString<IMacroRunner> ( this, result, cat.Name );
+        ele.InnerText = this.GetPropertyString<IMacroRunner> ( this, result, cat.Name );
         itemElement.AppendChild ( ele );
       }
 

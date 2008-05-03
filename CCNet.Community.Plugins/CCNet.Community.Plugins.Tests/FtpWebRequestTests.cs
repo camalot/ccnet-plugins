@@ -1,4 +1,4 @@
-/*
+﻿/*
  * http://www.codeplex.com/ccnetplugins/
  * 
  * Microsoft Public License (Ms-PL)
@@ -48,41 +48,60 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Exortech.NetReflector;
+using Xunit;
+using CCNet.Community.Plugins.Components.Ftp;
 
-namespace CCNet.Community.Plugins.Publishers {
-  /// <summary>
-  /// Represents a namespace that is added to the feed.
-  /// </summary>
-  [ ReflectorType( "namespace" ) ]
-  public class Namespace {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Namespace"/> class.
-    /// </summary>
-    public Namespace () {
+namespace CCNet.Community.Plugins.Tests {
+  public class FtpWebRequestTests {
+    [Fact]
+    public void GetDirectoryContents ( ) {
+      // test remote ftp ( requiring passive mode )
+      FtpWebRequest ftp = new FtpWebRequest ( );
+      ftp.UsePassive = true;
+      List<FtpSystemInfo> fsi = ftp.ListDirectory ( new Uri ( "ftp://ftp.ccnetconfig.org/Sources/CCNetConfig/" ) );
+      Assert.True ( fsi.Count > 0, "Count = " + fsi.Count );
+      
+      int d = 0;
+      int f = 0;
+      foreach ( FtpSystemInfo fi in fsi ) {
+        if ( fi.IsDirectory )
+          ++d;
+        else
+          ++f;
+      }
+      Assert.True ( f > 0 && d > 0);
 
     }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Namespace"/> class.
-    /// </summary>
-    /// <param name="prefix">The prefix.</param>
-    /// <param name="nsUri">The ns URI.</param>
-    public Namespace ( string prefix, string nsUri ) {
-      Prefix = prefix;
-      NamespaceUri = nsUri;
+    [Fact]
+    public void SshFtpRequest ( ) {
+      Assert.Throws<NotSupportedException> ( new Assert.ThrowsDelegate ( delegate ( ) {
+        FtpWebRequest ftp = new FtpWebRequest ( );
+        ftp.Request ( new Uri ( "sftp://ftp.ccnetconfig.org" ), System.Net.WebRequestMethods.Ftp.ListDirectory );
+      } ) );
     }
-    /// <summary>
-    /// Gets or sets the prefix.
-    /// </summary>
-    /// <value>The prefix.</value>
-    [ ReflectorProperty( "prefix", Required=true ) ]
-    public string Prefix { get;set; }
-    /// <summary>
-    /// Gets or sets the namespace URI.
-    /// </summary>
-    /// <value>The namespace URI.</value>
-    [ReflectorProperty ( "namespaceURI", Required = true )]
-    public string NamespaceUri { get; set; }
+
+    [Fact]
+    public void FileSystemPermissionsFromString ( ) {
+      Assert.Throws<ArgumentNullException> ( new Assert.ThrowsDelegate ( delegate ( ) {
+        FtpSystemInfoPermission.FromString ( string.Empty );
+      } ) );
+
+      Assert.Throws<ArgumentException> ( new Assert.ThrowsDelegate ( delegate ( ) {
+        FtpSystemInfoPermission.FromString ( "-rwe" );
+      } ) );
+
+      FtpSystemInfoPermission fsip = FtpSystemInfoPermission.FromString ( "rwx" );
+      Assert.True ( fsip.CanExecute && fsip.CanRead && fsip.CanWrite );
+      Assert.Equal<string> ( "rwx", fsip.ToString ( ) );
+
+      fsip = FtpSystemInfoPermission.FromString ( "---" );
+      Assert.True ( !fsip.CanExecute && !fsip.CanRead && !fsip.CanWrite );
+      Assert.Equal<string> ( "---", fsip.ToString ( ) );
+      
+    }
+
   }
+
+
 }

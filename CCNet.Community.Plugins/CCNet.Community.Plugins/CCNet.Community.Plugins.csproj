@@ -92,6 +92,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\Proxy.cs" />
+    <Compile Include="Common\CommunityTaskResult.cs" />
     <Compile Include="Components\Ftp\FtpDirectoryInfo.cs" />
     <Compile Include="Components\Ftp\FtpFileInfo.cs" />
     <Compile Include="Components\Ftp\FtpSystemInfo.cs" />
@@ -107,6 +109,7 @@
     <Compile Include="Components\Macros\IMacro.cs" />
     <Compile Include="Components\Macros\IMacroRunner.cs" />
     <Compile Include="Components\Macros\MacroEngine.cs" />
+    <Compile Include="Components\Macros\XslTransform.cs" />
     <Compile Include="Components\Twitter\TwitterService.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="Publishers\CodePlexReleasePublisher.cs" />
@@ -120,7 +123,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Publishers\RssBuildsPublisher.cs" />
-    <Compile Include="Publishers\RssBuilds\Category.cs" />
+    <Compile Include="Common\Category.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Publishers\RssBuilds\FeedImage.cs" />
     <Compile Include="Publishers\RssBuilds\Namespace.cs" />
     <Compile Include="Publishers\RssBuilds\PingElement.cs" />
@@ -142,9 +147,6 @@
     <Compile Include="Publishers\TfsServerConnection.cs" />
     <Compile Include="Publishers\TfsWorkItemPublisher.cs" />
     <Compile Include="Publishers\TwitterPublisher.cs" />
-    <Compile Include="SourceControls\FtpClient.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="SourceControls\FtpSourceControl.cs" />
     <Compile Include="Tasks\MbUnitArgument.cs" />
     <Compile Include="Tasks\MbUnitFilters.cs" />

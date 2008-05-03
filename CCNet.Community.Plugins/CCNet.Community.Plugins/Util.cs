@@ -66,138 +66,20 @@ namespace CCNet.Community.Plugins {
     /// <returns></returns>
     public static string ToLowerString ( Object o ) {
       return o.ToString ( ).ToLower ( );
-    }
+    }   
 
-    /// <summary>
-    /// Gets the CCNet property string.
-    /// </summary>
-    /// <param name="sender">The sender.</param>
-    /// <param name="result">The result.</param>
-    /// <param name="input">The input.</param>
-    /// <returns></returns>
-    public static string GetCCNetPropertyString<T> ( T sender, IIntegrationResult result, string input ) {
-      Regex xpathFinder = new Regex ( Properties.Resources.XPathPattern, RegexOptions.Singleline | RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace );
-      Match m1 = xpathFinder.Match ( input );
-      string ret = input;
-      if ( m1.Success ) {
-        ret = m1.Result ( "$1" );
-      }
-
-      Regex propFinder = new Regex ( Properties.Resources.PropertyPatern, RegexOptions.Singleline | RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace );
-      Match m = propFinder.Match ( ret );
-      while ( m.Success ) {
-        string propName = m.Result ( "$1" );
-        if ( ContainsCCNetPropertyName<T> ( sender, result, propName ) )
-          ret = ret.Replace ( string.Format ( "$({0})", propName ), GetCCNetPropertyValue<T> ( sender, result, propName ) );
-        m = m.NextMatch ( );
-      }
-
-      try {
-        XmlNode tNode = GetXmlTaskResultNode ( result, ret );
-        if ( tNode != null )
-          return tNode.InnerText;
-      } catch ( Exception ex ) {
-        Log.Warning ( ex.ToString ( ) );
-      }
-
-      if ( typeof ( T ).GetInterface ( typeof ( IMacroRunner ).FullName ) != null ) {
-        IMacroRunner runner = sender as IMacroRunner;
-        propFinder = new Regex ( Properties.Resources.MacroPattern, RegexOptions.Singleline | RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace );
-        m = propFinder.Match ( ret );
-        while ( m.Success ) {
-          string propName = m.Result ( "$1" );
-          string arg = m.Result ( "$2" );
-          ThoughtWorks.CruiseControl.Core.Util.Log.Debug ( string.Format ( "Found Macro {0}", m.Value ) );
-          ret = ret.Replace ( m.Value, runner.MacroEngine.Execute ( result, runner, propName, GetCCNetPropertyString<T> (sender, result, arg ) ) );
-          m = m.NextMatch ( );
+    public static string GetModidicationCommentsString ( IIntegrationResult result ) {
+      DateTime lastDate = DateTime.MinValue;
+      StringBuilder descText = new StringBuilder ( );
+      foreach ( Modification mod in result.Modifications ) {
+        if ( lastDate.CompareTo ( mod.ModifiedTime ) != 0 ) {
+          lastDate = mod.ModifiedTime;
+          if ( !string.IsNullOrEmpty ( mod.Comment ) ) {
+            descText.AppendLine ( mod.Comment );
+          }
         }
       }
-      return ret;
-    }
-
-    /// <summary>
-    /// Creates the task result XML document.
-    /// </summary>
-    /// <param name="result">The result.</param>
-    /// <returns></returns>
-    internal static XmlDocument CreateTaskResultXmlDocument ( IIntegrationResult result ) {
-      XmlDocument doc = new XmlDocument ( );
-      doc.AppendChild ( doc.CreateElement ( "CCNetResults" ) );
-      foreach ( ITaskResult tr in result.TaskResults ) {
-        XmlDocument tdoc = new XmlDocument ( );
-        XmlDocumentFragment frag = tdoc.CreateDocumentFragment ( );
-        frag.InnerXml = tr.Data;
-        doc.DocumentElement.AppendChild ( doc.ImportNode ( frag, true ) );
-      }
-      return doc;
-    }
-
-    /// <summary>
-    /// Gets the XML task result node.
-    /// </summary>
-    /// <param name="result">The result.</param>
-    /// <param name="xpath">The xpath.</param>
-    /// <returns></returns>
-    internal static XmlNode GetXmlTaskResultNode ( IIntegrationResult result, string xpath ) {
-      XmlDocument doc = CreateTaskResultXmlDocument ( result );
-      XmlNode node = doc.SelectSingleNode ( xpath );
-      if ( node != null )
-        return node;
-      else
-        return null;
-    }
-
-    /// <summary>
-    /// Contains the name of the CCnet property.
-    /// </summary>
-    /// <param name="sender">The sender.</param>
-    /// <param name="result">The result.</param>
-    /// <param name="propName">Name of the prop.</param>
-    /// <returns>
-    /// 	<see langword="true"/> if [contains CC net property name] [the specified sender]; otherwise, <see langword="false"/>.
-    /// </returns>
-    internal static bool ContainsCCNetPropertyName<T> ( T sender, IIntegrationResult result, string propName ) {
-      foreach ( string s in result.IntegrationProperties.Keys )
-        if ( string.Compare ( s, propName, true ) == 0 )
-          return true;
-
-      // check this objects properties
-      BindingFlags flags = BindingFlags.IgnoreCase | BindingFlags.GetProperty | BindingFlags.Public | BindingFlags.Instance;
-      PropertyInfo pi = null;
-      if ( sender != null ) {
-        pi = sender.GetType ( ).GetProperty ( propName, flags );
-        if ( pi != null )
-          return true;
-      }
-
-      pi = result.GetType ( ).GetProperty ( propName, flags );
-      if ( pi != null )
-        return true;
-      return false;
-    }
-
-    /// <summary>
-    /// Gets the CCnet property value.
-    /// </summary>
-    /// <param name="sender">The sender.</param>
-    /// <param name="result">The result.</param>
-    /// <param name="propName">Name of the prop.</param>
-    /// <returns></returns>
-    internal static string GetCCNetPropertyValue<T> ( T sender, IIntegrationResult result, string propName ) {
-      foreach ( string s in result.IntegrationProperties.Keys )
-        if ( string.Compare ( s, propName, true ) == 0 )
-          return result.IntegrationProperties[ s ] as string;
-
-      BindingFlags flags = BindingFlags.IgnoreCase | BindingFlags.GetProperty | BindingFlags.Public | BindingFlags.Instance;
-      PropertyInfo pi = null;
-      if ( sender != null ) {
-        pi = sender.GetType ( ).GetProperty ( propName, flags );
-        if ( pi != null )
-          return pi.GetValue ( sender, null ).ToString ( );
-      }
-
-      pi = result.GetType ( ).GetProperty ( propName, flags );
-      return pi == null ? string.Empty : pi.GetValue ( result, null ) as String;
+      return descText.ToString ( );
     }
   }
 

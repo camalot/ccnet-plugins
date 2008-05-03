@@ -121,6 +121,9 @@
     <value>The file '{0}' was not found.</value>
     <comment>{0} = file name</comment>
   </data>
+  <data name="FtpDirectoryListRegexPattern" xml:space="preserve">
+    <value>^((d|-)[^\s]+)\s+(\d{1,})\s+([^\s]+)\s+([^\s]+)\s+(\d{1,})\s+([a-z]{3}\s+\d{1,2}\s+\d{1,2} :? \d{2})\s+([^\n]+)$</value>
+  </data>
   <data name="GeneratorString" xml:space="preserve">
     <value>Rss Builds Publisher plugin for CruiseControl.NET version {0} - by Ryan Conrad - http://codeplex.com/ccnetplugins</value>
   </data>
@@ -138,6 +141,9 @@
   </data>
   <data name="PropertyPatern" xml:space="preserve">
     <value>\$\(([^\)]+)\)</value>
+  </data>
+  <data name="SshFtpNotSupportedMessage" xml:space="preserve">
+    <value>The SSH Ftp protocol is not supported. For secured ftp requests, ftps ( ftp over ssl) can be used.</value>
   </data>
   <data name="XPathPattern" xml:space="preserve">
     <value>!\{([^\}]+)\}</value>

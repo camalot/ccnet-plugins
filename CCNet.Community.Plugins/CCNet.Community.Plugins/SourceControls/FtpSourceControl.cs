@@ -53,6 +53,7 @@ using Exortech.NetReflector;
 using System.IO;
 using System.Net;
 using System.Text.RegularExpressions;
+using CCNet.Community.Plugins.Common;
 
 namespace CCNet.Community.Plugins.SourceControls {
   [ReflectorType ( "ftp" )]
@@ -98,14 +99,21 @@ namespace CCNet.Community.Plugins.SourceControls {
     /// Gets or sets a value indicating whether [use secured FTP].
     /// </summary>
     /// <value><c>true</c> if [use secured FTP]; otherwise, <c>false</c>.</value>
-    [ReflectorProperty ( "useSecuredFtp", Required = false )]
-    public bool UseSecuredFtp { get; set; }
+    [ReflectorProperty ( "useSsl", Required = false )]
+    public bool UseSsl { get; set; }
     /// <summary>
     /// Gets or sets a value indicating whether [use passive].
     /// </summary>
     /// <value><c>true</c> if [use passive]; otherwise, <c>false</c>.</value>
     [ReflectorProperty ( "usePassive", Required = false )]
     public bool UsePassive { get; set; }
+
+    /// <summary>
+    /// Gets or sets the proxy.
+    /// </summary>
+    /// <value>The proxy.</value>
+    [ReflectorProperty("proxy",Required=false)]
+    public Proxy Proxy { get; set; }
     /// <summary>
     /// Initializes a new instance of the <see cref="FtpSourceControl"/> class.
     /// </summary>
@@ -115,7 +123,7 @@ namespace CCNet.Community.Plugins.SourceControls {
       this.Password = string.Empty;
       this.AutoGetSource = true;
       this.RepositoryRoot = "/";
-      this.UseSecuredFtp = false;
+      this.UseSsl = false;
       this.UsePassive = false;
     }
 
@@ -123,8 +131,8 @@ namespace CCNet.Community.Plugins.SourceControls {
       return new Uri ( string.Format ( "{4}{0}{1}{2}{3}{5}",
         this.FtpServer, this.Port != 21 ? ":" + this.Port : string.Empty,
         !this.RepositoryRoot.StartsWith("/") ? "/" : string.Empty, this.RepositoryRoot ,
-        !this.FtpServer.StartsWith ( "ftp://" ) && !this.UseSecuredFtp ? "ftp://" : 
-        !this.FtpServer.StartsWith ( "sftp://" ) && this.UseSecuredFtp  ? "sftp://" : 
+        !this.FtpServer.StartsWith ( "ftp://" ) && !this.UseSsl ? "ftp://" : 
+        !this.FtpServer.StartsWith ( "ftps://" ) && this.UseSsl  ? "ftps://" : 
         string.Empty,!this.RepositoryRoot.EndsWith("/") ? "/" : string.Empty) ).ToString ( );
     }
 
@@ -149,41 +157,12 @@ namespace CCNet.Community.Plugins.SourceControls {
 
     public void GetSource ( IIntegrationResult result ) {
       if ( this.AutoGetSource ) {
-        FtpClient client = new FtpClient ( );
-        client.FtpServer = this.FtpServer;
-        client.Path = this.RepositoryRoot;
-        client.Port = this.Port;
-        client.UsePassive = this.UsePassive;
-        client.Username = this.Username;
-        client.Password = this.Password;
         
       }
     }
 
     private void DownloadFile ( string remotePath, IIntegrationResult result ) {
-      /*FtpWebRequest req = this.CreateFtpRequest ( remotePath );
-      //Specify we're downloading a file
-      req.Method = WebRequestMethods.Ftp.DownloadFile;
 
-      //initialize the Filestream we're using to create the downloaded file locally
-      FileStream localfileStream = new FileStream ( Path.Combine ( result.WorkingDirectory, remotePath ), FileMode.Create, FileAccess.Write );
-
-      //Get a reponse
-      FtpWebResponse response = req.GetResponse ( ) as FtpWebResponse;
-      Stream responseStream = response.GetResponseStream ( );
-      using ( response ) {
-        using ( responseStream ) {
-          using ( localfileStream ) {
-            //create the file
-            byte[ ] buffer = new byte[ 1024 ];
-            int bytesRead = responseStream.Read ( buffer, 0, 1024 );
-            while ( bytesRead != 0 ) {
-              localfileStream.Write ( buffer, 0, bytesRead );
-              bytesRead = responseStream.Read ( buffer, 0, 1024 );
-            }
-          }
-        }
-      }*/
     }
 
 

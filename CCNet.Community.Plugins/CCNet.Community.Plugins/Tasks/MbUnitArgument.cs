@@ -51,6 +51,7 @@ using System.Text;
 using ThoughtWorks.CruiseControl.Core;
 using ThoughtWorks.CruiseControl.Core.Util;
 using System.IO;
+using CCNet.Community.Plugins.Components;
 
 namespace CCNet.Community.Plugins.Tasks {
   /// <summary>
@@ -82,12 +83,26 @@ namespace CCNet.Community.Plugins.Tasks {
         builder.AddArgument ( "/fa", ":", string.Join ( ",", MbUnit.Filters.Author ) );
       }
 
-      if ( MbUnit.Filters.Categories != null && MbUnit.Filters.Categories.Length > 0 ) {
-        builder.AddArgument ( "/fc", ":", string.Join ( ",", MbUnit.Filters.Categories ) );
+      if ( MbUnit.Filters.Categories != null && MbUnit.Filters.Categories.Count > 0 ) {
+        StringBuilder sb = new StringBuilder ( );
+        foreach ( Category cat in MbUnit.Filters.Categories ) {
+          sb.AppendFormat ( "{0},", cat.Name );
+        }
+        string s = sb.ToString ( );
+        if ( s.EndsWith ( "," ) )
+          s = s.Substring ( 0, s.Length - 1 );
+        builder.AddArgument ( "/ec", ":", s );
       }
 
-      if ( MbUnit.Filters.ExcludeCategories != null && MbUnit.Filters.ExcludeCategories.Length > 0 ) {
-        builder.AddArgument ( "/ec", ":", string.Join ( ",", MbUnit.Filters.ExcludeCategories ) );
+      if ( MbUnit.Filters.ExcludeCategories != null && MbUnit.Filters.ExcludeCategories.Count > 0 ) {
+        StringBuilder sb = new StringBuilder ( );
+        foreach ( Category cat in MbUnit.Filters.ExcludeCategories ) {
+          sb.AppendFormat ( "{0},", cat.Name );
+        }
+        string s = sb.ToString ( );
+        if ( s.EndsWith ( "," ) )
+          s = s.Substring ( 0, s.Length - 1 );
+        builder.AddArgument ( "/ec", ":", s );
       }
 
       if ( MbUnit.Filters.Type != null && MbUnit.Filters.Type.Length > 0 ) {

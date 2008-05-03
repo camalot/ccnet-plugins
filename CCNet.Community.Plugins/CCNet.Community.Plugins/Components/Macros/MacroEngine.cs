@@ -51,6 +51,9 @@ using System.Text;
 using ThoughtWorks.CruiseControl.Core;
 using System.Reflection;
 using System.IO;
+using System.Text.RegularExpressions;
+using System.Xml;
+using ThoughtWorks.CruiseControl.Core.Util;
 
 namespace CCNet.Community.Plugins.Components.Macros {
   /// <summary>
@@ -63,10 +66,154 @@ namespace CCNet.Community.Plugins.Components.Macros {
     /// </summary>
     public MacroEngine () {
       Macros = new Dictionary<string, IMacro> ();
+      LoadedAssemblies = new List<string> ( );
       LoadMacrosIntoAppDomain ();
     }
 
+    /// <summary>
+    /// Gets or sets the macros.
+    /// </summary>
+    /// <value>The macros.</value>
     public Dictionary<string,IMacro> Macros { get; private set; }
+    private List<string> LoadedAssemblies { get; set; }
+    /// <summary>
+    /// Gets the property string.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="sender">The sender.</param>
+    /// <param name="result">The result.</param>
+    /// <param name="input">The input.</param>
+    /// <returns></returns>
+    public string GetPropertyString<T> ( T sender, IIntegrationResult result, string input ) {
+      Regex xpathFinder = new Regex ( Properties.Resources.XPathPattern, RegexOptions.Singleline | RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace );
+      Match m1 = xpathFinder.Match ( input );
+      string ret = input;
+      if ( m1.Success ) {
+        // get the xpath string.
+        ret = m1.Result ( "$1" );
+        try {
+          XmlNode tNode = GetXmlTaskResultNode ( result, ret );
+          if ( tNode != null )
+            return tNode.InnerText;
+          else {
+            throw new Exception ( "No node found for xpath (" + ret + ")" );
+          }
+        } catch ( Exception ex ) {
+          // log the error as a waring and continue
+          Log.Warning ( ex.ToString ( ) );
+          return "!{" + ret + "}";
+        }
+      }
+
+      Regex propFinder = new Regex ( Properties.Resources.PropertyPatern, RegexOptions.Singleline | RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace );
+      Match m = propFinder.Match ( ret );
+      while ( m.Success ) {
+        string propName = m.Result ( "$1" );
+        if ( ContainsPropertyName<T> ( sender, result, propName ) )
+          ret = ret.Replace ( string.Format ( "$({0})", propName ), GetPropertyValue<T> ( sender, result, propName ) );
+        m = m.NextMatch ( );
+      }
+
+      
+      if ( sender.GetType().GetInterface ( typeof ( IMacroRunner ).FullName ) != null ) {
+        IMacroRunner runner = sender as IMacroRunner;
+        propFinder = new Regex ( Properties.Resources.MacroPattern, RegexOptions.Singleline | RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace );
+        m = propFinder.Match ( ret );
+        while ( m.Success ) {
+          string propName = m.Result ( "$1" );
+          string arg = m.Result ( "$2" );
+          ThoughtWorks.CruiseControl.Core.Util.Log.Debug ( string.Format ( "Found Macro {0}", m.Value ) );
+          ret = ret.Replace ( m.Value, runner.MacroEngine.Execute ( result, runner, propName, GetPropertyString<T> ( sender, result, arg ) ) );
+          m = m.NextMatch ( );
+        }
+      }
+      return ret;
+    }
+
+    /// <summary>
+    /// Contains the name of the CCnet property.
+    /// </summary>
+    /// <param name="sender">The sender.</param>
+    /// <param name="result">The result.</param>
+    /// <param name="propName">Name of the prop.</param>
+    /// <returns>
+    /// 	<see langword="true"/> if [contains CC net property name] [the specified sender]; otherwise, <see langword="false"/>.
+    /// </returns>
+    internal bool ContainsPropertyName<T> ( T sender, IIntegrationResult result, string propName ) {
+      foreach ( string s in result.IntegrationProperties.Keys )
+        if ( string.Compare ( s, propName, true ) == 0 )
+          return true;
+
+      // check this objects properties
+      BindingFlags flags = BindingFlags.IgnoreCase | BindingFlags.GetProperty | BindingFlags.Public | BindingFlags.Instance;
+      PropertyInfo pi = null;
+      if ( sender != null ) {
+        pi = sender.GetType ( ).GetProperty ( propName, flags );
+        if ( pi != null )
+          return true;
+      }
+
+      pi = result.GetType ( ).GetProperty ( propName, flags );
+      if ( pi != null )
+        return true;
+      return false;
+    }
+
+    /// <summary>
+    /// Gets the CCnet property value.
+    /// </summary>
+    /// <param name="sender">The sender.</param>
+    /// <param name="result">The result.</param>
+    /// <param name="propName">Name of the prop.</param>
+    /// <returns></returns>
+    internal string GetPropertyValue<T> ( T sender, IIntegrationResult result, string propName ) {
+      foreach ( string s in result.IntegrationProperties.Keys )
+        if ( string.Compare ( s, propName, true ) == 0 )
+          return result.IntegrationProperties[ s ] as string;
+
+      BindingFlags flags = BindingFlags.IgnoreCase | BindingFlags.GetProperty | BindingFlags.Public | BindingFlags.Instance;
+      PropertyInfo pi = null;
+      if ( sender != null ) {
+        pi = sender.GetType ( ).GetProperty ( propName, flags );
+        if ( pi != null )
+          return pi.GetValue ( sender, null ).ToString ( );
+      }
+
+      pi = result.GetType ( ).GetProperty ( propName, flags );
+      return pi == null ? string.Empty : pi.GetValue ( result, null ) as String;
+    }
+
+    /// <summary>
+    /// Creates the task result XML document.
+    /// </summary>
+    /// <param name="result">The result.</param>
+    /// <returns></returns>
+    public XmlDocument CreateTaskResultXmlDocument ( IIntegrationResult result ) {
+      XmlDocument doc = new XmlDocument ( );
+      doc.AppendChild ( doc.CreateElement ( "IntegrationResults" ) );
+      foreach ( ITaskResult tr in result.TaskResults ) {
+        XmlDocument tdoc = new XmlDocument ( );
+        XmlDocumentFragment frag = tdoc.CreateDocumentFragment ( );
+        frag.InnerXml = tr.Data;
+        doc.DocumentElement.AppendChild ( doc.ImportNode ( frag, true ) );
+      }
+      return doc;
+    }
+
+    /// <summary>
+    /// Gets the XML task result node.
+    /// </summary>
+    /// <param name="result">The result.</param>
+    /// <param name="xpath">The xpath.</param>
+    /// <returns></returns>
+    public XmlNode GetXmlTaskResultNode ( IIntegrationResult result, string xpath ) {
+      XmlDocument doc = CreateTaskResultXmlDocument ( result );
+      XmlNode node = doc.DocumentElement.SelectSingleNode ( xpath );
+      if ( node != null )
+        return node;
+      else
+        return null;
+    }
 
     /// <summary>
     /// Executes the macro.
@@ -87,19 +234,43 @@ namespace CCNet.Community.Plugins.Components.Macros {
     /// Loads the macros into app domain.
     /// </summary>
     private void LoadMacrosIntoAppDomain () {
+      LoadedAssemblies.Clear ( );
       DirectoryInfo path = new DirectoryInfo ( Path.GetDirectoryName ( this.GetType ().Assembly.Location ) );
-      LoadMacroFromAssembly ( this.GetType ().Assembly );
+      LoadMacrosFromAssembly ( this.GetType ().Assembly );
       foreach ( FileInfo file in path.GetFiles ( Properties.Resources.MacroDllPattern ) ) {
-        Assembly asm = Assembly.LoadFrom ( file.FullName );
-        LoadMacroFromAssembly ( asm );
+        if ( !IsAssemblyAlreadyLoaded ( file.FullName ) ) {
+          Assembly asm = Assembly.LoadFrom ( file.FullName );
+          LoadMacrosFromAssembly ( asm );
+        }
       }
     }
 
     /// <summary>
-    /// Loads the macro from assembly.
+    /// Checks if an assembly file is already loaded in the app domain
+    /// </summary>
+    /// <param name="fileName"></param>
+    /// <returns></returns>
+    private bool IsAssemblyAlreadyLoaded ( string fileName ) {
+      // check the list first
+      if ( LoadedAssemblies.Contains ( fileName ) )
+        return true;
+
+      AppDomain ad = AppDomain.CurrentDomain;
+      Assembly[ ] assemblies = ad.GetAssemblies ( );
+      foreach ( Assembly asm in assemblies ) {
+        if ( string.Compare ( fileName, asm.Location, true ) == 0 )
+          return true;
+      }
+      // add the new assembly to the list.
+      LoadedAssemblies.Add ( fileName );
+      return false;
+    }
+
+    /// <summary>
+    /// Loads the macros from assembly.
     /// </summary>
     /// <param name="asm">The asm.</param>
-    private void LoadMacroFromAssembly ( Assembly asm ) {
+    private void LoadMacrosFromAssembly ( Assembly asm ) {
       foreach ( Type t in asm.GetTypes () ) {
         if ( t.GetInterface ( typeof ( IMacro ).FullName, true ) != null ) {
           if ( !Macros.ContainsKey ( t.Name ) )

@@ -50,7 +50,14 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace CCNet.Community.Plugins.Components.Macros {
+  /// <summary>
+  /// 
+  /// </summary>
   public interface IMacroRunner {
+    /// <summary>
+    /// Gets the macro engine.
+    /// </summary>
+    /// <value>The macro engine.</value>
     MacroEngine MacroEngine { get; }
   }
 }

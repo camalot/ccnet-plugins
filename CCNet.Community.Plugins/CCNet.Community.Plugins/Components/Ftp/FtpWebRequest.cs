@@ -52,28 +52,54 @@ using System.IO;
 using System.Text.RegularExpressions;
 
 namespace CCNet.Community.Plugins.Components.Ftp {
+
+  /// <summary>
+  /// A wrapper of the <see cref="System.Net.FtpWebRequest"/> and <see cref="System.Net.FtpWebResponse"/> classes
+  /// to simplify ftp requests
+  /// </summary>
   public class FtpWebRequest : WebRequest {
+    /// <summary>
+    /// Standard FTP
+    /// </summary>
+    public const string UriSchemeFtp = "ftp";
+    /// <summary>
+    /// Ftp over SSH ( not supported )
+    /// </summary>
+    public const string UriSchemeSshFtp = "sftp";
+    /// <summary>
+    /// Ftp over SSL ( supported )
+    /// </summary>
+    public const string UriSchemeFtpSsl = "ftps";
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FtpWebRequest"/> class.
+    /// </summary>
+    public FtpWebRequest ( ) {
+      EnableSsl = false;
+      UsePassive = false;
+    }
 
     /// <summary>
     /// Gets or sets a value indicating whether to use passive mode.
     /// </summary>
     /// <value><c>true</c> if [use passive]; otherwise, <c>false</c>.</value>
-    public bool UsePassive {
-      get;
-      set;
-    }
-
+    public bool UsePassive { get; set; }
+    /// <summary>
+    /// Gets or sets a value indicating whether [enable SSL].
+    /// </summary>
+    /// <value><c>true</c> if [enable SSL]; otherwise, <c>false</c>.</value>
+    public bool EnableSsl { get; set; }
+    
     /// <summary>
     /// Lists the directory.
     /// </summary>
     /// <param name="ftpUrl">The FTP URL.</param>
     /// <returns></returns>
     public List<FtpSystemInfo> ListDirectory ( Uri ftpUrl ) {
-
       List<FtpSystemInfo> items = new List<FtpSystemInfo> ( );
       FtpWebResponse data = Request ( ftpUrl, System.Net.WebRequestMethods.Ftp.ListDirectoryDetails );
-
-      Regex regex = new Regex ( @"^((d|-)[^\s]+)\s+(\d{1,})\s+([^\s]+)\s+([^\s]+)\s+(\d{1,})\s+([a-z]{3}\s+\d{1,2}\s+\d{2} :? \d{2})\s+([^\n]+)$", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace | RegexOptions.Multiline );
+      //throw new Exception ( data.Data );
+      Regex regex = new Regex ( Properties.Resources.FtpDirectoryListRegexPattern, 
+        RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace | RegexOptions.Multiline );
       Match match = regex.Match ( data.Data );
       while ( match.Success ) {
         string perm = match.Groups[ 0 ].Value;
@@ -171,14 +197,22 @@ namespace CCNet.Community.Plugins.Components.Ftp {
     /// <param name="method">The method.</param>
     /// <returns></returns>
     public FtpWebResponse Request ( Uri ftpUrl, string method ) {
+      CheckNotSshFtp ( ftpUrl );
+
       System.Net.FtpWebRequest req = System.Net.FtpWebRequest.Create ( ftpUrl ) as System.Net.FtpWebRequest;
-      req.UsePassive = this.UsePassive;
-      req.Timeout = this.Timeout;
-      req.Method = method;
 
       if ( this.Credentials != null ) {
         req.Credentials = this.Credentials;
-      } 
+      } else {
+        req.Credentials = new System.Net.NetworkCredential ( "anonymous", "user@" + ftpUrl.Host );
+      }
+
+      req.UsePassive = this.UsePassive;
+      req.Timeout = this.Timeout;
+      req.Method = method;
+      req.EnableSsl = this.EnableSsl || string.Compare(ftpUrl.Scheme,FtpWebRequest.UriSchemeFtpSsl) == 0 || 
+        string.Compare(ftpUrl.Scheme,FtpWebRequest.UriSchemeSshFtp) == 0;
+      
 
       System.Net.FtpWebResponse resp = req.GetResponse ( ) as System.Net.FtpWebResponse;
       StreamReader sr = new StreamReader ( resp.GetResponseStream ( ) );
@@ -204,6 +238,11 @@ namespace CCNet.Community.Plugins.Components.Ftp {
       fwr.StatusCode = code;
       fwr.StatusDescription = desc;
       return fwr;
+    }
+
+    private void CheckNotSshFtp ( Uri ftpUrl ) {
+      if ( string.Compare ( ftpUrl.Scheme, FtpWebRequest.UriSchemeSshFtp ) == 0 )
+        throw new NotSupportedException ( Properties.Resources.SshFtpNotSupportedMessage );
     }
   }
 }

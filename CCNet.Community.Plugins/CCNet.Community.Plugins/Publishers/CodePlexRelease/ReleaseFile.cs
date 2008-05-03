@@ -51,20 +51,16 @@ using System.Text;
 using Exortech.NetReflector;
 using System.IO;
 using ThoughtWorks.CruiseControl.Core;
+using CCNet.Community.Plugins.Components.Macros;
 
 namespace CCNet.Community.Plugins.Publishers {
   [ReflectorType ( "releaseFile" )]
-  public class ReleaseFile {
-    private string fileName;
-    private ReleaseFileType fileType;
-    private string mimeType;
-    private string name;
-
+  public class ReleaseFile : IMacroRunner {
     /// <summary>
     /// Initializes a new instance of the <see cref="ReleaseFile"/> class.
     /// </summary>
     public ReleaseFile ( ) {
-
+      this.MacroEngine = new MacroEngine ( );
     }
 
     /// <summary>
@@ -75,57 +71,44 @@ namespace CCNet.Community.Plugins.Publishers {
     /// <param name="fileName">Name of the file.</param>
     /// <param name="fileType">Type of the file.</param>
     public ReleaseFile ( string name, string mimeType, string fileName, ReleaseFileType fileType ) {
-      this.name = name;
-      this.mimeType = mimeType;
-      this.fileName = fileName;
-      this.fileType = fileType;
+      this.Name = name;
+      this.MimeType = mimeType;
+      this.FileName = fileName;
+      this.FileType = fileType;
     }
     /// <summary>
     /// Gets or sets the name of the file.
     /// </summary>
     /// <value>The name of the file.</value>
     [ReflectorProperty ( "fileName", Required = true )]
-    public string FileName {
-      get { return this.fileName; }
-      set { this.fileName = value; }
-    }
+    public string FileName { get; set; }
 
     /// <summary>
     /// Gets or sets the type of the file.
     /// </summary>
     /// <value>The type of the file.</value>
     [ReflectorProperty ( "fileType", Required = true )]
-    public ReleaseFileType FileType {
-      get { return this.fileType; }
-      set { this.fileType = value; }
-    }
+    public ReleaseFileType FileType { get; set; }
 
     /// <summary>
     /// Gets or sets the Mime Type.
     /// </summary>
     /// <value>The MimeType.</value>
     [ReflectorProperty ( "mimeType", Required = false )]
-    public string MimeType {
-      get { return this.mimeType; }
-      set { this.mimeType = value; }
-    }
+    public string MimeType { get; set; }
 
     /// <summary>
     /// Gets or sets the name.
     /// </summary>
     /// <value>The name.</value>
     [ReflectorProperty ( "name", Required = false )]
-    public string Name {
-      get { return this.name; }
-      set { this.name = value; }
-    }
-
+    public string Name { get; set; }
     /// <summary>
     /// Gets the file data.
     /// </summary>
     /// <returns></returns>
     public byte[ ] GetFileData ( IIntegrationResult result ) {
-      FileInfo file = new FileInfo ( Util.GetCCNetPropertyString<ReleaseFile> ( this, result, this.fileName ) );
+      FileInfo file = new FileInfo ( this.MacroEngine.GetPropertyString<ReleaseFile> ( this, result, this.FileName ) );
       if ( file.Exists ) {
         FileStream tfs = new FileStream ( file.FullName, FileMode.Open, FileAccess.Read );
         byte[ ] fullBuffer = new byte[ file.Length ];
@@ -139,5 +122,14 @@ namespace CCNet.Community.Plugins.Publishers {
       } else
         throw new FileNotFoundException ( string.Format ( Properties.Resources.FileNotFoundMessage, file.FullName ) );
     }
+
+    #region IMacroRunner Members
+
+    public MacroEngine MacroEngine {
+      get;
+      private set;
+    }
+
+    #endregion
   }
 }

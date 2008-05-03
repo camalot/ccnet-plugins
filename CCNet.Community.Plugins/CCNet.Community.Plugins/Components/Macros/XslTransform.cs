@@ -1,4 +1,4 @@
-/*
+﻿/*
  * http://www.codeplex.com/ccnetplugins/
  * 
  * Microsoft Public License (Ms-PL)
@@ -48,27 +48,65 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Exortech.NetReflector;
+using System.Xml;
+using System.IO;
 
-namespace CCNet.Community.Plugins.Publishers {
+namespace CCNet.Community.Plugins.Components.Macros {
   /// <summary>
-  /// Represents a category assigned to an item
+  /// Performs an Xsl Transform on data in the IntegrationResult Task Results.
   /// </summary>
-  [ReflectorType("category")]
-  public class Category {
-    string _name = string.Empty;
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Category"/> class.
-    /// </summary>
-    public Category ( ) {
+  public class XslTransform : IMacro {
+    #region IMacro Members
 
+    /// <summary>
+    /// Executes the Macro.
+    /// </summary>
+    /// <param name="result">The result.</param>
+    /// <param name="invoker">The invoker.</param>
+    /// <param name="args">The args.</param>
+    /// <returns></returns>
+    public string Execute ( ThoughtWorks.CruiseControl.Core.IIntegrationResult result, IMacroRunner invoker, string args ) {
+      if ( string.IsNullOrEmpty ( args ) )
+        throw new ArgumentNullException ( "args" );
+      if ( invoker == null ) {
+        throw new ArgumentNullException ( "invoker" );
+      }
+
+      string[ ] arga = args.Split ( new char[ ] { ',' }, StringSplitOptions.RemoveEmptyEntries );
+      if ( arga.Length < 2 ) {
+        throw new ArgumentException ( "args must contain 2 arguments." );
+      } else {
+        string xpath = arga[ 0 ];
+        string file = arga[ 1 ];
+        StringBuilder outData = new StringBuilder ( );
+        MemoryStream ms = new MemoryStream ( );
+        using ( ms ) {
+          XmlTextWriter writer = new XmlTextWriter ( ms, Encoding.UTF8 );
+          using ( writer ) {
+            XmlDocument tdoc = invoker.MacroEngine.CreateTaskResultXmlDocument ( result );
+            XmlNode n = invoker.MacroEngine.GetXmlTaskResultNode ( result, xpath );
+            if ( n == null )
+              throw new ArgumentException ( "Xpath did not select any elements." );
+            else if ( n.NodeType != XmlNodeType.Element )
+              throw new ArgumentException ( "Xpath must select an element." );
+            XmlDocument doc = new XmlDocument ( );
+            doc.LoadXml ( n.OuterXml );
+            System.Xml.Xsl.XslCompiledTransform trans = new System.Xml.Xsl.XslCompiledTransform();
+            trans.Load ( file );
+
+            trans.Transform ( doc, null, writer );
+            ms.Position = 0;
+            StreamReader reader = new StreamReader ( ms );
+            while ( !reader.EndOfStream ) {
+              outData.AppendLine ( reader.ReadLine ( ) );
+            }
+
+          }
+        }
+        return outData.ToString ( );
+      }
     }
 
-    /// <summary>
-    /// Gets or sets the name.
-    /// </summary>
-    /// <value>The name.</value>
-    [ReflectorProperty("name")]
-    public string Name { get { return this._name; } set { this._name = value; } }
+    #endregion
   }
 }

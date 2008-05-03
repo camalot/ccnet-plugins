@@ -49,6 +49,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Exortech.NetReflector;
+using CCNet.Community.Plugins.Components;
+using CCNet.Community.Plugins.Common;
 
 namespace CCNet.Community.Plugins.Tasks {
   /// <summary>
@@ -60,8 +62,8 @@ namespace CCNet.Community.Plugins.Tasks {
     /// Initializes a new instance of the <see cref="MbUnitFilters"/> class.
     /// </summary>
     public MbUnitFilters ( ) {
-      this.Categories = new string[ 0 ];
-      this.ExcludeCategories = new string[ 0 ];
+      this.Categories = new List<Category>();
+      this.ExcludeCategories = new List<Category> ( );
       this.Author = new string[0];
       this.Type = new string[0];
       this.Namespaces = new string[0];
@@ -70,31 +72,31 @@ namespace CCNet.Community.Plugins.Tasks {
     /// Gets or sets the categories.
     /// </summary>
     /// <value>The categories.</value>
-    [ReflectorArray ( "filterCategories" )]
-    public string[ ] Categories { get; set; }
+    [ReflectorCollection ( "filterCategories",Required=false)]
+    public List<Category> Categories { get; set; }
     /// <summary>
     /// Gets or sets the exclude categories.
     /// </summary>
     /// <value>The exclude categories.</value>
-    [ReflectorArray ( "excludeCategories" )]
-    public string[ ] ExcludeCategories { get; set; }
+    [ReflectorCollection ( "excludeCategories", Required = false )]
+    public List<Category> ExcludeCategories { get; set; }
     /// <summary>
     /// Gets or sets the author.
     /// </summary>
     /// <value>The author.</value>
-    [ReflectorArray ( "authors" )]
+    [ReflectorArray ( "authors",Required=false )]
     public string[ ] Author { get; set; }
     /// <summary>
     /// Gets or sets the type.
     /// </summary>
     /// <value>The type.</value>
-    [ReflectorArray("types")]
+    [ReflectorArray ( "types", Required = false )]
     public string[] Type { get; set; }
     /// <summary>
     /// Gets or sets the namespaces.
     /// </summary>
     /// <value>The namespaces.</value>
-    [ReflectorArray("namespaces")]
+    [ReflectorArray ( "namespaces", Required = false )]
     public string[] Namespaces { get; set; }
   }
 }

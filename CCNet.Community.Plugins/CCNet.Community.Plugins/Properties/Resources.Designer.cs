@@ -70,6 +70,15 @@ namespace CCNet.Community.Plugins.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to ^((d|-)[^\s]+)\s+(\d{1,})\s+([^\s]+)\s+([^\s]+)\s+(\d{1,})\s+([a-z]{3}\s+\d{1,2}\s+\d{1,2} :? \d{2})\s+([^\n]+)$.
+        /// </summary>
+        internal static string FtpDirectoryListRegexPattern {
+            get {
+                return ResourceManager.GetString("FtpDirectoryListRegexPattern", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Rss Builds Publisher plugin for CruiseControl.NET version {0} - by Ryan Conrad - http://codeplex.com/ccnetplugins.
         /// </summary>
         internal static string GeneratorString {
@@ -120,6 +129,15 @@ namespace CCNet.Community.Plugins.Properties {
         internal static string PropertyPatern {
             get {
                 return ResourceManager.GetString("PropertyPatern", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The SSH Ftp protocol is not supported. For secured ftp requests, ftps ( ftp over ssl) can be used..
+        /// </summary>
+        internal static string SshFtpNotSupportedMessage {
+            get {
+                return ResourceManager.GetString("SshFtpNotSupportedMessage", resourceCulture);
             }
         }
         

@@ -50,39 +50,28 @@ using System.Collections.Generic;
 using System.Text;
 using Exortech.NetReflector;
 
-namespace CCNet.Community.Plugins.Publishers {
+namespace CCNet.Community.Plugins.Common {
   /// <summary>
-  /// Represents a namespace that is added to the feed.
+  /// Represents a category assigned to an item
   /// </summary>
-  [ ReflectorType( "namespace" ) ]
-  public class Namespace {
+  [ReflectorType("category")]
+  public class Category {
     /// <summary>
-    /// Initializes a new instance of the <see cref="Namespace"/> class.
+    /// Initializes a new instance of the <see cref="Category"/> class.
     /// </summary>
-    public Namespace () {
+    public Category ( ) {
 
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="Namespace"/> class.
+    /// Gets or sets the name.
     /// </summary>
-    /// <param name="prefix">The prefix.</param>
-    /// <param name="nsUri">The ns URI.</param>
-    public Namespace ( string prefix, string nsUri ) {
-      Prefix = prefix;
-      NamespaceUri = nsUri;
+    /// <value>The name.</value>
+    [ReflectorProperty ( "name", Required = true )]
+    public string Name { get; set; }
+
+    public override string ToString ( ) {
+      return this.Name;
     }
-    /// <summary>
-    /// Gets or sets the prefix.
-    /// </summary>
-    /// <value>The prefix.</value>
-    [ ReflectorProperty( "prefix", Required=true ) ]
-    public string Prefix { get;set; }
-    /// <summary>
-    /// Gets or sets the namespace URI.
-    /// </summary>
-    /// <value>The namespace URI.</value>
-    [ReflectorProperty ( "namespaceURI", Required = true )]
-    public string NamespaceUri { get; set; }
   }
 }

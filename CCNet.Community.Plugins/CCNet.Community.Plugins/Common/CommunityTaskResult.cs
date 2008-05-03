@@ -48,37 +48,24 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using CCNet.Community.Plugins.SourceControls;
-using Xunit;
+using ThoughtWorks.CruiseControl.Core;
 
-namespace CCNet.Community.Plugins.Tests {
-  public class FtpClientTests {
+namespace CCNet.Community.Plugins.Common {
+  public class CommunityTaskResult : ITaskResult {
+    #region ITaskResult Members
 
-    [Fact]
-    public void GetDirectories ( ) {
-      FtpClient client = CreateFtpClient ( );
-      List<string> dirs = client.GetDirectories ( );
-      Console.WriteLine ( string.Join ( ",", dirs.ToArray ( ) ) );
-      Assert.True ( dirs.Count > 0 );
+    public string Data {
+      get { throw new NotImplementedException ( ); }
     }
 
-    [Fact]
-    public void GetFiles ( ) {
-      FtpClient client = CreateFtpClient ( );
-      List<string> files = client.GetFiles ( );
-      Console.WriteLine ( string.Join ( ",", files.ToArray ( ) ) );
-      Assert.True ( files.Count > 0 );
+    public bool Failed ( ) {
+      throw new NotImplementedException ( );
     }
 
-
-    private FtpClient CreateFtpClient ( ) {
-      FtpClient client = new FtpClient ( );
-      client.FtpServer = "ftp.ccnetconfig.org";
-      client.Path = "Sources/CCNetConfig";
-      client.UsePassive = true;
-      client.Username = "anonymous";
-      client.Password = "ccnet@ccnetconfig.org";
-      return client;
+    public bool Succeeded ( ) {
+      throw new NotImplementedException ( );
     }
+
+    #endregion
   }
 }
