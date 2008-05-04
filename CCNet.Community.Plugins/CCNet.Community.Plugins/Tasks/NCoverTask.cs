@@ -48,9 +48,47 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using ThoughtWorks.CruiseControl.Core;
+using Exortech.NetReflector;
 
 namespace CCNet.Community.Plugins.Tasks {
-  public class NCoverTask {
+  [ReflectorType("ncover")]
+  public class NCoverTask : ITask{
+    public NCoverTask ( ) {
+      this.Executable = "ncover.console.exe";
+      this.OutputFile = "coverage.xml";
+      this.Assemblies = new string[ 0 ];
+      this.CoverageType = NCoverCoverageType.All;
+      this.Excludes = new NCoverExcludes ( );
+      this.Register = false;
+      this.SymbolSearchPolicy = NCoverSymbolSearchPolicy.Default;
+    }
+    [ReflectorProperty("executable",Required=false)]
+    public string Executable { get; set; }
+    [ReflectorProperty("outputfile",Required=false)]
+    public string OutputFile { get; set; }
+    [ReflectorArray("assemblies",Required=true)]
+    public string[] Assemblies { get; set; }
+    [ReflectorProperty("coverageType",Required=false)]
+    public NCoverCoverageType CoverageType { get; set; }
+    [ReflectorProperty("excludes",Required=false)]
+    public NCoverExcludes Excludes { get; set; }
+    [ReflectorProperty("register",Required=false)]
+    public bool Register { get; set; }
+    [ReflectorProperty("settingsFile",Required=false)]
+    public string SettingsFile { get; set; }
+    [ReflectorProperty("log",Required=false)]
+    public string LogFile { get; set; }
+    [ReflectorProperty("processModule",Required=false)]
+    public string ProcessModule { get; set; }
+    [ReflectorProperty("symbolSearchPolicy",Required=false)]
+    public NCoverSymbolSearchPolicy SymbolSearchPolicy { get; set; }
+    #region ITask Members
 
+    public void Run ( IIntegrationResult result ) {
+      throw new NotImplementedException ( );
+    }
+
+    #endregion
   }
 }

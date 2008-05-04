@@ -56,7 +56,7 @@ namespace CCNet.Community.Plugins.Tasks {
   /// <summary>
   /// 
   /// </summary>
-  public class XUnitArgument {
+  public class XUnitArgument : ITaskArgument {
     /// <summary>
     /// Initializes a new instance of the <see cref="XUnitArgument"/> class.
     /// </summary>

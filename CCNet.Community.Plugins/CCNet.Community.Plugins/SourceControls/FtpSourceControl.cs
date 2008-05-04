@@ -56,6 +56,9 @@ using System.Text.RegularExpressions;
 using CCNet.Community.Plugins.Common;
 
 namespace CCNet.Community.Plugins.SourceControls {
+  /// <summary>
+  /// 
+  /// </summary>
   [ReflectorType ( "ftp" )]
   public class FtpSourceControl : ISourceControl {
     private string _currentDirectory = string.Empty;
@@ -127,6 +130,12 @@ namespace CCNet.Community.Plugins.SourceControls {
       this.UsePassive = false;
     }
 
+    /// <summary>
+    /// Returns a <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
+    /// </summary>
+    /// <returns>
+    /// A <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
+    /// </returns>
     public override string ToString ( ) {
       return new Uri ( string.Format ( "{4}{0}{1}{2}{3}{5}",
         this.FtpServer, this.Port != 21 ? ":" + this.Port : string.Empty,
@@ -151,28 +160,55 @@ namespace CCNet.Community.Plugins.SourceControls {
 
     #region ISourceControl Members
 
+    /// <summary>
+    /// Gets the modifications.
+    /// </summary>
+    /// <param name="from">From.</param>
+    /// <param name="to">To.</param>
+    /// <returns></returns>
     public Modification[ ] GetModifications ( IIntegrationResult from, IIntegrationResult to ) {
       return null;
     }
 
+    /// <summary>
+    /// Gets the source.
+    /// </summary>
+    /// <param name="result">The result.</param>
     public void GetSource ( IIntegrationResult result ) {
       if ( this.AutoGetSource ) {
         
       }
     }
 
+    /// <summary>
+    /// Downloads the file.
+    /// </summary>
+    /// <param name="remotePath">The remote path.</param>
+    /// <param name="result">The result.</param>
     private void DownloadFile ( string remotePath, IIntegrationResult result ) {
 
     }
 
 
 
+    /// <summary>
+    /// Initializes the specified project.
+    /// </summary>
+    /// <param name="project">The project.</param>
     public void Initialize ( IProject project ) {
     }
 
+    /// <summary>
+    /// Labels the source control.
+    /// </summary>
+    /// <param name="result">The result.</param>
     public void LabelSourceControl ( IIntegrationResult result ) {
     }
 
+    /// <summary>
+    /// Purges the specified project.
+    /// </summary>
+    /// <param name="project">The project.</param>
     public void Purge ( IProject project ) {
     }
 

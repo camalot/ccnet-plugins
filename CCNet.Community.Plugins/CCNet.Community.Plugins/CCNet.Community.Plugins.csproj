@@ -132,6 +132,8 @@
     <Compile Include="Publishers\RssBuilds\RssElement.cs" />
     <Compile Include="Publishers\RssBuilds\RssElementAttribute.cs" />
     <Compile Include="Publishers\RssBuilds\RssNode.cs" />
+    <Compile Include="Tasks\ITaskArgument.cs" />
+    <Compile Include="Tasks\NCoverExcludes.cs" />
     <Compile Include="Util.cs" />
     <Compile Include="Components\XmlRpc\MetaWeblogAPI.cs" />
     <Compile Include="Components\XmlRpc\MetaWeblogClient.cs">

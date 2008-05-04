@@ -52,12 +52,13 @@ using ThoughtWorks.CruiseControl.Core;
 using ThoughtWorks.CruiseControl.Core.Util;
 using System.IO;
 using CCNet.Community.Plugins.Components;
+using CCNet.Community.Plugins.Common;
 
 namespace CCNet.Community.Plugins.Tasks {
   /// <summary>
   /// 
   /// </summary>
-  public class MbUnitArgument {
+  public class MbUnitArgument : ITaskArgument {
     public MbUnitArgument ( MbUnitTask mbunit, IIntegrationResult result ) {
       if ( ( mbunit.Assemblies == null ) || ( mbunit.Assemblies.Length == 0 ) ) {
         throw new CruiseControlException ( "No unit test assemblies are specified. Please use the <assemblies> element to specify the test assemblies to run." );
@@ -66,7 +67,15 @@ namespace CCNet.Community.Plugins.Tasks {
       this.IntegrationResult = result;
     }
 
+    /// <summary>
+    /// Gets or sets the mb unit.
+    /// </summary>
+    /// <value>The mb unit.</value>
     public MbUnitTask MbUnit { get; set; }
+    /// <summary>
+    /// Gets or sets the integration result.
+    /// </summary>
+    /// <value>The integration result.</value>
     public IIntegrationResult IntegrationResult { get; set; }
 
     public override string ToString ( ) {
