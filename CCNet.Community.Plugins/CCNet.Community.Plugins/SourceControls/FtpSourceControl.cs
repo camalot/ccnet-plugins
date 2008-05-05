@@ -51,17 +51,18 @@ using System.Text;
 using ThoughtWorks.CruiseControl.Core;
 using Exortech.NetReflector;
 using System.IO;
-using System.Net;
 using System.Text.RegularExpressions;
 using CCNet.Community.Plugins.Common;
+using CCNet.Community.Plugins.Components.Ftp;
 
 namespace CCNet.Community.Plugins.SourceControls {
   /// <summary>
-  /// 
+  /// An FTP server source control provider
   /// </summary>
   [ReflectorType ( "ftp" )]
   public class FtpSourceControl : ISourceControl {
-    private string _currentDirectory = string.Empty;
+
+    public string RootFtpPath { get; private set; }
     /// <summary>
     /// Gets or sets the FTP server.
     /// </summary>
@@ -112,11 +113,36 @@ namespace CCNet.Community.Plugins.SourceControls {
     public bool UsePassive { get; set; }
 
     /// <summary>
+    /// Gets or sets the timeout.
+    /// </summary>
+    /// <value>The timeout.</value>
+    [ReflectorProperty ( "timeout", Required = false )]
+    public int Timeout { get; set; }
+    /// <summary>
     /// Gets or sets the proxy.
     /// </summary>
     /// <value>The proxy.</value>
-    [ReflectorProperty("proxy",Required=false)]
+    [ReflectorProperty ( "proxy", Required = false )]
     public Proxy Proxy { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether to clean the working directory before getting the source.
+    /// </summary>
+    /// <value><c>true</c> if should clean the working directory; otherwise, <c>false</c>.</value>
+    [ReflectorProperty("cleanSource",Required=false)]
+    public bool CleanSource { get; set; }
+
+    /// <summary>
+    /// Gets the FTP URL.
+    /// </summary>
+    /// <value>The FTP URL.</value>
+    public Uri FtpUrl { get { return new Uri ( this.ToString ( ) ); } }
+
+    /// <summary>
+    /// Gets or sets the modifications.
+    /// </summary>
+    /// <value>The modifications.</value>
+    public List<Modification> Modifications { get; private set; }
     /// <summary>
     /// Initializes a new instance of the <see cref="FtpSourceControl"/> class.
     /// </summary>
@@ -128,6 +154,9 @@ namespace CCNet.Community.Plugins.SourceControls {
       this.RepositoryRoot = "/";
       this.UseSsl = false;
       this.UsePassive = false;
+      this.Timeout = 60000;
+      this.CleanSource = false;
+      this.Modifications = new List<Modification> ( );
     }
 
     /// <summary>
@@ -139,10 +168,10 @@ namespace CCNet.Community.Plugins.SourceControls {
     public override string ToString ( ) {
       return new Uri ( string.Format ( "{4}{0}{1}{2}{3}{5}",
         this.FtpServer, this.Port != 21 ? ":" + this.Port : string.Empty,
-        !this.RepositoryRoot.StartsWith("/") ? "/" : string.Empty, this.RepositoryRoot ,
-        !this.FtpServer.StartsWith ( "ftp://" ) && !this.UseSsl ? "ftp://" : 
-        !this.FtpServer.StartsWith ( "ftps://" ) && this.UseSsl  ? "ftps://" : 
-        string.Empty,!this.RepositoryRoot.EndsWith("/") ? "/" : string.Empty) ).ToString ( );
+        !this.RepositoryRoot.StartsWith ( "/" ) ? "/" : string.Empty, this.RepositoryRoot,
+        !this.FtpServer.StartsWith ( "ftp://" ) && !this.UseSsl ? "ftp://" :
+        !this.FtpServer.StartsWith ( "ftps://" ) && this.UseSsl ? "ftps://" :
+        string.Empty, !this.RepositoryRoot.EndsWith ( "/" ) ? "/" : string.Empty ) ).ToString ( );
     }
 
     /// <summary>
@@ -150,11 +179,12 @@ namespace CCNet.Community.Plugins.SourceControls {
     /// </summary>
     /// <param name="info">The info.</param>
     /// <returns></returns>
-    private Modification CreateModification ( FileInfo info ) {
+    private Modification CreateModification ( FtpFileInfo info ) {
       Modification modification = new Modification ( );
       modification.FileName = info.Name;
-      modification.ModifiedTime = info.LastWriteTime;
-      modification.FolderName = info.DirectoryName;
+      modification.ModifiedTime = info.LastModified;
+      modification.Url = info.Url.ToString ( );
+      modification.FolderName = info.Directory;
       return modification;
     }
 
@@ -167,7 +197,7 @@ namespace CCNet.Community.Plugins.SourceControls {
     /// <param name="to">To.</param>
     /// <returns></returns>
     public Modification[ ] GetModifications ( IIntegrationResult from, IIntegrationResult to ) {
-      return null;
+      return this.Modifications.ToArray ( );
     }
 
     /// <summary>
@@ -176,20 +206,11 @@ namespace CCNet.Community.Plugins.SourceControls {
     /// <param name="result">The result.</param>
     public void GetSource ( IIntegrationResult result ) {
       if ( this.AutoGetSource ) {
-        
+        Uri ftpUrl = new Uri ( this.ToString ( ) );
+        this.RootFtpPath = ftpUrl.AbsolutePath;
+        DownloadFilesFromFtpServer ( result );
       }
     }
-
-    /// <summary>
-    /// Downloads the file.
-    /// </summary>
-    /// <param name="remotePath">The remote path.</param>
-    /// <param name="result">The result.</param>
-    private void DownloadFile ( string remotePath, IIntegrationResult result ) {
-
-    }
-
-
 
     /// <summary>
     /// Initializes the specified project.
@@ -213,5 +234,74 @@ namespace CCNet.Community.Plugins.SourceControls {
     }
 
     #endregion
+
+    private System.Net.NetworkCredential CreateCredentials ( ) {
+      if ( !string.IsNullOrEmpty ( this.Username ) ) {
+        return new System.Net.NetworkCredential ( this.Username, this.Password );
+      } else {
+        return null;
+      }
+    }
+
+    private void CleanWorkingDirectory ( IIntegrationResult result ) {
+      if ( this.CleanSource ) {
+        Directory.Delete ( result.WorkingDirectory, true );
+      }
+    }
+
+    /// <summary>
+    /// Creates the FTP web request.
+    /// </summary>
+    /// <returns></returns>
+    private FtpWebRequest CreateFtpWebRequest ( ) {
+      FtpWebRequest req = new FtpWebRequest ( );
+      if ( this.Proxy != null )
+        req.Proxy = this.Proxy.CreateProxy ( );
+      req.UsePassive = this.UsePassive;
+      req.EnableSsl = this.UseSsl;
+      System.Net.NetworkCredential creds = CreateCredentials ( );
+      if ( creds != null ) {
+        req.Credentials = creds;
+      }
+      //req.Timeout = this.Timeout;
+      return req;
+    }
+
+    private void DownloadFilesFromFtpServer ( IIntegrationResult result ) {
+      DownloadFilesRecursive ( this.FtpUrl, result );
+    }
+
+    private bool IsFileChanged ( FtpFileInfo file, DateTime date ) {
+      return file.LastModified > date;
+    }
+
+    private void DownloadFilesRecursive ( Uri ftpUrl, IIntegrationResult result ) {
+      FtpWebRequest req = this.CreateFtpWebRequest ( );
+      List<FtpSystemInfo> siList = req.ListDirectory ( ftpUrl );
+      foreach ( FtpSystemInfo fsi in siList ) {
+        if ( fsi.IsFile ) {
+          try {
+            int start = ftpUrl.ToString ( ).IndexOf ( this.RootFtpPath ) + this.RootFtpPath.Length;
+            string path = ftpUrl.ToString ( ).Substring ( start );
+            if ( string.IsNullOrEmpty ( path ) )
+              path = ".\\";
+            if ( !path.EndsWith ( "\\" ) || !path.EndsWith ( "/" ) )
+              path = path + "\\";
+            DirectoryInfo saveDir = new DirectoryInfo ( result.BaseFromWorkingDirectory ( path ) );
+            if ( !saveDir.Exists )
+              saveDir.Create ( );
+            FileInfo localFile = new FileInfo ( Path.Combine ( saveDir.FullName, fsi.Name ) );
+            req.DownloadFile ( new Uri ( ftpUrl.ToString ( ) + fsi.Name ), localFile.FullName );
+            if ( IsFileChanged ( fsi as FtpFileInfo, result.StartTime ) ) {
+              this.Modifications.Add ( this.CreateModification ( fsi as FtpFileInfo ) );
+            }
+          } catch ( Exception ex ) {
+            throw new Exception ( "\n" + ftpUrl.ToString ( ) + fsi.Name, ex );
+          }
+        } else {
+          DownloadFilesRecursive ( new Uri ( ftpUrl.ToString ( ) + fsi.Name + "/" ), result );
+        }
+      }
+    }
   }
 }

@@ -7,7 +7,7 @@ namespace CCNet.Community.Plugins.Tests {
   public abstract class IntegrationResultTestObject {
     public IntegrationResult Result { get; set; }
     public IntegrationResultTestObject ( ) {
-      Result = new IntegrationResult ( "test", @"c:\source", @"c:\redist",
+      Result = new IntegrationResult ( "test", @"d:\source\ccnetplugins\", @"d:\redist\ccnetplugins\",
         new ThoughtWorks.CruiseControl.Remote.IntegrationRequest (
           ThoughtWorks.CruiseControl.Remote.BuildCondition.IfModificationExists, "Test" ),
           new IntegrationSummary ( ThoughtWorks.CruiseControl.Remote.IntegrationStatus.Success,

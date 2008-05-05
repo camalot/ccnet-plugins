@@ -64,14 +64,16 @@ namespace CCNet.Community.Plugins.Components.Ftp {
     /// <param name="group">The group.</param>
     /// <param name="publicUsers">The public users.</param>
     /// <param name="isDirectory">if set to <c>true</c> [is directory].</param>
+    /// <param name="lastModified">The last modified.</param>
     internal FtpSystemInfo ( string name, long size, FtpSystemInfoPermission owner, 
-      FtpSystemInfoPermission group, FtpSystemInfoPermission publicUsers, bool isDirectory ) {
+      FtpSystemInfoPermission group, FtpSystemInfoPermission publicUsers, bool isDirectory, DateTime lastModified ) {
       this.Name = name;
       this.Size = size;
       this.Group = group;
       this.Public = publicUsers;
       this.Owner = owner;
       this.IsDirectory = isDirectory;
+      this.LastModified = lastModified;
     }
 
     /// <summary>
@@ -137,6 +139,28 @@ namespace CCNet.Community.Plugins.Components.Ftp {
     public bool IsFile {
       get;
       protected set;
+    }
+
+    /// <summary>
+    /// Gets or sets the last modified.
+    /// </summary>
+    /// <value>The last modified.</value>
+    public DateTime LastModified { get; protected set; }
+
+    /// <summary>
+    /// Gets or sets the URL.
+    /// </summary>
+    /// <value>The URL.</value>
+    public Uri Url { get; set; }
+
+    /// <summary>
+    /// Gets or sets the directory.
+    /// </summary>
+    /// <value>The directory.</value>
+    public string Directory {
+      get {
+        return this.Url != null ? this.Url.AbsolutePath.Substring ( 0, this.Url.AbsolutePath.LastIndexOf ( "/" ) ) : "/";
+      }
     }
 
   }

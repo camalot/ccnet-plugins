@@ -58,7 +58,7 @@ namespace CCNet.Community.Plugins.Tests {
       // test remote ftp ( requiring passive mode )
       FtpWebRequest ftp = new FtpWebRequest ( );
       ftp.UsePassive = true;
-      List<FtpSystemInfo> fsi = ftp.ListDirectory ( new Uri ( "ftp://ftp.ccnetconfig.org/Sources/CCNetConfig/" ) );
+      List<FtpSystemInfo> fsi = ftp.ListDirectory ( new Uri ( "ftp://ftp.ccnetconfig.org/Sources/ccnetplugins/" ) );
       Assert.True ( fsi.Count > 0, "Count = " + fsi.Count );
       
       int d = 0;

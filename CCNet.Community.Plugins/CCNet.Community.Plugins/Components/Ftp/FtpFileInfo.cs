@@ -59,7 +59,7 @@ namespace CCNet.Community.Plugins.Components.Ftp {
     /// </summary>
     /// <param name="name">The name.</param>
     public FtpFileInfo ( string name )
-      : this ( name, 0, null, null, null ) {
+      : this ( name, 0, null, null, null, DateTime.Now ) {
 
     }
 
@@ -71,9 +71,10 @@ namespace CCNet.Community.Plugins.Components.Ftp {
     /// <param name="owner">The owner.</param>
     /// <param name="group">The group.</param>
     /// <param name="publicUsers">The public users.</param>
+    /// <param name="lastModified">The last modified.</param>
     internal FtpFileInfo ( string name, long size, FtpSystemInfoPermission owner,
-      FtpSystemInfoPermission group, FtpSystemInfoPermission publicUsers)
-      : base ( name, size, owner, group, publicUsers, false ) {
+      FtpSystemInfoPermission group, FtpSystemInfoPermission publicUsers, DateTime lastModified)
+      : base ( name, size, owner, group, publicUsers, false, lastModified ) {
 
     }
   }

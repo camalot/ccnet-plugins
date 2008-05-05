@@ -32,7 +32,7 @@ namespace CCNet.Community.Plugins.Tests {
     public void GetResultPropertyValue ( ) {
       MacroRunner runner = new MacroRunner ( );
       string ad = runner.MacroEngine.GetPropertyString<IMacroRunner> ( runner, Result, "$(ArtifactDirectory)" );
-      Assert.Equal<string> ( @"c:\redist", ad );
+      Assert.Equal<string> ( @"d:\redist\ccnetplugins\", ad );
       ad = runner.MacroEngine.GetPropertyString<IMacroRunner> ( runner, Result, "$(CCNetLabel)" );
       Assert.Equal<string> ( @"UNKNOWN", ad );
 

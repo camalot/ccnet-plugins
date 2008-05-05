@@ -53,7 +53,7 @@ using Exortech.NetReflector;
 using Xunit;
 
 namespace CCNet.Community.Plugins.Tests {
-  public class FtpSourceControlTests {
+  public class FtpSourceControlTests : IntegrationResultTestObject {
     [Fact]
     public void LoadWithUriNoPort ( ) {
         string xml = @"<sourcecontrol type=""ftp"">
@@ -114,11 +114,17 @@ namespace CCNet.Community.Plugins.Tests {
       string xml = @"<sourcecontrol type=""ftp"">
 	<server>ftp.ccnetconfig.org</server>
   <port>21</port>
-  <repositoryRoot>/sources/CCNet.Community.Plugins</repositoryRoot>
+  <repositoryRoot>/sources/ccnetplugins</repositoryRoot>
+  <usePassive>true</usePassive>
+  <cleanSource>true</cleanSource>
 </sourcecontrol>";
       FtpSourceControl task = new FtpSourceControl ( );
       NetReflector.Read ( xml, task );
-      task.GetSource ( null );
+      task.GetSource ( Result );
+
+      Assert.Equal<string> ( "/sources/ccnetplugins/", task.RootFtpPath );
+
+      Assert.True ( task.Modifications.Count > 0 );
     }
   }
 }

@@ -116,18 +116,25 @@ namespace CCNet.Community.Plugins.Components.Ftp {
         FtpSystemInfoPermission pub = FtpSystemInfoPermission.FromString ( perms[ 2 ] );
 
         FtpSystemInfo fsi = null;
+        DateTime lastMod = GetLastModificationDateTime (  match.Groups[7].Value.Trim());
         if ( isDirectory ) {
-          fsi = new FtpDirectoryInfo ( match.Groups[ 6 ].Value, 0, owner, group, pub );
+          fsi = new FtpDirectoryInfo ( match.Groups[ 8 ].Value.Trim ( ), 0, owner, group, pub, lastMod );
+        fsi.Url = ftpUrl;
         } else {
           long size = 0;
-          long.TryParse ( match.Groups[ 4 ].Value, out size );
-          fsi = new FtpFileInfo ( match.Groups[ 6 ].Value, size, owner, group, pub );
+          long.TryParse ( match.Groups[ 6 ].Value, out size );
+          fsi = new FtpFileInfo ( match.Groups[ 8 ].Value.Trim ( ), size, owner, group, pub, lastMod );
+          fsi.Url = ftpUrl;
         }
 
         items.Add ( fsi );
         match = match.NextMatch ( );
       }
       return items;
+    }
+
+    private DateTime GetLastModificationDateTime ( string dt ) {
+      return DateTime.Parse ( dt );
     }
 
     /// <summary>
@@ -141,7 +148,9 @@ namespace CCNet.Community.Plugins.Components.Ftp {
       FileStream fs = new FileStream ( local.FullName, FileMode.Create, FileAccess.Write, FileShare.Read );
       using ( fs ) {
         fs.Write ( data.ByteData, 0, data.ByteData.Length );
+        fs.Flush ( );
       }
+
     }
 
     /// <summary>
@@ -212,7 +221,7 @@ namespace CCNet.Community.Plugins.Components.Ftp {
       req.Method = method;
       req.EnableSsl = this.EnableSsl || string.Compare(ftpUrl.Scheme,FtpWebRequest.UriSchemeFtpSsl) == 0 || 
         string.Compare(ftpUrl.Scheme,FtpWebRequest.UriSchemeSshFtp) == 0;
-      
+      req.KeepAlive = false;
 
       System.Net.FtpWebResponse resp = req.GetResponse ( ) as System.Net.FtpWebResponse;
       StreamReader sr = new StreamReader ( resp.GetResponseStream ( ) );
@@ -222,15 +231,18 @@ namespace CCNet.Community.Plugins.Components.Ftp {
 
       using ( resp ) {
         Stream strm = resp.GetResponseStream ( );
-        MemoryStream ms = new MemoryStream ( );
-        using ( ms ) {
-          byte[] buff = new byte[ 2048 ];
-          int i = 0;
-          while ( ( i = strm.Read ( buff, 0, buff.Length ) ) > 0 ) {
-            ms.Write ( buff, 0, i );
+        using ( strm ) {
+          MemoryStream ms = new MemoryStream ( );
+          using ( ms ) {
+            byte[ ] buff = new byte[ 1024 ];
+            int i = 0;
+            while ( ( i = strm.Read ( buff, 0, buff.Length ) ) > 0 ) {
+              ms.Write ( buff, 0, i );
+              ms.Flush ( );
+            }
+            ms.Position = 0;
+            buffer = ms.ToArray ( );
           }
-          ms.Position = 0;
-          buffer = ms.ToArray ( );
         }
       }
 
