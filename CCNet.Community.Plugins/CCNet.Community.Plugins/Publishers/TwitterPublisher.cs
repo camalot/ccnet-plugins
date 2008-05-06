@@ -55,6 +55,7 @@ using ThoughtWorks.CruiseControl.Core;
 using ThoughtWorks.CruiseControl.Core.Util;
 using ThoughtWorks.CruiseControl.Remote;
 using CCNet.Community.Plugins.Components.Twitter;
+using CCNet.Community.Plugins.Common;
 
 namespace CCNet.Community.Plugins.Publishers {
   /// <summary>
@@ -91,12 +92,20 @@ namespace CCNet.Community.Plugins.Publishers {
     /// <value>The project URL.</value>
     [ReflectorProperty("projectUrl",Required=false)]
     public string ProjectUrl { get; set; }
+    /// <summary>
+    /// Gets or sets the proxy.
+    /// </summary>
+    /// <value>The proxy.</value>
+    [ReflectorProperty("proxy",Required=false)]
+    public Proxy Proxy { get; set; }
 
     #region ITask Members
 
     public void Run ( IIntegrationResult result ) {
       try {
         TwitterService twitter = new TwitterService ( );
+        if ( this.Proxy != null )
+          twitter.Proxy = this.Proxy.CreateProxy ( );
         System.Xml.XmlDocument resultXml = twitter.UpdateAsXml ( this.UserName, this.Password, CreateStatus ( result ) );
         Log.Info ( "Integration results published to twitter" );
         result.AddTaskResult ( "<twitter>" + resultXml.DocumentElement.InnerXml + "</twitter>" );

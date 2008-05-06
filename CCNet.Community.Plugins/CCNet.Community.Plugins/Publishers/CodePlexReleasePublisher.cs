@@ -55,6 +55,7 @@ using System.IO;
 using System.Security.Cryptography.X509Certificates;
 using CCNet.Community.Plugins.CodePlexApi;
 using CCNet.Community.Plugins.Components.Macros;
+using CCNet.Community.Plugins.Common;
 
 namespace CCNet.Community.Plugins.Publishers {
   [ReflectorType ( "codeplexRelease" )]
@@ -97,7 +98,12 @@ namespace CCNet.Community.Plugins.Publishers {
     /// <value>The releases.</value>
     [ReflectorArray ( "releases", Required = true )]
     public List<ReleaseItem> Releases { get; set; }
-
+    /// <summary>
+    /// Gets or sets the proxy.
+    /// </summary>
+    /// <value>The proxy.</value>
+    [ReflectorProperty("proxy",Required=false)]
+    public Proxy Proxy { get; set; }
     /// <summary>
     /// Gets the modification comments.
     /// </summary>
@@ -141,6 +147,8 @@ namespace CCNet.Community.Plugins.Publishers {
           }
 
           this.ReleaseService = new ReleaseService ( );
+          if ( this.Proxy != null )
+            this.ReleaseService.Proxy = this.Proxy.CreateProxy ( );
           string tProjectName = string.IsNullOrEmpty ( this.ProjectName ) ? result.ProjectName.ToLower ( ).Trim ( ) : this.ProjectName;
           ThoughtWorks.CruiseControl.Core.Util.Log.Debug ( string.Format ( "Creating release {1} for {0}",
             GetPropertyString<ReleaseItem> ( item, result, tProjectName ),

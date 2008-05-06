@@ -8,24 +8,62 @@ using System.Net;
 using CCNet.Community.Plugins.XmlRpc;
 using ThoughtWorks.CruiseControl.Remote;
 using ThoughtWorks.CruiseControl.Core.Util;
+using CCNet.Community.Plugins.Common;
 
 namespace CCNet.Community.Plugins.Publishers {
+  /// <summary>
+  /// Publishes the build results to a blog supporting the MetaWeblog API
+  /// </summary>
   [ReflectorType ( "metaweblog" )]
   public class MetaWeblogPublisher : ITask {
+    /// <summary>
+    /// Gets or sets the meta weblog API URL.
+    /// </summary>
+    /// <value>The meta weblog API URL.</value>
     [ReflectorProperty ( "url", Required = true )]
     public string MetaWeblogApiUrl { get; set; }
+    /// <summary>
+    /// Gets or sets the username.
+    /// </summary>
+    /// <value>The username.</value>
     [ReflectorProperty ( "username", Required = true )]
     public string Username { get; set; }
+    /// <summary>
+    /// Gets or sets the password.
+    /// </summary>
+    /// <value>The password.</value>
     [ReflectorProperty ( "password", Required = true )]
     public string Password { get; set; }
+    /// <summary>
+    /// Gets or sets the title format.
+    /// </summary>
+    /// <value>The title format.</value>
     [ReflectorProperty ( "titleformat" , Required = false) ]
     public string TitleFormat { get; set; }
+    /// <summary>
+    /// Gets or sets the description format.
+    /// </summary>
+    /// <value>The description format.</value>
     [ReflectorProperty ( "descriptionformat", Required = false )]
     public string DescriptionFormat { get; set; }
+    /// <summary>
+    /// Gets or sets a value indicating whether [continue on failure].
+    /// </summary>
+    /// <value><c>true</c> if [continue on failure]; otherwise, <c>false</c>.</value>
     [ReflectorProperty ( "continueOnFailure", Required = false )]
     public bool ContinueOnFailure { get; set; }
+    /// <summary>
+    /// Gets or sets the tags.
+    /// </summary>
+    /// <value>The tags.</value>
     [ReflectorArray ( "tags", Required = false )]
     public string[ ] Tags { get; set; }
+    /// <summary>
+    /// Gets or sets the proxy.
+    /// </summary>
+    /// <value>The proxy.</value>
+    [ReflectorProperty("proxy",Required=false)]
+    public Proxy Proxy { get; set; }
 
     public MetaWeblogPublisher ( ) {
       this.ContinueOnFailure = false;
@@ -42,6 +80,10 @@ namespace CCNet.Community.Plugins.Publishers {
       client.Url = this.MetaWeblogApiUrl;
       client.Credentials = creds;
       client.KeepAlive = false;
+
+      if ( this.Proxy != null )
+        client.Proxy = this.Proxy.CreateProxy ( );
+
       string blogId = string.Empty;
       try {
         BlogInfo[ ] blogs = client.getUsersBlogs ( string.Empty, creds.UserName, creds.Password );
