@@ -98,7 +98,7 @@ namespace CCNet.Community.Plugins.Publishers {
       string result = string.Empty;
       try {
         HttpWebRequest request = HttpWebRequest.Create ( this.PingUrl ) as HttpWebRequest;
-        request.UserAgent = string.Format ( "{0} version {1} - http://codeplex.com/rssbuildspublisher", this.GetType ().Assembly.GetName ().Name, this.GetType ().Assembly.GetName ().Version.ToString () );
+        request.UserAgent = string.Format ( "{0} version {1} - http://codeplex.com/ccnetplugins", this.GetType ().Assembly.GetName ().Name, this.GetType ().Assembly.GetName ().Version.ToString () );
         request.Method = "POST";
         request.ContentType = "text/xml";
         XmlTextWriter xmlPing = new XmlTextWriter ( request.GetRequestStream (), Encoding.UTF8 );

@@ -44,57 +44,60 @@
  * or conditions. You may have additional consumer rights under your local laws which this license cannot change. To the extent 
  * permitted under your local laws, the contributors exclude the implied warranties of merchantability, fitness for a particular 
  * purpose and non-infringement.
- * 
- * 
  */
 using System;
 using System.Collections.Generic;
 using System.Text;
-using ThoughtWorks.CruiseControl.Core;
-using System.Text.RegularExpressions;
-using System.Xml;
-using System.Reflection;
-using ThoughtWorks.CruiseControl.Core.Util;
-using CCNet.Community.Plugins.Components.Macros;
+using Exortech.NetReflector;
+using CCNet.Community.Plugins.Publishers;
+using Xunit;
 
-namespace CCNet.Community.Plugins {
-  public static class Util {
-    /// <summary>
-    /// Converts an objects tostring to lowercase
-    /// </summary>
-    /// <param name="o">The object.</param>
-    /// <returns></returns>
-    public static string ToLowerString ( Object o ) {
-      return o.ToString ( ).ToLower ( );
-    }   
+namespace CCNet.Community.Plugins.Tests {
+	public class PowncePublisherTests : IntegrationResultTestObject {
+		string username = "ccnetplugins";
+		string password = "CodePlex1";
+		[Fact]
+		public void Create() {
+			
+			string xml = @"<pownce>
+	<username>" + username + @"</username>
+	<password>" + password + @"</password>
+	<notes>
+		<note>
+			<message>Test Note</message>
+		</note>
+		<note>
+			<message>Another Test Note</message>
+		</note>
+	</notes>
+	<links>
+		<link>
+			<message>New Search Engine!</message>
+			<url>http://google.com</url>
+		</link>
+	</links>
+	<events>
+		<event>
+			<date>5/21/2008 16:00</date>
+			<location>Great Wide Open</location>
+			<name>New Event</name>
+		</event>
+	</events>
+</pownce>";
 
-    public static string GetModidicationCommentsString ( IIntegrationResult result ) {
-      DateTime lastDate = DateTime.MinValue;
-      StringBuilder descText = new StringBuilder ( );
-      foreach ( Modification mod in result.Modifications ) {
-        if ( lastDate.CompareTo ( mod.ModifiedTime ) != 0 ) {
-          lastDate = mod.ModifiedTime;
-          if ( !string.IsNullOrEmpty ( mod.Comment ) ) {
-            descText.AppendLine ( mod.Comment );
-          }
-        }
-      }
-      return descText.ToString ( );
-    }
-
-		public static PublishBuildStatus GetBuildStatus(IIntegrationResult result) {
-			if (result.Status == ThoughtWorks.CruiseControl.Remote.IntegrationStatus.Success)
-				return PublishBuildStatus.Success;
-			else
-				return PublishBuildStatus.Failure;
+			PowncePublisher publisher = NetReflector.Read ( xml ) as PowncePublisher;
+			Assert.True ( publisher.Notes.Count == 2 );
+			Assert.True ( publisher.Links.Count == 1 );
+			Assert.True ( publisher.Events.Count == 1 );
+			Assert.True ( publisher.Files.Count == 0);
+			Assert.True ( publisher.Notes[0].BuildCondition == PublishBuildCondition.AllBuildConditions );
+			Assert.True ( publisher.Notes[0].BuildStatus == PublishBuildStatus.Any );
+			Assert.True ( publisher.Links[0].BuildCondition == PublishBuildCondition.AllBuildConditions );
+			Assert.True ( publisher.Links[0].BuildStatus == PublishBuildStatus.Any );
+			Assert.True ( publisher.Events[0].BuildCondition == PublishBuildCondition.AllBuildConditions );
+			Assert.True ( publisher.Events[0].BuildStatus == PublishBuildStatus.Any );
+			Assert.Equal<string> ( username, publisher.UserName );
+			publisher.Run ( Result );
 		}
-
-		public static PublishBuildCondition GetBuildCondition(IIntegrationResult result) {
-			if (result.BuildCondition == ThoughtWorks.CruiseControl.Remote.BuildCondition.ForceBuild)
-				return PublishBuildCondition.ForceBuild;
-			else
-				return PublishBuildCondition.IfModificationExists;
-		}
-  }
-
+	}
 }

@@ -110,10 +110,16 @@
     <Compile Include="Components\Macros\IMacroRunner.cs" />
     <Compile Include="Components\Macros\MacroEngine.cs" />
     <Compile Include="Components\Macros\XslTransform.cs" />
+    <Compile Include="Components\Pownce\PownceService.cs" />
+    <Compile Include="Components\Pownce\SendToOption.cs" />
     <Compile Include="Components\Twitter\TwitterService.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="Publishers\CodePlexReleasePublisher.cs" />
     <Compile Include="Publishers\CodePlexReleaseTaskResult.cs" />
+    <Compile Include="Publishers\Pownce\PownceEvent.cs" />
+    <Compile Include="Publishers\Pownce\PownceFile.cs" />
+    <Compile Include="Publishers\Pownce\PownceLink.cs" />
+    <Compile Include="Publishers\Pownce\PownceNoteBase.cs" />
     <Compile Include="Publishers\CodePlexRelease\ReleaseBase.cs" />
     <Compile Include="Publishers\CodePlexRelease\ReleaseFile.cs" />
     <Compile Include="Publishers\CodePlexRelease\ReleaseItem.cs" />
@@ -122,6 +128,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Publishers\Pownce\PownceNote.cs" />
+    <Compile Include="Publishers\PowncePublisher.cs" />
     <Compile Include="Publishers\RssBuildsPublisher.cs" />
     <Compile Include="Common\Category.cs">
       <SubType>Code</SubType>

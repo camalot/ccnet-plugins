@@ -62,6 +62,10 @@ namespace CCNet.Community.Plugins.SourceControls {
   [ReflectorType ( "ftp" )]
   public class FtpSourceControl : ISourceControl {
 
+    /// <summary>
+    /// Gets or sets the root FTP path.
+    /// </summary>
+    /// <value>The root FTP path.</value>
     public string RootFtpPath { get; private set; }
     /// <summary>
     /// Gets or sets the FTP server.

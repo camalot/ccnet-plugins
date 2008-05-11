@@ -136,19 +136,19 @@ namespace CCNet.Community.Plugins.Publishers {
     /// Initializes a new instance of the <see cref="RssBuildsPublisher"/> class.
     /// </summary>
     public RssBuildsPublisher () {
-      _maxHistory = 25;
-      OutputPath = string.Empty;
-      Encoding = "UTF-8";
-      _fileName = "rss";
-      RssExtensions = new List<Namespace> ( );
-      FeedImage = new FeedImage ();
-      FeedElements = new List<RssElement> ( );
-      ItemElements = new List<RssElement> ( );
-      Categories = new List<Category> ();
+			this._maxHistory = 25;
+			this.OutputPath = string.Empty;
+			this.Encoding = "UTF-8";
+			this._fileName = "rss";
+      this._namespaces = new List<Namespace> ( );
+			this.FeedImage = new FeedImage ( );
+			this.FeedElements = new List<RssElement> ( );
+			this.ItemElements = new List<RssElement> ( );
+			this.Categories = new List<Category> ( );
       this.PingItems = new List<PingElement> ( );
       // need to add some default namespaces.
       AddDefaultNamespaces ();
-      MacroEngine = new MacroEngine ();
+			this.MacroEngine = new MacroEngine ( );
     }
     #endregion
 

@@ -44,57 +44,50 @@
  * or conditions. You may have additional consumer rights under your local laws which this license cannot change. To the extent 
  * permitted under your local laws, the contributors exclude the implied warranties of merchantability, fitness for a particular 
  * purpose and non-infringement.
- * 
- * 
  */
 using System;
 using System.Collections.Generic;
 using System.Text;
-using ThoughtWorks.CruiseControl.Core;
-using System.Text.RegularExpressions;
-using System.Xml;
-using System.Reflection;
-using ThoughtWorks.CruiseControl.Core.Util;
-using CCNet.Community.Plugins.Components.Macros;
+using CCNet.Community.Plugins.Components.Pownce;
+using System.Net;
+using Xunit;
 
-namespace CCNet.Community.Plugins {
-  public static class Util {
-    /// <summary>
-    /// Converts an objects tostring to lowercase
-    /// </summary>
-    /// <param name="o">The object.</param>
-    /// <returns></returns>
-    public static string ToLowerString ( Object o ) {
-      return o.ToString ( ).ToLower ( );
-    }   
+namespace CCNet.Community.Plugins.Tests {
+	public class PownceServiceTests {
+		// README!
+		// To run these tests, change the network credentials to a valid pownce username and password
+		// then remove the Skip = "No user name specified." from the tests.
 
-    public static string GetModidicationCommentsString ( IIntegrationResult result ) {
-      DateTime lastDate = DateTime.MinValue;
-      StringBuilder descText = new StringBuilder ( );
-      foreach ( Modification mod in result.Modifications ) {
-        if ( lastDate.CompareTo ( mod.ModifiedTime ) != 0 ) {
-          lastDate = mod.ModifiedTime;
-          if ( !string.IsNullOrEmpty ( mod.Comment ) ) {
-            descText.AppendLine ( mod.Comment );
-          }
-        }
-      }
-      return descText.ToString ( );
-    }
-
-		public static PublishBuildStatus GetBuildStatus(IIntegrationResult result) {
-			if (result.Status == ThoughtWorks.CruiseControl.Remote.IntegrationStatus.Success)
-				return PublishBuildStatus.Success;
-			else
-				return PublishBuildStatus.Failure;
+		public PownceServiceTests() {
+			this.Service = new PownceService ( "i43hw0i1231oq23o058h21lr0j505mf6",
+				new NetworkCredential ( "SET_ME_TO_A_POWNCE_USER_ACCOUNT", "AND_THE_PASSWORD" ) );
+		}
+		public PownceService Service { get; set; }
+		[Fact(Skip="No user name specified.")]
+		public void PostNote() {
+			Assert.DoesNotThrow ( new Assert.ThrowsDelegate ( delegate () {
+				Service.PostText ( "testing post" );
+			} ) );
+		}
+		[Fact ( Skip = "No user name specified." )]
+		public void PostLink() {
+			Assert.DoesNotThrow ( new Assert.ThrowsDelegate ( delegate () {
+				Service.PostLink ( new Uri ( "http://codeplex.com/ccnetplugins" ) );
+			} ) );
+		}
+		[Fact ( Skip = "No user name specified." )]
+		public void PostEvent() {
+			Assert.DoesNotThrow ( new Assert.ThrowsDelegate ( delegate () {
+				string s = Service.PostEvent ( "Test Event", "Cloud 9", DateTime.Now.AddDays ( 1 ) );
+			} ) );
 		}
 
-		public static PublishBuildCondition GetBuildCondition(IIntegrationResult result) {
-			if (result.BuildCondition == ThoughtWorks.CruiseControl.Remote.BuildCondition.ForceBuild)
-				return PublishBuildCondition.ForceBuild;
-			else
-				return PublishBuildCondition.IfModificationExists;
+		/// <summary>
+		/// Gets the send to list.
+		/// </summary>
+		[Fact ( Skip = "No user name specified." )]
+		public void GetSendToList() {
+			Assert.True ( Service.GetSendToList ( ).Count > 0 );
 		}
-  }
-
+	}
 }

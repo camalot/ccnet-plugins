@@ -44,57 +44,20 @@
  * or conditions. You may have additional consumer rights under your local laws which this license cannot change. To the extent 
  * permitted under your local laws, the contributors exclude the implied warranties of merchantability, fitness for a particular 
  * purpose and non-infringement.
- * 
- * 
  */
 using System;
 using System.Collections.Generic;
 using System.Text;
-using ThoughtWorks.CruiseControl.Core;
-using System.Text.RegularExpressions;
-using System.Xml;
-using System.Reflection;
-using ThoughtWorks.CruiseControl.Core.Util;
-using CCNet.Community.Plugins.Components.Macros;
+using Exortech.NetReflector;
 
-namespace CCNet.Community.Plugins {
-  public static class Util {
-    /// <summary>
-    /// Converts an objects tostring to lowercase
-    /// </summary>
-    /// <param name="o">The object.</param>
-    /// <returns></returns>
-    public static string ToLowerString ( Object o ) {
-      return o.ToString ( ).ToLower ( );
-    }   
-
-    public static string GetModidicationCommentsString ( IIntegrationResult result ) {
-      DateTime lastDate = DateTime.MinValue;
-      StringBuilder descText = new StringBuilder ( );
-      foreach ( Modification mod in result.Modifications ) {
-        if ( lastDate.CompareTo ( mod.ModifiedTime ) != 0 ) {
-          lastDate = mod.ModifiedTime;
-          if ( !string.IsNullOrEmpty ( mod.Comment ) ) {
-            descText.AppendLine ( mod.Comment );
-          }
-        }
-      }
-      return descText.ToString ( );
-    }
-
-		public static PublishBuildStatus GetBuildStatus(IIntegrationResult result) {
-			if (result.Status == ThoughtWorks.CruiseControl.Remote.IntegrationStatus.Success)
-				return PublishBuildStatus.Success;
-			else
-				return PublishBuildStatus.Failure;
-		}
-
-		public static PublishBuildCondition GetBuildCondition(IIntegrationResult result) {
-			if (result.BuildCondition == ThoughtWorks.CruiseControl.Remote.BuildCondition.ForceBuild)
-				return PublishBuildCondition.ForceBuild;
-			else
-				return PublishBuildCondition.IfModificationExists;
-		}
-  }
-
+namespace CCNet.Community.Plugins.Publishers {
+	[ReflectorType ( "event" )]
+	public class PownceEvent : PownceNoteBase {
+		[ReflectorProperty ( "name", Required = true )]
+		public string Name { get; set; }
+		[ReflectorProperty ( "date", Required = true )]
+		public DateTime Date { get; set; }
+		[ReflectorProperty ( "location", Required = true )]
+		public string Location { get; set; }
+	}
 }

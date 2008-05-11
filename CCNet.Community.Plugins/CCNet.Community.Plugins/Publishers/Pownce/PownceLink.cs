@@ -1,4 +1,4 @@
-/*
+﻿/*
  * http://www.codeplex.com/ccnetplugins/
  * 
  * Microsoft Public License (Ms-PL)
@@ -48,143 +48,46 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Exortech.NetReflector;
 
-namespace CCNet.Community.Plugins {
-  /// <summary>
-  /// The status of the release
-  /// </summary>
-  public enum ReleaseStatus {
-    /// <summary>
-    /// The release is a planned release.
-    /// </summary>
-    Planned,
-    /// <summary>
-    /// The release is an available release
-    /// </summary>
-    Released
-  }
-
-  /// <summary>
-  /// The file type
-  /// </summary>
-  public enum ReleaseFileType {
-    /// <summary>
-    /// Binary file
-    /// </summary>
-    RuntimeBinary,
-    /// <summary>
-    /// Source Code file
-    /// </summary>
-    SourceCode,
-    /// <summary>
-    /// Documentation file
-    /// </summary>
-    Documentation,
-    /// <summary>
-    /// Example file
-    /// </summary>
-    Example
-  }
-
-  /// <summary>
-  /// The type of release
-  /// </summary>
-  public enum ReleaseType {
-    /// <summary>
-    /// No specified release type
-    /// </summary>
-    None,
-    /// <summary>
-    /// An alpha release
-    /// </summary>
-    Alpha,
-    /// <summary>
-    /// A beta release
-    /// </summary>
-    Beta,
-    /// <summary>
-    /// A nightly release
-    /// </summary>
-    Nightly,
-    /// <summary>
-    /// A production release
-    /// </summary>
-    Production
-  }
-
-  /// <summary>
-  /// Supported Build Conditions
-  /// </summary>
-  public enum PublishBuildCondition : int {
-    /// <summary>
-    /// Build because of modifications
-    /// </summary>
-    IfModificationExists = 0,
-    /// <summary>
-    /// Forced Build
-    /// </summary>
-    ForceBuild,
-    /// <summary>
-    /// Any Build type.
-    /// </summary>
-    AllBuildConditions
-  }
-
-	public enum PublishBuildStatus : int {
+namespace CCNet.Community.Plugins.Publishers {
+	/// <summary>
+	/// A Pownce Link
+	/// </summary>
+	[ReflectorType ( "link" )]
+	public class PownceLink : PownceNoteBase {
 		/// <summary>
-		/// Build failed
+		/// Initializes a new instance of the <see cref="PownceLink"/> class.
 		/// </summary>
-		Failure = 0,
+		public PownceLink() {
+
+		}
+
 		/// <summary>
-		/// Success
+		/// Initializes a new instance of the <see cref="PownceLink"/> class.
 		/// </summary>
-		Success,
+		/// <param name="message">The message.</param>
+		/// <param name="url">The URL.</param>
+		public PownceLink(string message, Uri url)
+			: this ( ) {
+			this.Message = message;
+			this.Url = url.ToString();
+		}
+
 		/// <summary>
-		/// Any Build status.
+		/// Initializes a new instance of the <see cref="PownceLink"/> class.
 		/// </summary>
-		Any
+		/// <param name="url">The URL.</param>
+		public PownceLink(Uri url)
+			: this ( string.Empty, url ) {
+
+		}
+
+		/// <summary>
+		/// Gets or sets the URL.
+		/// </summary>
+		/// <value>The URL.</value>
+		[ReflectorProperty ( "url", Required = true )]
+		public string Url { get; set; }
 	}
-
-  /// <summary>
-  /// Return only the coverage data requested.
-  /// </summary>
-  public enum NCoverCoverageType {
-    /// <summary>
-    /// All coverage data
-    /// </summary>
-    All = -1,
-    /// <summary>
-    /// only shows methods
-    /// </summary>
-    None = 0,
-    /// <summary>
-    /// shows sequence point data as well as methods
-    /// </summary>
-    SequencePoint = 1,
-    /// <summary>
-    /// shows branch point data as well as methods. This is only available in the Enterprise edition.
-    /// </summary>
-    Branch = 2
-  }
-
-  [Flags]
-  public enum NCoverSymbolSearchPolicy {
-    Default = 0,
-    /// <summary>
-    /// Queries the registry for symbol search paths
-    /// </summary>
-    AllowRegistryAccess = 1,
-    /// <summary>
-    /// Accesses a symbol server
-    /// </summary>
-    AllowSymbolServerAccess = 2,
-    /// <summary>
-    /// Searches the path speicifed in the Debug directory
-    /// </summary>
-    AllowOriginalPathAccess = 4,
-    /// <summary>
-    /// Searches for the PDB in the place where the .exe file is
-    /// </summary>
-    AllowReferencePathAccess = 8
-  }
 }
