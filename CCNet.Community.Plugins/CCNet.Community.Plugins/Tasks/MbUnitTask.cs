@@ -160,7 +160,6 @@ namespace CCNet.Community.Plugins.Tasks {
     /// </summary>
     /// <param name="result">The result.</param>
     public void Run ( IIntegrationResult result ) {
-      ListenerFile.WriteInfo ( result.ListenerFile, "Executing NUnit" );
       string outputFile = result.BaseFromArtifactsDirectory ( this.OutputFile );
       ProcessResult result2 = this._processExecutor.Execute ( this.NewProcessInfo ( outputFile, result ), ProcessMonitor.GetProcessMonitorByProject ( result.ProjectName ) );
       result.AddTaskResult ( new ProcessTaskResult ( result2 ) );
@@ -169,8 +168,6 @@ namespace CCNet.Community.Plugins.Tasks {
       } else {
         Log.Warning ( string.Format ( "MbUnit test output file {0} was not created", outputFile ) );
       }
-      ListenerFile.RemoveListenerFile ( result.ListenerFile );
-
     }
     #endregion
   }

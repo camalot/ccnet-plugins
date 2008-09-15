@@ -44,66 +44,39 @@
  * or conditions. You may have additional consumer rights under your local laws which this license cannot change. To the extent 
  * permitted under your local laws, the contributors exclude the implied warranties of merchantability, fitness for a particular 
  * purpose and non-infringement.
+ * 
+ * 
+ *    - CCNetConfig:
+ *      - http://ccnetconfig.org
+ *      - http://codeplex.com/ccnetconfig
+ * 
  */
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Exortech.NetReflector;
-using CCNet.Community.Plugins.Publishers;
-using Xunit;
+using CCNetConfig.Core.Components;
 
-namespace CCNet.Community.Plugins.Tests {
-	// README!
-	// To run these tests, change the network credentials to a valid pownce username and password
-	// then remove the Skip = "No user name specified." from the tests.
+namespace CCNet.Community.Plugins.CCNetConfig.Common {
+	/// <summary>
+	/// 
+	/// </summary>
+	[ReflectorName("pattern")]
+	public class BypassPattern {
+		/// <summary>
+		/// Gets or sets the value.
+		/// </summary>
+		/// <value>The value.</value>
+		[ReflectorNodeType(ReflectorNodeTypes.Value)]
+		public string Value { get; set; }
 
-	public class PowncePublisherTests : IntegrationResultTestObject {
-		string username = "pownceUser";
-		string password = "powncePass";
-
-
-		[Fact (Skip="No user name specified.")]
-		public void Create() {
-			
-			string xml = @"<pownce>
-	<username>" + username + @"</username>
-	<password>" + password + @"</password>
-	<notes>
-		<note>
-			<message>Test Note</message>
-		</note>
-		<note>
-			<message>Another Test Note</message>
-		</note>
-	</notes>
-	<links>
-		<link>
-			<message>New Search Engine!</message>
-			<url>http://google.com</url>
-		</link>
-	</links>
-	<events>
-		<event>
-			<date>9/21/2008 16:00</date>
-			<location>Great Wide Open</location>
-			<name>New Event</name>
-		</event>
-	</events>
-</pownce>";
-
-			PowncePublisher publisher = NetReflector.Read ( xml ) as PowncePublisher;
-			Assert.True ( publisher.Notes.Count == 2 );
-			Assert.True ( publisher.Links.Count == 1 );
-			Assert.True ( publisher.Events.Count == 1 );
-			Assert.True ( publisher.Files.Count == 0);
-			Assert.True ( publisher.Notes[0].BuildCondition == PublishBuildCondition.AllBuildConditions );
-			Assert.True ( publisher.Notes[0].BuildStatus == PublishBuildStatus.Any );
-			Assert.True ( publisher.Links[0].BuildCondition == PublishBuildCondition.AllBuildConditions );
-			Assert.True ( publisher.Links[0].BuildStatus == PublishBuildStatus.Any );
-			Assert.True ( publisher.Events[0].BuildCondition == PublishBuildCondition.AllBuildConditions );
-			Assert.True ( publisher.Events[0].BuildStatus == PublishBuildStatus.Any );
-			Assert.Equal<string> ( username, publisher.UserName );
-			publisher.Run ( Result );
+		/// <summary>
+		/// Returns a <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
+		/// </summary>
+		/// <returns>
+		/// A <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
+		/// </returns>
+		public override string ToString () {
+			return this.Value;
 		}
 	}
 }

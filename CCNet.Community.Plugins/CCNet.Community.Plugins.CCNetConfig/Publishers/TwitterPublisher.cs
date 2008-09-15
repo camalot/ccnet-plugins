@@ -59,6 +59,8 @@ using System.ComponentModel;
 using CCNetConfig.Core.Serialization;
 using CCNetConfig.Core.Components;
 using System.Drawing.Design;
+using CCNet.Community.Plugins.CCNetConfig.Common;
+using System.Xml;
 
 namespace CCNet.Community.Plugins.CCNetConfig.Publishers {
   [ReflectorName ( "twit" ), Plugin, MinimumVersion ( "1.3" )]
@@ -71,23 +73,42 @@ namespace CCNet.Community.Plugins.CCNetConfig.Publishers {
 
     }
 
+		/// <summary>
+		/// Gets or sets the continue on failure.
+		/// </summary>
+		/// <value>The continue on failure.</value>
     [Description ( "If true, the build will not fail if this publisher fails" ),
     ReflectorName ( "continueOnFailure" ), DefaultValue ( null ), Category ( "Optional" ),
     Editor ( typeof ( DefaultableBooleanUIEditor ), typeof ( UITypeEditor ) ),
     TypeConverter ( typeof ( DefaultableBooleanTypeConverter ) )]
     public bool? ContinueOnFailure { get; set; }
 
+		/// <summary>
+		/// Gets or sets the name of the user.
+		/// </summary>
+		/// <value>The name of the user.</value>
     [Description ( "The twitter user account" ),
     ReflectorName ( "username" ), DefaultValue ( null ),
     DisplayName ( "(UserName)" ), Category ( "Required" ),
-    Editor ( typeof ( DefaultableBooleanUIEditor ), typeof ( UITypeEditor ) ),
-    TypeConverter ( typeof ( DefaultableBooleanTypeConverter ) )]
+    Editor ( typeof ( DefaultableBooleanUIEditor ), typeof ( UITypeEditor ) )]
     public string UserName { get; set; }
+		/// <summary>
+		/// Gets or sets the password.
+		/// </summary>
+		/// <value>The password.</value>
     [Description ( "The twitter user account" ), Required,
     DisplayName ( "(Password)" ), Category ( "Required" ),
     ReflectorName ( "password" ), DefaultValue ( null ),
     TypeConverter ( typeof ( PasswordTypeConverter ) )]
     public HiddenPassword Password { get; set; }
+		/// <summary>
+		/// Gets or sets the proxy.
+		/// </summary>
+		/// <value>The proxy.</value>
+		[TypeConverter ( typeof ( ObjectOrNoneTypeConverter ) ), DefaultValue ( null ),
+		Editor ( typeof ( ObjectOrNoneUIEditor ), typeof ( UITypeEditor ) ), ReflectorName ( "proxy" ),
+		Category ( "Optional" ), Description ( "Proxy information." )]
+		public Proxy Proxy { get; set; }
 
     /// <summary>
     /// Creates a copy of this object.
@@ -105,11 +126,21 @@ namespace CCNet.Community.Plugins.CCNetConfig.Publishers {
       if ( string.Compare ( element.Name, this.TypeName, false ) != 0 )
         throw new InvalidCastException ( string.Format ( "Unable to convert {0} to a {1}", element.Name, this.TypeName ) );
 
-      this.UserName = string.Empty;
-      this.Password = new HiddenPassword ( );
+			Utils.ResetObjectProperties<TwitterPublisher> ( this );
 
       this.UserName = Util.GetElementOrAttributeValue ( "username", element );
       this.Password.Password = Util.GetElementOrAttributeValue ( "password", element );
+
+			string s = Util.GetElementOrAttributeValue ( "continueOnFailure", element );
+			if ( !string.IsNullOrEmpty ( s ) ) {
+				this.ContinueOnFailure = string.Compare ( bool.TrueString, s, true ) == 0;
+			}
+
+			XmlElement proxyElement = element.SelectSingleNode ( "proxy" ) as XmlElement;
+			if ( proxyElement != null ) {
+				this.Proxy = new Proxy ();
+				this.Proxy.Deserialize ( proxyElement );
+			}
     }
 
     /// <summary>

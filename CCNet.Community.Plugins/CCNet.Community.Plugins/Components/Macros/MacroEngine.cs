@@ -110,7 +110,7 @@ namespace CCNet.Community.Plugins.Components.Macros {
       while ( m.Success ) {
         string propName = m.Result ( "$1" );
         if ( ContainsPropertyName<T> ( sender, result, propName ) )
-          ret = ret.Replace ( string.Format ( "$({0})", propName ), GetPropertyValue<T> ( sender, result, propName ) );
+          ret = ret.Replace ( m.Value, GetPropertyValue<T> ( sender, result, propName ) );
         m = m.NextMatch ( );
       }
 

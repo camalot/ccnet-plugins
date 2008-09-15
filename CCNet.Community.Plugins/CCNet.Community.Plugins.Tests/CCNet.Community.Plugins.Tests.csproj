@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{66AC52EC-7B71-4014-932A-D4D8139A2BBE}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -37,7 +37,7 @@
   <ItemGroup>
     <Reference Include="log4net, Version=1.2.9.0, Culture=neutral, PublicKeyToken=b32731d11ce58905">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\3rdParty\log4net.dll</HintPath>
+      <HintPath>..\3rdParty\log4net.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.TeamFoundation, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -53,18 +53,18 @@
     </Reference>
     <Reference Include="NetReflector, Version=1.0.0.120, Culture=neutral, PublicKeyToken=2f4dd8b32acbcd8e">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\3rdParty\NetReflector.dll</HintPath>
+      <HintPath>..\3rdParty\NetReflector.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="ThoughtWorks.CruiseControl.Core, Version=1.4.0.3154, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="ThoughtWorks.CruiseControl.Core, Version=1.4.0.3524, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\3rdParty\ThoughtWorks.CruiseControl.Core.dll</HintPath>
+      <HintPath>..\3rdParty\ThoughtWorks.CruiseControl.Core.dll</HintPath>
     </Reference>
-    <Reference Include="ThoughtWorks.CruiseControl.Remote, Version=1.4.0.3154, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="ThoughtWorks.CruiseControl.Remote, Version=1.4.0.3524, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\3rdParty\ThoughtWorks.CruiseControl.Remote.dll</HintPath>
+      <HintPath>..\3rdParty\ThoughtWorks.CruiseControl.Remote.dll</HintPath>
     </Reference>
     <Reference Include="xunit, Version=1.0.0.1252, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

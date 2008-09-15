@@ -57,8 +57,10 @@ namespace CCNet.Community.Plugins.Tests {
 		// README!
 		// To run these tests, change the network credentials to a valid pownce username and password
 		// then remove the Skip = "No user name specified." from the tests.
+		// also remove the 'return' statement in the constructor
 
 		public PownceServiceTests() {
+			return;
 			this.Service = new PownceService ( "i43hw0i1231oq23o058h21lr0j505mf6",
 				new NetworkCredential ( "SET_ME_TO_A_POWNCE_USER_ACCOUNT", "AND_THE_PASSWORD" ) );
 		}

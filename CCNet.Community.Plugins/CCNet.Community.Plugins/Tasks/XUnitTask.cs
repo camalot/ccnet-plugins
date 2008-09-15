@@ -159,7 +159,6 @@ namespace CCNet.Community.Plugins.Tasks {
     /// <param name="result">The result.</param>
     public void Run ( IIntegrationResult result ) {
       foreach ( string assembly in this.Assemblies ) {
-        ListenerFile.WriteInfo ( result.ListenerFile, string.Format ( "Executing XUnit for assembly: {0}", assembly ) );
         string outputFile = result.BaseFromArtifactsDirectory ( this.OutputFile );
         ProcessResult result2 = this._processExecutor.Execute ( this.NewProcessInfo ( outputFile,assembly, result ), ProcessMonitor.GetProcessMonitorByProject ( result.ProjectName ) );
         result.AddTaskResult ( new ProcessTaskResult ( result2 ) );
@@ -169,8 +168,6 @@ namespace CCNet.Community.Plugins.Tasks {
           Log.Warning ( string.Format ( "MbUnit test output file {0} was not created", outputFile ) );
         }
       }
-
-      ListenerFile.RemoveListenerFile ( result.ListenerFile );
     }
 
     #endregion

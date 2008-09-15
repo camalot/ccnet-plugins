@@ -4,38 +4,16 @@
         <name>CCNetConfig.Core</name>
     </assembly>
     <members>
-        <member name="T:CCNetConfig.Core.AlienbrainUri">
+        <member name="T:CCNetConfig.Core.Components.AlienbrainUri">
             <summary>
             A <see cref="T:System.Uri"/> object that supports only the "Alienbrain" scheme
             </summary>
         </member>
-        <member name="T:CCNetConfig.Core.ICCNetDocumentation">
+        <member name="M:CCNetConfig.Core.Components.AlienbrainUri.#ctor(System.String)">
             <summary>
-            Defines an object that has a link to documentation.
-            </summary>
-        </member>
-        <member name="P:CCNetConfig.Core.ICCNetDocumentation.DocumentationUri">
-            <summary>
-            Gets the documentation URI.
-            </summary>
-            <value>The documentation URI.</value>
-        </member>
-        <member name="T:CCNetConfig.Core.ICCNetObject">
-            <summary>
-            Defines an object that is a CCNetObject.
-            </summary>
-        </member>
-        <member name="M:CCNetConfig.Core.AlienbrainUri.#ctor(System.String)">
-            <summary>
-            Initializes a new instance of the <see cref="T:CCNetConfig.Core.AlienbrainUri"/> class.
+            Initializes a new instance of the <see cref="T:CCNetConfig.Core.Components.AlienbrainUri"/> class.
             </summary>
             <param name="url">The URL.</param>
-        </member>
-        <member name="P:CCNetConfig.Core.AlienbrainUri.DocumentationUri">
-            <summary>
-            Gets the documentation URI.
-            </summary>
-            <value>The documentation URI.</value>
         </member>
         <member name="T:CCNetConfig.Core.CloneableList`1">
             <summary>
@@ -656,85 +634,6 @@
             A <see cref="T:System.Drawing.Design.UITypeEditorEditStyle"></see> value that indicates the style of editor used by the <see cref="M:System.Drawing.Design.UITypeEditor.EditValue(System.IServiceProvider,System.Object)"></see> method. If the <see cref="T:System.Drawing.Design.UITypeEditor"></see> does not support this method, then <see cref="M:System.Drawing.Design.UITypeEditor.GetEditStyle"></see> will return <see cref="F:System.Drawing.Design.UITypeEditorEditStyle.None"></see>.
             </returns>
         </member>
-        <member name="T:CCNetConfig.Core.Components.DefaultableBooleanTypeConverter">
-            <summary>
-            Converts the nullable boolean to a string and back.
-            </summary>
-        </member>
-        <member name="M:CCNetConfig.Core.Components.DefaultableBooleanTypeConverter.CanConvertFrom(System.ComponentModel.ITypeDescriptorContext,System.Type)">
-            <summary>
-            Returns whether this converter can convert an object of the given type to the type of this converter, using the specified context.
-            </summary>
-            <param name="context">An <see cref="T:System.ComponentModel.ITypeDescriptorContext"></see> that provides a format context.</param>
-            <param name="sourceType">A <see cref="T:System.Type"></see> that represents the type you want to convert from.</param>
-            <returns>
-            true if this converter can perform the conversion; otherwise, false.
-            </returns>
-        </member>
-        <member name="M:CCNetConfig.Core.Components.DefaultableBooleanTypeConverter.CanConvertTo(System.ComponentModel.ITypeDescriptorContext,System.Type)">
-            <summary>
-            Returns whether this converter can convert the object to the specified type, using the specified context.
-            </summary>
-            <param name="context">An <see cref="T:System.ComponentModel.ITypeDescriptorContext"></see> that provides a format context.</param>
-            <param name="destinationType">A <see cref="T:System.Type"></see> that represents the type you want to convert to.</param>
-            <returns>
-            true if this converter can perform the conversion; otherwise, false.
-            </returns>
-        </member>
-        <member name="M:CCNetConfig.Core.Components.DefaultableBooleanTypeConverter.ConvertTo(System.ComponentModel.ITypeDescriptorContext,System.Globalization.CultureInfo,System.Object,System.Type)">
-            <summary>
-            Converts the given value object to the specified type, using the specified context and culture information.
-            </summary>
-            <param name="context">An <see cref="T:System.ComponentModel.ITypeDescriptorContext"></see> that provides a format context.</param>
-            <param name="culture">A <see cref="T:System.Globalization.CultureInfo"></see>. If null is passed, the current culture is assumed.</param>
-            <param name="value">The <see cref="T:System.Object"></see> to convert.</param>
-            <param name="destinationType">The <see cref="T:System.Type"></see> to convert the value parameter to.</param>
-            <returns>
-            An <see cref="T:System.Object"></see> that represents the converted value.
-            </returns>
-            <exception cref="T:System.NotSupportedException">The conversion cannot be performed. </exception>
-            <exception cref="T:System.ArgumentNullException">The destinationType parameter is null. </exception>
-        </member>
-        <member name="M:CCNetConfig.Core.Components.DefaultableBooleanTypeConverter.ConvertFrom(System.ComponentModel.ITypeDescriptorContext,System.Globalization.CultureInfo,System.Object)">
-            <summary>
-            Converts the given object to the type of this converter, using the specified context and culture information.
-            </summary>
-            <param name="context">An <see cref="T:System.ComponentModel.ITypeDescriptorContext"></see> that provides a format context.</param>
-            <param name="culture">The <see cref="T:System.Globalization.CultureInfo"></see> to use as the current culture.</param>
-            <param name="value">The <see cref="T:System.Object"></see> to convert.</param>
-            <returns>
-            An <see cref="T:System.Object"></see> that represents the converted value.
-            </returns>
-            <exception cref="T:System.NotSupportedException">The conversion cannot be performed. </exception>
-        </member>
-        <member name="M:CCNetConfig.Core.Components.DefaultableBooleanTypeConverter.GetStandardValuesSupported(System.ComponentModel.ITypeDescriptorContext)">
-            <summary>
-            Returns whether this object supports a standard set of values that can be picked from a list, using the specified context.
-            </summary>
-            <param name="context">An <see cref="T:System.ComponentModel.ITypeDescriptorContext"></see> that provides a format context.</param>
-            <returns>
-            true if <see cref="M:System.ComponentModel.TypeConverter.GetStandardValues"></see> should be called to find a common set of values the object supports; otherwise, false.
-            </returns>
-        </member>
-        <member name="M:CCNetConfig.Core.Components.DefaultableBooleanTypeConverter.GetStandardValues(System.ComponentModel.ITypeDescriptorContext)">
-            <summary>
-            Returns a collection of standard values for the data type this type converter is designed for when provided with a format context.
-            </summary>
-            <param name="context">An <see cref="T:System.ComponentModel.ITypeDescriptorContext"></see> that provides a format context that can be used to extract additional information about the environment from which this converter is invoked. This parameter or properties of this parameter can be null.</param>
-            <returns>
-            A <see cref="T:System.ComponentModel.TypeConverter.StandardValuesCollection"></see> that holds a standard set of valid values, or null if the data type does not support a standard set of values.
-            </returns>
-        </member>
-        <member name="M:CCNetConfig.Core.Components.DefaultableBooleanTypeConverter.IsValid(System.ComponentModel.ITypeDescriptorContext,System.Object)">
-            <summary>
-            Returns whether the given value object is valid for this type and for the specified context.
-            </summary>
-            <param name="context">An <see cref="T:System.ComponentModel.ITypeDescriptorContext"></see> that provides a format context.</param>
-            <param name="value">The <see cref="T:System.Object"></see> to test for validity.</param>
-            <returns>
-            true if the specified value is valid for this object; otherwise, false.
-            </returns>
-        </member>
         <member name="T:CCNetConfig.Core.Components.DefaultableEnumUIEditor">
             <summary>
             A drowdown that shows a default value plus all the possible values for the <see cref="T:System.Enum"/>.
@@ -771,35 +670,6 @@
             <returns>
             A <see cref="T:System.Drawing.Design.UITypeEditorEditStyle"></see> value that indicates the style of editor used by the <see cref="M:System.Drawing.Design.UITypeEditor.EditValue(System.IServiceProvider,System.Object)"></see> method. If the <see cref="T:System.Drawing.Design.UITypeEditor"></see> does not support this method, then <see cref="M:System.Drawing.Design.UITypeEditor.GetEditStyle"></see> will return <see cref="F:System.Drawing.Design.UITypeEditorEditStyle.None"></see>.
             </returns>
-        </member>
-        <member name="T:CCNetConfig.Core.Components.DefaultableEnumTypeConverter">
-            <summary>
-            Converts the nullable <see cref="T:System.Enum"/> to a <see cref="T:System.String"/> and back.
-            </summary>
-        </member>
-        <member name="M:CCNetConfig.Core.Components.DefaultableEnumTypeConverter.CanConvertTo(System.ComponentModel.ITypeDescriptorContext,System.Type)">
-            <summary>
-            Returns whether this converter can convert the object to the specified type, using the specified context.
-            </summary>
-            <param name="context">An <see cref="T:System.ComponentModel.ITypeDescriptorContext"></see> that provides a format context.</param>
-            <param name="destinationType">A <see cref="T:System.Type"></see> that represents the type you want to convert to.</param>
-            <returns>
-            true if this converter can perform the conversion; otherwise, false.
-            </returns>
-        </member>
-        <member name="M:CCNetConfig.Core.Components.DefaultableEnumTypeConverter.ConvertTo(System.ComponentModel.ITypeDescriptorContext,System.Globalization.CultureInfo,System.Object,System.Type)">
-            <summary>
-            Converts the given value object to the specified type, using the specified context and culture information.
-            </summary>
-            <param name="context">An <see cref="T:System.ComponentModel.ITypeDescriptorContext"></see> that provides a format context.</param>
-            <param name="culture">A <see cref="T:System.Globalization.CultureInfo"></see>. If null is passed, the current culture is assumed.</param>
-            <param name="value">The <see cref="T:System.Object"></see> to convert.</param>
-            <param name="destinationType">The <see cref="T:System.Type"></see> to convert the value parameter to.</param>
-            <returns>
-            An <see cref="T:System.Object"></see> that represents the converted value.
-            </returns>
-            <exception cref="T:System.NotSupportedException">The conversion cannot be performed. </exception>
-            <exception cref="T:System.ArgumentNullException">The destinationType parameter is null. </exception>
         </member>
         <member name="T:CCNetConfig.Core.Components.LabellerUIEditor">
             <summary>
@@ -2140,6 +2010,11 @@
             The Cruise Control object. All CCNet Config interaction starts with this object.
             </summary>
         </member>
+        <member name="T:CCNetConfig.Core.ICCNetObject">
+            <summary>
+            Defines an object that is a CCNetObject.
+            </summary>
+        </member>
         <member name="T:CCNetConfig.Core.Serialization.ISerialize">
             <summary>
             An interface that defines an object that can serialize and deserialize itself
@@ -2156,6 +2031,17 @@
             Deserializes the specified element.
             </summary>
             <param name="element">The element.</param>
+        </member>
+        <member name="T:CCNetConfig.Core.ICCNetDocumentation">
+            <summary>
+            Defines an object that has a link to documentation.
+            </summary>
+        </member>
+        <member name="P:CCNetConfig.Core.ICCNetDocumentation.DocumentationUri">
+            <summary>
+            Gets the documentation URI.
+            </summary>
+            <value>The documentation URI.</value>
         </member>
         <member name="M:CCNetConfig.Core.CruiseControl.#ctor">
             <summary>
@@ -3366,6 +3252,15 @@
             <param name="val">The val.</param>
             <returns></returns>
         </member>
+        <member name="M:CCNetConfig.Core.Util.CheckRequired(CCNetConfig.Core.ICCNetObject,System.String,System.Nullable{System.Int32})">
+            <summary>
+            Checks the required.
+            </summary>
+            <param name="owner">The owner.</param>
+            <param name="name">The name.</param>
+            <param name="val">The val.</param>
+            <returns></returns>
+        </member>
         <member name="M:CCNetConfig.Core.Util.CheckRequired(CCNetConfig.Core.ICCNetObject,System.String,System.String)">
             <summary>
             Checks the required.
@@ -3411,7 +3306,7 @@
             <param name="val">The val.</param>
             <returns></returns>
         </member>
-        <member name="M:CCNetConfig.Core.Util.CheckRequired(CCNetConfig.Core.ICCNetObject,System.String,CCNetConfig.Core.AlienbrainUri)">
+        <member name="M:CCNetConfig.Core.Util.CheckRequired(CCNetConfig.Core.ICCNetObject,System.String,CCNetConfig.Core.Components.AlienbrainUri)">
             <summary>
             Checks the required.
             </summary>
@@ -3652,6 +3547,20 @@
             </summary>
             <param name="val">if set to <c>true</c> 1, otherwise 0.</param>
             <returns>0 or 1</returns>
+        </member>
+        <member name="M:CCNetConfig.Core.Util.GetReflectorArrayAttributeValue(System.Type)">
+            <summary>
+            Gets the reflector array attribute value.
+            </summary>
+            <param name="type">The type.</param>
+            <returns></returns>
+        </member>
+        <member name="M:CCNetConfig.Core.Util.GetReflectorArrayAttributeValue(System.Reflection.MemberInfo)">
+            <summary>
+            Gets the reflector array attribute value.
+            </summary>
+            <param name="mi">The mi.</param>
+            <returns></returns>
         </member>
         <member name="M:CCNetConfig.Core.Util.GetReflectorNameAttributeValue(System.Type)">
             <summary>
@@ -4007,6 +3916,119 @@
             </summary>
             <value>The URL.</value>
         </member>
+        <member name="T:CCNetConfig.Core.Components.AlienbrainUriParser">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:CCNetConfig.Core.Components.DefaultableBooleanTypeConverter">
+            <summary>
+            Converts the nullable boolean to a string and back.
+            </summary>
+        </member>
+        <member name="M:CCNetConfig.Core.Components.DefaultableBooleanTypeConverter.CanConvertFrom(System.ComponentModel.ITypeDescriptorContext,System.Type)">
+            <summary>
+            Returns whether this converter can convert an object of the given type to the type of this converter, using the specified context.
+            </summary>
+            <param name="context">An <see cref="T:System.ComponentModel.ITypeDescriptorContext"></see> that provides a format context.</param>
+            <param name="sourceType">A <see cref="T:System.Type"></see> that represents the type you want to convert from.</param>
+            <returns>
+            true if this converter can perform the conversion; otherwise, false.
+            </returns>
+        </member>
+        <member name="M:CCNetConfig.Core.Components.DefaultableBooleanTypeConverter.CanConvertTo(System.ComponentModel.ITypeDescriptorContext,System.Type)">
+            <summary>
+            Returns whether this converter can convert the object to the specified type, using the specified context.
+            </summary>
+            <param name="context">An <see cref="T:System.ComponentModel.ITypeDescriptorContext"></see> that provides a format context.</param>
+            <param name="destinationType">A <see cref="T:System.Type"></see> that represents the type you want to convert to.</param>
+            <returns>
+            true if this converter can perform the conversion; otherwise, false.
+            </returns>
+        </member>
+        <member name="M:CCNetConfig.Core.Components.DefaultableBooleanTypeConverter.ConvertTo(System.ComponentModel.ITypeDescriptorContext,System.Globalization.CultureInfo,System.Object,System.Type)">
+            <summary>
+            Converts the given value object to the specified type, using the specified context and culture information.
+            </summary>
+            <param name="context">An <see cref="T:System.ComponentModel.ITypeDescriptorContext"></see> that provides a format context.</param>
+            <param name="culture">A <see cref="T:System.Globalization.CultureInfo"></see>. If null is passed, the current culture is assumed.</param>
+            <param name="value">The <see cref="T:System.Object"></see> to convert.</param>
+            <param name="destinationType">The <see cref="T:System.Type"></see> to convert the value parameter to.</param>
+            <returns>
+            An <see cref="T:System.Object"></see> that represents the converted value.
+            </returns>
+            <exception cref="T:System.NotSupportedException">The conversion cannot be performed. </exception>
+            <exception cref="T:System.ArgumentNullException">The destinationType parameter is null. </exception>
+        </member>
+        <member name="M:CCNetConfig.Core.Components.DefaultableBooleanTypeConverter.ConvertFrom(System.ComponentModel.ITypeDescriptorContext,System.Globalization.CultureInfo,System.Object)">
+            <summary>
+            Converts the given object to the type of this converter, using the specified context and culture information.
+            </summary>
+            <param name="context">An <see cref="T:System.ComponentModel.ITypeDescriptorContext"></see> that provides a format context.</param>
+            <param name="culture">The <see cref="T:System.Globalization.CultureInfo"></see> to use as the current culture.</param>
+            <param name="value">The <see cref="T:System.Object"></see> to convert.</param>
+            <returns>
+            An <see cref="T:System.Object"></see> that represents the converted value.
+            </returns>
+            <exception cref="T:System.NotSupportedException">The conversion cannot be performed. </exception>
+        </member>
+        <member name="M:CCNetConfig.Core.Components.DefaultableBooleanTypeConverter.GetStandardValuesSupported(System.ComponentModel.ITypeDescriptorContext)">
+            <summary>
+            Returns whether this object supports a standard set of values that can be picked from a list, using the specified context.
+            </summary>
+            <param name="context">An <see cref="T:System.ComponentModel.ITypeDescriptorContext"></see> that provides a format context.</param>
+            <returns>
+            true if <see cref="M:System.ComponentModel.TypeConverter.GetStandardValues"></see> should be called to find a common set of values the object supports; otherwise, false.
+            </returns>
+        </member>
+        <member name="M:CCNetConfig.Core.Components.DefaultableBooleanTypeConverter.GetStandardValues(System.ComponentModel.ITypeDescriptorContext)">
+            <summary>
+            Returns a collection of standard values for the data type this type converter is designed for when provided with a format context.
+            </summary>
+            <param name="context">An <see cref="T:System.ComponentModel.ITypeDescriptorContext"></see> that provides a format context that can be used to extract additional information about the environment from which this converter is invoked. This parameter or properties of this parameter can be null.</param>
+            <returns>
+            A <see cref="T:System.ComponentModel.TypeConverter.StandardValuesCollection"></see> that holds a standard set of valid values, or null if the data type does not support a standard set of values.
+            </returns>
+        </member>
+        <member name="M:CCNetConfig.Core.Components.DefaultableBooleanTypeConverter.IsValid(System.ComponentModel.ITypeDescriptorContext,System.Object)">
+            <summary>
+            Returns whether the given value object is valid for this type and for the specified context.
+            </summary>
+            <param name="context">An <see cref="T:System.ComponentModel.ITypeDescriptorContext"></see> that provides a format context.</param>
+            <param name="value">The <see cref="T:System.Object"></see> to test for validity.</param>
+            <returns>
+            true if the specified value is valid for this object; otherwise, false.
+            </returns>
+        </member>
+        <member name="T:CCNetConfig.Core.Components.DefaultableEnumTypeConverter">
+            <summary>
+            Converts the nullable <see cref="T:System.Enum"/> to a <see cref="T:System.String"/> and back.
+            </summary>
+        </member>
+        <member name="M:CCNetConfig.Core.Components.DefaultableEnumTypeConverter.CanConvertTo(System.ComponentModel.ITypeDescriptorContext,System.Type)">
+            <summary>
+            Returns whether this converter can convert the object to the specified type, using the specified context.
+            </summary>
+            <param name="context">An <see cref="T:System.ComponentModel.ITypeDescriptorContext"></see> that provides a format context.</param>
+            <param name="destinationType">A <see cref="T:System.Type"></see> that represents the type you want to convert to.</param>
+            <returns>
+            true if this converter can perform the conversion; otherwise, false.
+            </returns>
+        </member>
+        <member name="M:CCNetConfig.Core.Components.DefaultableEnumTypeConverter.ConvertTo(System.ComponentModel.ITypeDescriptorContext,System.Globalization.CultureInfo,System.Object,System.Type)">
+            <summary>
+            Converts the given value object to the specified type, using the specified context and culture information.
+            </summary>
+            <param name="context">An <see cref="T:System.ComponentModel.ITypeDescriptorContext"></see> that provides a format context.</param>
+            <param name="culture">A <see cref="T:System.Globalization.CultureInfo"></see>. If null is passed, the current culture is assumed.</param>
+            <param name="value">The <see cref="T:System.Object"></see> to convert.</param>
+            <param name="destinationType">The <see cref="T:System.Type"></see> to convert the value parameter to.</param>
+            <returns>
+            An <see cref="T:System.Object"></see> that represents the converted value.
+            </returns>
+            <exception cref="T:System.NotSupportedException">The conversion cannot be performed. </exception>
+            <exception cref="T:System.ArgumentNullException">The destinationType parameter is null. </exception>
+        </member>
         <member name="T:CCNetConfig.Core.Components.FormatProviderAttribute">
             <summary>
             Provides a method of applying a format string to a value that implements IFormattable.
@@ -4023,6 +4045,193 @@
             Gets or sets the format.
             </summary>
             <value>The format.</value>
+        </member>
+        <member name="T:CCNetConfig.Core.Components.NullValueEditorObject">
+            <summary>
+            An object used to represent a null object in a property grid that allows a user to select from a list of objects
+            </summary>
+        </member>
+        <member name="M:CCNetConfig.Core.Components.NullValueEditorObject.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:CCNetConfig.Core.Components.NullValueEditorObject"/> class.
+            </summary>
+            <param name="name">The name.</param>
+        </member>
+        <member name="M:CCNetConfig.Core.Components.NullValueEditorObject.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:CCNetConfig.Core.Components.NullValueEditorObject"/> class.
+            </summary>
+        </member>
+        <member name="M:CCNetConfig.Core.Components.NullValueEditorObject.ToString">
+            <summary>
+            Returns a <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
+            </summary>
+            <returns>
+            A <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
+            </returns>
+        </member>
+        <member name="P:CCNetConfig.Core.Components.NullValueEditorObject.Name">
+            <summary>
+            Gets or sets the name.
+            </summary>
+            <value>The name.</value>
+        </member>
+        <member name="T:CCNetConfig.Core.Components.ObjectOrNoneTypeConverter">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:CCNetConfig.Core.Components.ObjectOrNoneTypeConverter.ConvertTo(System.ComponentModel.ITypeDescriptorContext,System.Globalization.CultureInfo,System.Object,System.Type)">
+            <summary>
+            Converts the given value object to the specified type, using the specified context and culture information.
+            </summary>
+            <param name="context">An <see cref="T:System.ComponentModel.ITypeDescriptorContext"/> that provides a format context.</param>
+            <param name="culture">A <see cref="T:System.Globalization.CultureInfo"/>. If null is passed, the current culture is assumed.</param>
+            <param name="value">The <see cref="T:System.Object"/> to convert.</param>
+            <param name="destinationType">The <see cref="T:System.Type"/> to convert the <paramref name="value"/> parameter to.</param>
+            <returns>
+            An <see cref="T:System.Object"/> that represents the converted value.
+            </returns>
+            <exception cref="T:System.ArgumentNullException">The <paramref name="destinationType"/> parameter is null. </exception>
+            <exception cref="T:System.NotSupportedException">The conversion cannot be performed. </exception>
+        </member>
+        <member name="T:CCNetConfig.Core.Components.ObjectOrNoneUIEditor">
+            <summary>
+            Allows an property to either be an object or null.
+            </summary>
+        </member>
+        <member name="F:CCNetConfig.Core.Components.ObjectOrNoneUIEditor.NULL_VALUE">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:CCNetConfig.Core.Components.ObjectOrNoneUIEditor.frmsvr">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:CCNetConfig.Core.Components.ObjectOrNoneUIEditor.EditValue(System.ComponentModel.ITypeDescriptorContext,System.IServiceProvider,System.Object)">
+            <summary>
+            Edits the specified object's value using the editor style indicated by the <see cref="M:System.Drawing.Design.UITypeEditor.GetEditStyle"/> method.
+            </summary>
+            <param name="context">An <see cref="T:System.ComponentModel.ITypeDescriptorContext"/> that can be used to gain additional context information.</param>
+            <param name="provider">An <see cref="T:System.IServiceProvider"/> that this editor can use to obtain services.</param>
+            <param name="value">The object to edit.</param>
+            <returns>
+            The new value of the object. If the value of the object has not changed, this should return the same object it was passed.
+            </returns>
+        </member>
+        <member name="M:CCNetConfig.Core.Components.ObjectOrNoneUIEditor.OnListBoxChanged(System.Object,System.EventArgs)">
+            <summary>
+            Called when [list box changed].
+            </summary>
+            <param name="sender">The sender.</param>
+            <param name="e">The <see cref="T:System.EventArgs"/> instance containing the event data.</param>
+        </member>
+        <member name="M:CCNetConfig.Core.Components.ObjectOrNoneUIEditor.GetEditStyle(System.ComponentModel.ITypeDescriptorContext)">
+            <summary>
+            Gets the editor style used by the <see cref="M:System.Drawing.Design.UITypeEditor.EditValue(System.IServiceProvider,System.Object)"/> method.
+            </summary>
+            <param name="context">An <see cref="T:System.ComponentModel.ITypeDescriptorContext"/> that can be used to gain additional context information.</param>
+            <returns>
+            A <see cref="T:System.Drawing.Design.UITypeEditorEditStyle"/> value that indicates the style of editor used by the <see cref="M:System.Drawing.Design.UITypeEditor.EditValue(System.IServiceProvider,System.Object)"/> method. If the <see cref="T:System.Drawing.Design.UITypeEditor"/> does not support this method, then <see cref="M:System.Drawing.Design.UITypeEditor.GetEditStyle"/> will return <see cref="F:System.Drawing.Design.UITypeEditorEditStyle.None"/>.
+            </returns>
+        </member>
+        <member name="T:CCNetConfig.Core.Components.SvnUri">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:CCNetConfig.Core.Components.SvnUri.UriSchemeSvn">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:CCNetConfig.Core.Components.SvnUri.UriSchemeSvnSsh">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:CCNetConfig.Core.Components.SvnUri.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:CCNetConfig.Core.Components.SvnUri"/> class.
+            </summary>
+            <param name="url">The URL.</param>
+        </member>
+        <member name="T:CCNetConfig.Core.Components.SvnUriParser">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:CCNetConfig.Core.Components.SvnUriParser.IsWellFormedOriginalString(System.Uri)">
+            <summary>
+            Indicates whether a URI is well-formed.
+            </summary>
+            <param name="uri">The URI to check.</param>
+            <returns>
+            true if <paramref name="uri"/> is well-formed; otherwise, false.
+            </returns>
+        </member>
+        <member name="T:CCNetConfig.Core.Components.SvnUriTypeConverter">
+            <summary>
+             A TypeConverter that allows only subversion uri values.
+            </summary>
+        </member>
+        <member name="M:CCNetConfig.Core.Components.SvnUriTypeConverter.CanConvertFrom(System.ComponentModel.ITypeDescriptorContext,System.Type)">
+            <summary>
+            Returns whether this converter can convert an object of the given type to the type of this converter, using the specified context.
+            </summary>
+            <param name="context">An <see cref="T:System.ComponentModel.ITypeDescriptorContext"/> that provides a format context.</param>
+            <param name="sourceType">A <see cref="T:System.Type"/> that represents the type you want to convert from.</param>
+            <returns>
+            true if this converter can perform the conversion; otherwise, false.
+            </returns>
+        </member>
+        <member name="M:CCNetConfig.Core.Components.SvnUriTypeConverter.CanConvertTo(System.ComponentModel.ITypeDescriptorContext,System.Type)">
+            <summary>
+            Returns whether this converter can convert the object to the specified type, using the specified context.
+            </summary>
+            <param name="context">An <see cref="T:System.ComponentModel.ITypeDescriptorContext"/> that provides a format context.</param>
+            <param name="destinationType">A <see cref="T:System.Type"/> that represents the type you want to convert to.</param>
+            <returns>
+            true if this converter can perform the conversion; otherwise, false.
+            </returns>
+        </member>
+        <member name="M:CCNetConfig.Core.Components.SvnUriTypeConverter.ConvertFrom(System.ComponentModel.ITypeDescriptorContext,System.Globalization.CultureInfo,System.Object)">
+            <summary>
+            Converts the given object to the type of this converter, using the specified context and culture information.
+            </summary>
+            <param name="context">An <see cref="T:System.ComponentModel.ITypeDescriptorContext"/> that provides a format context.</param>
+            <param name="culture">The <see cref="T:System.Globalization.CultureInfo"/> to use as the current culture.</param>
+            <param name="value">The <see cref="T:System.Object"/> to convert.</param>
+            <returns>
+            An <see cref="T:System.Object"/> that represents the converted value.
+            </returns>
+            <exception cref="T:System.NotSupportedException">The conversion cannot be performed. </exception>
+        </member>
+        <member name="M:CCNetConfig.Core.Components.SvnUriTypeConverter.ConvertTo(System.ComponentModel.ITypeDescriptorContext,System.Globalization.CultureInfo,System.Object,System.Type)">
+            <summary>
+            Converts the given value object to the specified type, using the specified context and culture information.
+            </summary>
+            <param name="context">An <see cref="T:System.ComponentModel.ITypeDescriptorContext"/> that provides a format context.</param>
+            <param name="culture">A <see cref="T:System.Globalization.CultureInfo"/>. If null is passed, the current culture is assumed.</param>
+            <param name="value">The <see cref="T:System.Object"/> to convert.</param>
+            <param name="destinationType">The <see cref="T:System.Type"/> to convert the <paramref name="value"/> parameter to.</param>
+            <returns>
+            An <see cref="T:System.Object"/> that represents the converted value.
+            </returns>
+            <exception cref="T:System.ArgumentNullException">The <paramref name="destinationType"/> parameter is null. </exception>
+            <exception cref="T:System.NotSupportedException">The conversion cannot be performed. </exception>
+        </member>
+        <member name="M:CCNetConfig.Core.Components.SvnUriTypeConverter.IsValid(System.ComponentModel.ITypeDescriptorContext,System.Object)">
+            <summary>
+            Returns whether the given value object is valid for this type and for the specified context.
+            </summary>
+            <param name="context">An <see cref="T:System.ComponentModel.ITypeDescriptorContext"/> that provides a format context.</param>
+            <param name="value">The <see cref="T:System.Object"/> to test for validity.</param>
+            <returns>
+            true if the specified value is valid for this object; otherwise, false.
+            </returns>
         </member>
     </members>
 </doc>

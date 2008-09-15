@@ -62,13 +62,13 @@ namespace CCNet.Community.Plugins.Tests {
   <rssExtensions>
     <namespace prefix=""foo"" namespaceURI=""urn:foo-bar"" />
   </rssExtensions>
-  <feedImage url=""http://mydomain.com/images/logo.png"" title=""$(ProjectName)"" link=""$(ProjectUrl)"" />
+  <feedImage url=""http://mydomain.com/images/logo.png"" title=""${ProjectName}"" link=""${ProjectUrl}"" />
   <maxHistory>25</maxHistory>
-  <channelUrl>$(ProjectUrl)</channelUrl>
-  <itemUrl>http://mydomain.com/builds/$(Label)/$(ProjectName).$(Label).zip</itemUrl>
-  <feedTitle>Nightly Builds for $(ProjectName)</feedTitle>
-  <feedDescription>Build Report for $(ProjectName)</feedDescription>
-  <itemTitle>$(ProjectName) $(Label)</itemTitle>
+  <channelUrl>${ProjectUrl}</channelUrl>
+  <itemUrl>http://mydomain.com/builds/${Label}/${ProjectName}.${Label}.zip</itemUrl>
+  <feedTitle>Nightly Builds for ${ProjectName}</feedTitle>
+  <feedDescription>Build Report for ${ProjectName}</feedDescription>
+  <itemTitle>${ProjectName} ${Label}</itemTitle>
   <feedElements>
     <rssElement name=""webmaster"" value=""my.email@address.com"" />
   </feedElements>

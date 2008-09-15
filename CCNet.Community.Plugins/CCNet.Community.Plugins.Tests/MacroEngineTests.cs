@@ -31,9 +31,9 @@ namespace CCNet.Community.Plugins.Tests {
     [Fact]
     public void GetResultPropertyValue ( ) {
       MacroRunner runner = new MacroRunner ( );
-      string ad = runner.MacroEngine.GetPropertyString<IMacroRunner> ( runner, Result, "$(ArtifactDirectory)" );
+      string ad = runner.MacroEngine.GetPropertyString<IMacroRunner> ( runner, Result, "${ArtifactDirectory}" );
       Assert.Equal<string> ( @"d:\redist\ccnetplugins\", ad );
-      ad = runner.MacroEngine.GetPropertyString<IMacroRunner> ( runner, Result, "$(CCNetLabel)" );
+      ad = runner.MacroEngine.GetPropertyString<IMacroRunner> ( runner, Result, "${CCNetLabel}" );
       Assert.Equal<string> ( @"UNKNOWN", ad );
 
     }
@@ -41,15 +41,15 @@ namespace CCNet.Community.Plugins.Tests {
     [Fact]
     public void GetObjectPropertyValue ( ) {
       MacroRunner runner = new MacroRunner ( );
-      string ad = runner.MacroEngine.GetPropertyString<IMacroRunner> ( runner, Result, "$(MyProperty)" );
+      string ad = runner.MacroEngine.GetPropertyString<IMacroRunner> ( runner, Result, "${MyProperty}" );
       Assert.Equal<string> ( @"This is My Property", ad );
     }
 
     [Fact]
     public void NoPropertyFound ( ) {
       MacroRunner runner = new MacroRunner ( );
-      string ad = runner.MacroEngine.GetPropertyString<IMacroRunner> ( runner, Result, "$(NoProperty)" );
-      Assert.Equal<string> ( @"$(NoProperty)", ad );
+      string ad = runner.MacroEngine.GetPropertyString<IMacroRunner> ( runner, Result, "${NoProperty}" );
+      Assert.Equal<string> ( @"${NoProperty}", ad );
     }
 
     [Fact]
@@ -95,7 +95,7 @@ namespace CCNet.Community.Plugins.Tests {
       ad = new DateTimeToString ( ).Execute ( Result, "04/01/1977 02:12:00,MM/dd/yyyy,foo" );
       Assert.Equal<string> ( "MacroFormatException: This macro does not support the supplied parmeters.", ad );
       //2,724
-      ad = new GetFileSize ( ).Execute ( Result, @"H:\Projects\CCNetPlugins\trunk\CCNet.Community.Plugins\License.txt" );
+      ad = new GetFileSize ( ).Execute ( Result, @"d:\Projects\CCNetPlugins\trunk\CCNet.Community.Plugins\License.txt" );
       Assert.Equal<string> ( "2724", ad );
       Assert.Throws<ArgumentNullException> ( new Assert.ThrowsDelegate ( delegate ( ) {
         new GetFileSize ( ).Execute ( Result, string.Empty );
@@ -105,8 +105,8 @@ namespace CCNet.Community.Plugins.Tests {
       Assert.Equal<string> ( @"MacroException: File 'c:\my.file' was not found.", ad );
 
       Assert.DoesNotThrow ( new Assert.ThrowsDelegate ( delegate ( ) {
-        new XslTransform ( ).Execute ( Result, runner, "CodePlexRelease,H:\\Projects\\CCNetPlugins\\trunk\\CCNet.Community.Plugins\\CCNet.Community.Plugins.Tests\\Resources\\xsltest.xslt" );
-        runner.MacroEngine.GetPropertyString<IMacroRunner> ( runner, Result, "@{XslTransform(CodePlexRelease,H:\\Projects\\CCNetPlugins\\trunk\\CCNet.Community.Plugins\\CCNet.Community.Plugins.Tests\\Resources\\xsltest.xslt)}" );
+        new XslTransform ( ).Execute ( Result, runner, "CodePlexRelease,d:\\Projects\\CCNetPlugins\\trunk\\CCNet.Community.Plugins\\CCNet.Community.Plugins.Tests\\Resources\\xsltest.xslt" );
+        runner.MacroEngine.GetPropertyString<IMacroRunner> ( runner, Result, "@{XslTransform(CodePlexRelease,D:\\Projects\\CCNetPlugins\\trunk\\CCNet.Community.Plugins\\CCNet.Community.Plugins.Tests\\Resources\\xsltest.xslt)}" );
       } ) );
 
       
