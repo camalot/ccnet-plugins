@@ -22,20 +22,19 @@ namespace CCNet.Community.Plugins.CCNetConfig {
 				DefaultValueAttribute dva = Util.GetCustomAttribute<DefaultValueAttribute> ( pi );
 				// check if the object allows nulls
 				TypeConverterAttribute tca = Util.GetCustomAttribute<TypeConverterAttribute> ( pi );
-				bool allowsNull = string.Compare ( tca.ConverterTypeName, typeof ( ObjectOrNoneTypeConverter ).FullName ) == 0;
+				bool allowsNull = tca != null && string.Compare ( tca.ConverterTypeName, typeof ( ObjectOrNoneTypeConverter ).FullName ) == 0;
 
-			  if ( dva != null ) {
-					if ( pi.PropertyType.IsClass && (!pi.PropertyType.IsPrimitive || Util.IsNullable(pi.PropertyType)) && !allowsNull ) {
-						Assembly a = pi.PropertyType.Assembly;
-						object tobj = a.CreateInstance ( pi.PropertyType.FullName );
+		
+				if ( dva != null ) {
+					if ( pi.PropertyType.IsClass && ( !pi.PropertyType.IsValueType || !pi.PropertyType.IsPrimitive || Util.IsNullable ( pi.PropertyType ) ) && !allowsNull ) {
+						object tobj = pi.PropertyType.TypeInitializer.Invoke ( null );
 						pi.SetValue ( obj, tobj, null );
 					} else {
 						pi.SetValue ( obj, dva.Value, null );
 					}
 				} else {
-					if ( pi.PropertyType.IsClass && ( !pi.PropertyType.IsPrimitive || Util.IsNullable ( pi.PropertyType ) ) && !allowsNull ) {
-						Assembly a = pi.PropertyType.Assembly;
-						object tobj = a.CreateInstance ( pi.PropertyType.FullName );
+					if ( pi.PropertyType.IsClass && ( !pi.PropertyType.IsValueType || !pi.PropertyType.IsPrimitive || Util.IsNullable ( pi.PropertyType ) ) && !allowsNull ) {
+						object tobj = pi.PropertyType.TypeInitializer.Invoke ( null );
 						pi.SetValue ( obj, tobj, null );
 					} else {
 						pi.SetValue ( obj, null, null );

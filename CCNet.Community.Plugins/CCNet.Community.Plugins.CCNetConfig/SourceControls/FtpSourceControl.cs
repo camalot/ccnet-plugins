@@ -66,7 +66,7 @@ namespace CCNet.Community.Plugins.CCNetConfig.SourceControls {
 	/// <summary>
 	/// This is an Ftp Source control. Allowing the source to be retrieved from an ftp server.
 	/// </summary>
-	[Plugin, MinimumVersion ( "1.2" ), ReflectorName ( "ftp" )]
+	[Plugin, MinimumVersion ( "1.2" )]
 	public class FtpSourceControl : SourceControl, ICCNetDocumentation {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="FtpSourceControl"/> class.

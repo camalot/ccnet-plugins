@@ -119,7 +119,8 @@ namespace CCNet.Community.Plugins.CCNetConfig.Common {
 		/// <value>The bypass list.</value>
 		[ReflectorName ( "bypassList" ), ReflectorArray ( "pattern" ), DefaultValue ( null ),
 		Description ( "The proxy port." ), Category ( "Optional" ),
-		Editor ( typeof ( NumericUpDownUIEditor ), typeof ( UITypeEditor ) )]
+		TypeConverter(typeof(IListTypeConverter)),
+		Editor ( typeof ( CollectionEditor ), typeof ( UITypeEditor ) )]
 		public CloneableList<string> BypassList { get; set; }
 
 		#region ISerialize Members
