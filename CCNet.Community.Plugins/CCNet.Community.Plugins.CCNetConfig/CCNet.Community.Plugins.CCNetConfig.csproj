@@ -35,9 +35,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CCNetConfig.Core, Version=0.6.30901.225, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="CCNetConfig.Core, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\3rdParty\CCNetConfig.Core.dll</HintPath>
+      <HintPath>..\..\..\..\CCNetConfig\trunk\CCNetConfig\bin\Debug\CCNetConfig.Core.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AdditionalAssemblyInfo.cs" />
     <Compile Include="Common\BypassPattern.cs" />
     <Compile Include="Common\Proxy.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

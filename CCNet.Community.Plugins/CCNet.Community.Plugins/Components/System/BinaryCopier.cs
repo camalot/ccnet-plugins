@@ -45,63 +45,29 @@
  * permitted under your local laws, the contributors exclude the implied warranties of merchantability, fitness for a particular 
  * purpose and non-infringement.
  */
+
 using System;
 using System.Collections.Generic;
 using System.Text;
-using CCNet.Community.Plugins.Components.Pownce;
-using System.Net;
-using Xunit;
 using System.IO;
-
-namespace CCNet.Community.Plugins.Tests {
-	public class PownceServiceTests {
-		// README!
-		// To run these tests, change the network credentials to a valid pownce username and password
-		// then remove the Skip = "No user name specified." from the tests.
-		// also remove the 'return' statement in the constructor
-
-		public PownceServiceTests () {
-			return;
-			this.Service = new PownceService ( "i43hw0i1231oq23o058h21lr0j505mf6",
-				new NetworkCredential ( "username", "password" ) );
-			
-		}
-		public PownceService Service { get; set; }
-		[Fact(Skip="No user name specified.")]
-		public void PostNote () {
-			Assert.DoesNotThrow ( new Assert.ThrowsDelegate ( delegate () {
-				Service.PostText ( "testing post" );
-			} ) );
-		}
-
-		[Fact(Skip="No user name specified.")]
-		public void PostFile () {
-			Assert.DoesNotThrow ( new Assert.ThrowsDelegate ( delegate () {
-				// change this to a path of the files in the resource directory or this test will fail.
-				string path = @"D:\Projects\CCNetPlugins\trunk\CCNet.Community.Plugins\CCNet.Community.Plugins.Tests\bin\Debug\Resources\";
-				Service.PostFile ( "testing zip", Path.Combine ( path, "Test.zip" ), "all" );
-				Service.PostFile ( "testing image", Path.Combine ( path, "TestImage.png" ), "all" );
-			} ) );
-		}
-		[Fact ( Skip = "No user name specified." )]
-		public void PostLink () {
-			Assert.DoesNotThrow ( new Assert.ThrowsDelegate ( delegate () {
-				Service.PostLink ( new Uri ( "http://codeplex.com/ccnetplugins" ) );
-			} ) );
-		}
-		[Fact ( Skip = "No user name specified." )]
-		public void PostEvent() {
-			Assert.DoesNotThrow ( new Assert.ThrowsDelegate ( delegate () {
-				string s = Service.PostEvent ( "Come one, Come All", "Test Event", "Cloud 9", DateTime.Now.AddDays ( 1 ), "public" );
-			} ) );
-		}
-
+namespace System.IO {
+	/// <summary>
+	/// Used to copy binary files from one stream to another.
+	/// </summary>
+	class BinaryCopier {
 		/// <summary>
-		/// Gets the send to list.
-		/// </summary>
-		[Fact ( Skip = "No user name specified." )]
-		public void GetSendToList () {
-			Assert.True ( Service.GetSendToList ().Count > 0 );
+		/// Copies data from a source stream to a target stream.</summary>
+		/// <param name="source">
+		/// The source stream to copy from.</param>
+		/// <param name="target">
+		/// The destination stream to copy to.</param>
+		public static void Copy ( Stream source, Stream dest ) {
+			const int bufSize = 5*1024;
+			byte[] buff = new byte[ bufSize ];
+			int bytesRead = 0;
+			while ( ( bytesRead = source.Read ( buff, 0, bufSize ) ) > 0 ) {
+				dest.Write ( buff, 0, bytesRead );
+			}
 		}
 	}
 }

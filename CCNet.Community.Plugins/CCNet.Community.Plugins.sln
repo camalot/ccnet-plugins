@@ -45,6 +45,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Example", "Example", "{EB05
 		ccnet.example.config = ccnet.example.config
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "XUnit", "XUnit", "{C0AFC641-5C70-4AC7-AFEE-099D0D09D4D6}"
+	ProjectSection(SolutionItems) = preProject
+		3rdParty\xunit.dll = 3rdParty\xunit.dll
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
 		SccNumberOfProjects = 4
@@ -86,5 +91,6 @@ Global
 		{B363BEF1-3C57-429A-989A-240CD1461D3E} = {E9CBCCE5-3DFF-4C25-B749-F467F156B8BB}
 		{8F0448B9-3626-40AC-ACC4-C3C65E06D993} = {E9CBCCE5-3DFF-4C25-B749-F467F156B8BB}
 		{F7E427E7-17E0-48C7-8AE2-F7D409DA96BC} = {E9CBCCE5-3DFF-4C25-B749-F467F156B8BB}
+		{C0AFC641-5C70-4AC7-AFEE-099D0D09D4D6} = {E9CBCCE5-3DFF-4C25-B749-F467F156B8BB}
 	EndGlobalSection
 EndGlobal

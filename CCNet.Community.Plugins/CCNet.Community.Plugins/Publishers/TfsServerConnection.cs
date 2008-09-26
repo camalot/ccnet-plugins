@@ -53,91 +53,97 @@ using System.Text;
 using Microsoft.TeamFoundation.Client;
 using System.Net;
 using Microsoft.TeamFoundation.WorkItemTracking.Client;
+using CCNet.Community.Plugins.Components.Macros;
 
 namespace CCNet.Community.Plugins.Publishers {
-  /// <summary>
-  /// 
-  /// </summary>
-  public class TfsServerConnection {
+	/// <summary>
+	/// 
+	/// </summary>
+	public class TfsServerConnection {
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="TfsServerConnection"/> class.
-    /// </summary>
-    /// <param name="tfsworkitem">The tfsworkitem.</param>
-    /// <param name="result">The result.</param>
-    public TfsServerConnection ( TfsWorkItemPublisher tfsworkitem, ThoughtWorks.CruiseControl.Core.IIntegrationResult result ) {
-      this.TfsWorkItem = tfsworkitem;
-      this.Result = result;
-    }
+		/// <summary>
+		/// Initializes a new instance of the <see cref="TfsServerConnection"/> class.
+		/// </summary>
+		/// <param name="tfsworkitem">The tfsworkitem.</param>
+		/// <param name="result">The result.</param>
+		public TfsServerConnection ( TfsWorkItemPublisher tfsworkitem, ThoughtWorks.CruiseControl.Core.IIntegrationResult result ) {
+			this.TfsWorkItem = tfsworkitem;
+			this.Result = result;
+		}
 
-    /// <summary>
-    /// Gets or sets the TFS work item.
-    /// </summary>
-    /// <value>The TFS work item.</value>
-    public TfsWorkItemPublisher TfsWorkItem { get; set; }
-    /// <summary>
-    /// Gets or sets the result.
-    /// </summary>
-    /// <value>The result.</value>
-    public ThoughtWorks.CruiseControl.Core.IIntegrationResult Result { get; set; }
+		/// <summary>
+		/// Gets or sets the TFS work item.
+		/// </summary>
+		/// <value>The TFS work item.</value>
+		public TfsWorkItemPublisher TfsWorkItem { get; set; }
+		/// <summary>
+		/// Gets or sets the result.
+		/// </summary>
+		/// <value>The result.</value>
+		public ThoughtWorks.CruiseControl.Core.IIntegrationResult Result { get; set; }
 
-    /// <summary>
-    /// Publishes this instance.
-    /// </summary>
-    public void Publish ( ) {
-      TeamFoundationServer tfs = this.CreateServer ( );
-      WorkItemStore store = tfs.GetService ( typeof ( WorkItemStore ) ) as WorkItemStore;
+		/// <summary>
+		/// Publishes this instance.
+		/// </summary>
+		public void Publish () {
+			TeamFoundationServer tfs = this.CreateServer ();
+			WorkItemStore store = tfs.GetService ( typeof ( WorkItemStore ) ) as WorkItemStore;
 
-      int projectId = this.GetProjectIdByName ( store, this.TfsWorkItem.ProjectName );
-      if ( projectId > -1 ) {
-        Project project = store.Projects.GetById ( projectId );
+			int projectId = this.GetProjectIdByName ( store, this.TfsWorkItem.GetPropertyString<IMacroRunner> ( this.TfsWorkItem, this.Result, this.TfsWorkItem.ProjectName ) );
+			if ( projectId > -1 ) {
+				Project project = store.Projects.GetById ( projectId );
 
-        WorkItem wi = new WorkItem ( project.WorkItemTypes[ 0 ] );
-        wi.Title = string.Format ( "{0}Build Failed for {1}", this.TfsWorkItem.TitlePrefix, this.Result.Label );
+				WorkItem wi = new WorkItem ( project.WorkItemTypes[ 0 ] );
+				wi.Title = string.Format ( "{0}Build Failed for {1}", this.TfsWorkItem.GetPropertyString<IMacroRunner> ( this.TfsWorkItem, this.Result,this.TfsWorkItem.TitlePrefix), this.Result.Label );
 
-        StringBuilder results = new StringBuilder ( );
+				StringBuilder results = new StringBuilder ();
 
-        foreach ( ThoughtWorks.CruiseControl.Core.ITaskResult itr in this.Result.TaskResults ) {
-          if ( itr.Failed ( ) )
-            results.AppendLine ( itr.Data );
-        }
+				foreach ( ThoughtWorks.CruiseControl.Core.ITaskResult itr in this.Result.TaskResults ) {
+					if ( itr.Failed () )
+						results.AppendLine ( itr.Data );
+				}
 
-        wi.Description = results.ToString ( );
+				wi.Description = results.ToString ();
 
-        wi.Save ( );
-        tfs.Dispose ( );
-      } else {
-        throw new ThoughtWorks.CruiseControl.Core.CruiseControlException ( string.Format ( "Unable to find project {0} on Team Foundation Server", this.TfsWorkItem.ProjectName ) );
-      }
-        
-    }
+				wi.Save ();
+				tfs.Dispose ();
+			} else {
+				throw new ThoughtWorks.CruiseControl.Core.CruiseControlException ( string.Format ( "Unable to find project {0} on Team Foundation Server", this.TfsWorkItem.GetPropertyString<IMacroRunner> ( this.TfsWorkItem, this.Result,this.TfsWorkItem.ProjectName) ) );
+			}
 
-    /// <summary>
-    /// Creates the server.
-    /// </summary>
-    /// <returns></returns>
-    private TeamFoundationServer CreateServer ( ) {
-      ICredentials creds = null;
-      if ( !string.IsNullOrEmpty(this.TfsWorkItem.UserName) ) {
-        creds= new NetworkCredential(this.TfsWorkItem.UserName,this.TfsWorkItem.Password,this.TfsWorkItem.Domain);
-      }
-      TeamFoundationServer tfs = new TeamFoundationServer ( this.TfsWorkItem.TfsServer, creds );
-      tfs.EnsureAuthenticated ( );
-      return tfs;
-    }
+		}
 
-    /// <summary>
-    /// Gets the name of the project id by.
-    /// </summary>
-    /// <param name="store">The store.</param>
-    /// <param name="projectName">Name of the project.</param>
-    /// <returns></returns>
-    private int GetProjectIdByName ( WorkItemStore store, string projectName ) {
-      foreach ( Project proj in store.Projects ) {
-        if ( string.Compare ( proj.Name, projectName ) == 0 )
-          return proj.Id;
-      }
-      return -1;
-    }
-  }
+		/// <summary>
+		/// Creates the server.
+		/// </summary>
+		/// <returns></returns>
+		private TeamFoundationServer CreateServer () {
+			ICredentials creds = null;
+			if ( !string.IsNullOrEmpty ( this.TfsWorkItem.UserName ) ) {
+				creds = new NetworkCredential ( 
+					this.TfsWorkItem.GetPropertyString<IMacroRunner> ( this.TfsWorkItem, this.Result,this.TfsWorkItem.UserName), 
+					this.TfsWorkItem.GetPropertyString<IMacroRunner> ( this.TfsWorkItem, this.Result,this.TfsWorkItem.Password),
+					this.TfsWorkItem.GetPropertyString<IMacroRunner> ( this.TfsWorkItem, this.Result, this.TfsWorkItem.Domain ));
+			}
+			TeamFoundationServer tfs = new TeamFoundationServer ( 
+				this.TfsWorkItem.GetPropertyString<IMacroRunner> ( this.TfsWorkItem, this.Result,this.TfsWorkItem.TfsServer), 
+				creds );
+			tfs.EnsureAuthenticated ();
+			return tfs;
+		}
+
+		/// <summary>
+		/// Gets the name of the project id by.
+		/// </summary>
+		/// <param name="store">The store.</param>
+		/// <param name="projectName">Name of the project.</param>
+		/// <returns></returns>
+		private int GetProjectIdByName ( WorkItemStore store, string projectName ) {
+			foreach ( Project proj in store.Projects ) {
+				if ( string.Compare ( proj.Name, projectName ) == 0 )
+					return proj.Id;
+			}
+			return -1;
+		}
+	}
 }

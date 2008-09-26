@@ -4,7 +4,7 @@
     <Configuration Condition="'$(CCNetBuildCondition)' != 'ForceBuild'">Debug</Configuration>
     <Configuration Condition="'$(CCNetBuildCondition)' == 'ForceBuild'">Release</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{327A7C9D-76EB-4318-86F1-191E2445906D}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -112,6 +112,9 @@
     <Compile Include="Components\Macros\XslTransform.cs" />
     <Compile Include="Components\Pownce\PownceService.cs" />
     <Compile Include="Components\Pownce\SendToOption.cs" />
+    <Compile Include="Components\System\BinaryCopier.cs" />
+    <Compile Include="Components\System\FileTypeMap.cs" />
+    <Compile Include="Components\System\MimetypesFileTypeMap.cs" />
     <Compile Include="Components\Twitter\TwitterService.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="Publishers\CodePlexReleasePublisher.cs" />

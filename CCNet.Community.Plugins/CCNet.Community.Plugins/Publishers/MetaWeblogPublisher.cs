@@ -9,13 +9,14 @@ using CCNet.Community.Plugins.XmlRpc;
 using ThoughtWorks.CruiseControl.Remote;
 using ThoughtWorks.CruiseControl.Core.Util;
 using CCNet.Community.Plugins.Common;
+using CCNet.Community.Plugins.Components.Macros;
 
 namespace CCNet.Community.Plugins.Publishers {
   /// <summary>
   /// Publishes the build results to a blog supporting the MetaWeblog API
   /// </summary>
   [ReflectorType ( "metaweblog" )]
-  public class MetaWeblogPublisher : ITask {
+	public class MetaWeblogPublisher : ITask, IMacroRunner {
     /// <summary>
     /// Gets or sets the meta weblog API URL.
     /// </summary>
@@ -70,14 +71,15 @@ namespace CCNet.Community.Plugins.Publishers {
       this.DescriptionFormat = Properties.Settings.Default.MetaWeblogDefaultDescriptionFormat;
       this.TitleFormat = Properties.Settings.Default.MetaWeblogDefaultTitleFormat;
       this.Tags = new string[ 0 ];
+			this.MacroEngine = new MacroEngine ();
     }
 
     #region ITask Members
 
     public void Run ( IIntegrationResult result ) {
       MetaWeblogClient client = new MetaWeblogClient ( );
-      NetworkCredential creds = new NetworkCredential ( this.Username, this.Password );
-      client.Url = this.MetaWeblogApiUrl;
+			NetworkCredential creds = new NetworkCredential ( this.GetPropertyString<IMacroRunner> ( this, result, this.Username ), this.GetPropertyString<IMacroRunner> ( this, result, this.Password ) );
+			client.Url = this.GetPropertyString<IMacroRunner> ( this, result, this.MetaWeblogApiUrl );
       client.Credentials = creds;
       client.KeepAlive = false;
 
@@ -127,12 +129,12 @@ namespace CCNet.Community.Plugins.Publishers {
         StringBuilder tags = new StringBuilder ( );
         if ( this.Tags != null && this.Tags.Length > 0 ) {
           foreach ( string tag in this.Tags ) {
-            tags.AppendFormat ( Properties.Settings.Default.MetaWeblogDefaultTagFormat, tag );
+            tags.AppendFormat ( Properties.Settings.Default.MetaWeblogDefaultTagFormat, this.GetPropertyString<IMacroRunner> ( this, result, tag ) );
           }
         }
 
-        post.description = string.Format ( this.DescriptionFormat, mods.ToString ( ), results, result.Label, result.LastChangeNumber, result.TotalIntegrationTime, result.Status, result.ProjectName, result.BuildCondition,tags.ToString() );
-        post.title = string.Format ( this.TitleFormat, mods.ToString ( ), results, result.Label, result.LastChangeNumber, result.TotalIntegrationTime, result.Status, result.ProjectName, result.BuildCondition,tags.ToString() );
+				post.description = string.Format ( this.GetPropertyString<IMacroRunner> ( this, result, this.DescriptionFormat ), mods.ToString (), results, result.Label, result.LastChangeNumber, result.TotalIntegrationTime, result.Status, result.ProjectName, result.BuildCondition, this.GetPropertyString<IMacroRunner> ( this, result, tags.ToString () ) );
+				post.title = string.Format ( this.GetPropertyString<IMacroRunner> ( this, result, this.TitleFormat ), mods.ToString (), results, result.Label, result.LastChangeNumber, result.TotalIntegrationTime, result.Status, result.ProjectName, result.BuildCondition, this.GetPropertyString<IMacroRunner> ( this, result, tags.ToString () ) );
 
         client.newPost ( blogId, creds.UserName, creds.Password, post, true );
       } catch ( Exception ex ) {
@@ -146,5 +148,40 @@ namespace CCNet.Community.Plugins.Publishers {
     }
 
     #endregion
-  }
+
+		#region IMacroRunner Members
+
+		/// <summary>
+		/// Gets the macro engine.
+		/// </summary>
+		/// <value>The macro engine.</value>
+		public MacroEngine MacroEngine { get; private set; }
+
+		/// <summary>
+		/// Gets the property string.
+		/// </summary>
+		/// <param name="sender">The sender.</param>
+		/// <param name="result">The result.</param>
+		/// <param name="input">The input.</param>
+		/// <returns></returns>
+		string IMacroRunner.GetPropertyString<T> ( T sender, IIntegrationResult result, string input ) {
+			return this.GetPropertyString<T> ( sender, result, input );
+		}
+
+		/// <summary>
+		/// Gets the property string.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="sender">The sender.</param>
+		/// <param name="result">The result.</param>
+		/// <param name="input">The input.</param>
+		/// <returns></returns>
+		private string GetPropertyString<T> ( T sender, IIntegrationResult result, string input ) {
+			string ret = this.GetPropertyString<MetaWeblogPublisher> ( this, result, input );
+			ret = this.GetPropertyString<T> ( sender, result, ret );
+			return ret;
+		}
+		#endregion
+
+	}
 }

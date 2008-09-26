@@ -46,62 +46,37 @@
  * purpose and non-infringement.
  */
 using System;
-using System.Collections.Generic;
-using System.Text;
-using CCNet.Community.Plugins.Components.Pownce;
-using System.Net;
-using Xunit;
+using Microsoft.Win32;
 using System.IO;
 
-namespace CCNet.Community.Plugins.Tests {
-	public class PownceServiceTests {
-		// README!
-		// To run these tests, change the network credentials to a valid pownce username and password
-		// then remove the Skip = "No user name specified." from the tests.
-		// also remove the 'return' statement in the constructor
+namespace System.IO {
+	public class MimetypesFileTypeMap : FileTypeMap {
+		// the default mime type if one is not found.
+		private string _defaultMimeType = "application/octet-stream";
 
-		public PownceServiceTests () {
-			return;
-			this.Service = new PownceService ( "i43hw0i1231oq23o058h21lr0j505mf6",
-				new NetworkCredential ( "username", "password" ) );
-			
-		}
-		public PownceService Service { get; set; }
-		[Fact(Skip="No user name specified.")]
-		public void PostNote () {
-			Assert.DoesNotThrow ( new Assert.ThrowsDelegate ( delegate () {
-				Service.PostText ( "testing post" );
-			} ) );
+		// gets the content type of a file
+		public override string GetContentType ( System.IO.FileInfo file ) {
+			return GetContentType ( file.FullName );
 		}
 
-		[Fact(Skip="No user name specified.")]
-		public void PostFile () {
-			Assert.DoesNotThrow ( new Assert.ThrowsDelegate ( delegate () {
-				// change this to a path of the files in the resource directory or this test will fail.
-				string path = @"D:\Projects\CCNetPlugins\trunk\CCNet.Community.Plugins\CCNet.Community.Plugins.Tests\bin\Debug\Resources\";
-				Service.PostFile ( "testing zip", Path.Combine ( path, "Test.zip" ), "all" );
-				Service.PostFile ( "testing image", Path.Combine ( path, "TestImage.png" ), "all" );
-			} ) );
-		}
-		[Fact ( Skip = "No user name specified." )]
-		public void PostLink () {
-			Assert.DoesNotThrow ( new Assert.ThrowsDelegate ( delegate () {
-				Service.PostLink ( new Uri ( "http://codeplex.com/ccnetplugins" ) );
-			} ) );
-		}
-		[Fact ( Skip = "No user name specified." )]
-		public void PostEvent() {
-			Assert.DoesNotThrow ( new Assert.ThrowsDelegate ( delegate () {
-				string s = Service.PostEvent ( "Come one, Come All", "Test Event", "Cloud 9", DateTime.Now.AddDays ( 1 ), "public" );
-			} ) );
+		// gets the content type of a file
+		public override string GetContentType ( string filename ) {
+			// set a default mimetype if not found.
+			string contentType = this.DefaultMimeType;
+			try {
+				// get the registry classes root
+				RegistryKey classes = Registry.ClassesRoot;
+				// find the sub key based on the file extension
+				RegistryKey fileClass = classes.OpenSubKey ( Path.GetExtension ( filename ) );
+				contentType = fileClass.GetValue ( "Content Type" ).ToString ();
+			} catch { }
+			return contentType;
 		}
 
-		/// <summary>
-		/// Gets the send to list.
-		/// </summary>
-		[Fact ( Skip = "No user name specified." )]
-		public void GetSendToList () {
-			Assert.True ( Service.GetSendToList ().Count > 0 );
+		// the default mime type if one is not found.
+		public string DefaultMimeType {
+			get { return this._defaultMimeType; }
+			set { this._defaultMimeType = value; }
 		}
 	}
 }

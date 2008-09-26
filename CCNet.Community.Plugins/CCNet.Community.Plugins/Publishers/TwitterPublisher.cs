@@ -56,15 +56,17 @@ using ThoughtWorks.CruiseControl.Core.Util;
 using ThoughtWorks.CruiseControl.Remote;
 using CCNet.Community.Plugins.Components.Twitter;
 using CCNet.Community.Plugins.Common;
+using CCNet.Community.Plugins.Components.Macros;
 
 namespace CCNet.Community.Plugins.Publishers {
   /// <summary>
   /// A twitter publisher. 
   /// </summary>
   [ReflectorType("twit")]
-  public class TwitterPublisher : ITask{
+  public class TwitterPublisher : ITask, IMacroRunner {
     public TwitterPublisher ( ) {
       this.ContinueOnFailure = false;
+			this.MacroEngine = new MacroEngine ();
     }
     /// <summary>
     /// Gets or sets the name of the user.
@@ -137,5 +139,36 @@ namespace CCNet.Community.Plugins.Publishers {
         return String.Format ( "{0} Build Failed. See {1}", result.ProjectName, ProjectUrl ?? result.ProjectUrl );
       }
     }
-  }
+
+		#region IMacroRunner Members
+
+		public MacroEngine MacroEngine {get;set;}
+
+		/// <summary>
+		/// Gets the property string.
+		/// </summary>
+		/// <param name="sender">The sender.</param>
+		/// <param name="result">The result.</param>
+		/// <param name="input">The input.</param>
+		/// <returns></returns>
+		string IMacroRunner.GetPropertyString<T> ( T sender, IIntegrationResult result, string input ) {
+			return this.GetPropertyString<T> ( sender, result, input );
+		}
+
+		/// <summary>
+		/// Gets the property string.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="sender">The sender.</param>
+		/// <param name="result">The result.</param>
+		/// <param name="input">The input.</param>
+		/// <returns></returns>
+		private string GetPropertyString<T> ( T sender, IIntegrationResult result, string input ) {
+			string ret = this.GetPropertyString<TwitterPublisher> ( this, result, input );
+			ret = this.GetPropertyString<T> ( sender, result, ret );
+			return ret;
+		}
+
+		#endregion
+	}
 }

@@ -360,18 +360,30 @@ namespace CCNet.Community.Plugins.Publishers {
     #endregion
 
     #region Private Methods
-    /// <summary>
-    /// Gets the property string.
-    /// </summary>
-    /// <param name="sender">The sender.</param>
-    /// <param name="result">The result.</param>
-    /// <param name="input">The input.</param>
-    /// <returns></returns>
-    private string GetPropertyString<T> ( T sender, IIntegrationResult result, string input ) {
-      string ret = this.MacroEngine.GetPropertyString<RssBuildsPublisher> ( this, result, input );
-      ret = this.GetPropertyString<T> ( sender, result, ret );
-      return ret;
-    }
+		/// <summary>
+		/// Gets the property string.
+		/// </summary>
+		/// <param name="sender">The sender.</param>
+		/// <param name="result">The result.</param>
+		/// <param name="input">The input.</param>
+		/// <returns></returns>
+		string IMacroRunner.GetPropertyString<T> ( T sender, IIntegrationResult result, string input ) {
+			return this.GetPropertyString<T> ( sender, result, input );
+		}
+
+		/// <summary>
+		/// Gets the property string.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="sender">The sender.</param>
+		/// <param name="result">The result.</param>
+		/// <param name="input">The input.</param>
+		/// <returns></returns>
+		private string GetPropertyString<T> ( T sender, IIntegrationResult result, string input ) {
+			string ret = this.GetPropertyString<RssBuildsPublisher> ( this, result, input );
+			ret = this.GetPropertyString<T> ( sender, result, ret );
+			return ret;
+		}
 
     /// <summary>
     /// Builds the base feed document.

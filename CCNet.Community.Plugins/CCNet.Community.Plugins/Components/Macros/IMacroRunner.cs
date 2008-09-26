@@ -48,6 +48,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using ThoughtWorks.CruiseControl.Core;
 
 namespace CCNet.Community.Plugins.Components.Macros {
   /// <summary>
@@ -59,5 +60,14 @@ namespace CCNet.Community.Plugins.Components.Macros {
     /// </summary>
     /// <value>The macro engine.</value>
     MacroEngine MacroEngine { get; }
+		/// <summary>
+		/// Gets the property string.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="sender">The sender.</param>
+		/// <param name="result">The result.</param>
+		/// <param name="input">The input.</param>
+		/// <returns></returns>
+		string GetPropertyString<T> ( T sender, IIntegrationResult result, string input );
   }
 }

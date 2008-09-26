@@ -224,11 +224,23 @@ namespace CCNet.Community.Plugins.Publishers {
     /// <param name="result">The result.</param>
     /// <param name="input">The input.</param>
     /// <returns></returns>
-    private string GetPropertyString<T> ( T sender, IIntegrationResult result, string input ) {
-      string ret = this.GetPropertyString<CodePlexReleasePublisher> ( this, result, input );
-      ret = this.GetPropertyString<T> ( sender, result, ret );
-      return ret;
-    }
+		string IMacroRunner.GetPropertyString<T> ( T sender, IIntegrationResult result, string input ) {
+			return this.GetPropertyString<T> ( sender, result, input );
+		}
+
+		/// <summary>
+		/// Gets the property string.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="sender">The sender.</param>
+		/// <param name="result">The result.</param>
+		/// <param name="input">The input.</param>
+		/// <returns></returns>
+		private string GetPropertyString<T> ( T sender, IIntegrationResult result, string input ) {
+			string ret = this.GetPropertyString<CodePlexReleasePublisher> ( this, result, input );
+			ret = this.GetPropertyString<T> ( sender, result, ret );
+			return ret;
+		}
 
     #region IMacroRunner Members
 

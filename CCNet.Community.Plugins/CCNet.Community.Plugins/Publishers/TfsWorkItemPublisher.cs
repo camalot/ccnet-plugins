@@ -51,13 +51,18 @@ using System.Text;
 using ThoughtWorks.CruiseControl.Core;
 using Exortech.NetReflector;
 using CCNet.Community.Plugins.Common;
+using CCNet.Community.Plugins.Components.Macros;
 
 namespace CCNet.Community.Plugins.Publishers {
   /// <summary>
   /// Publishes a failed build as a workitem to a tfs server
   /// </summary>
   [ReflectorType ( "workitemPublisher", Description = "Publishes results to a TFS WorkItem when build fails." )]
-  public class TfsWorkItemPublisher : ITask {
+  public class TfsWorkItemPublisher : ITask, IMacroRunner {
+
+		public TfsWorkItemPublisher () {
+			this.MacroEngine = new MacroEngine ();
+		}
     /// <summary>
     /// Gets or sets the TFS server.
     /// </summary>
@@ -105,14 +110,37 @@ namespace CCNet.Community.Plugins.Publishers {
         try {
           TfsServerConnection connection = new TfsServerConnection ( this, result );
           connection.Publish ( );
-        } catch ( CruiseControlException cce ) {
+        } catch ( CruiseControlException ) {
           throw;
-        } catch ( Exception ex ) {
+        } catch ( Exception ) {
           throw;
         }
       }
     }
 
     #endregion
-  }
+
+		#region IMacroRunner Members
+
+		/// <summary>
+		/// Gets the macro engine.
+		/// </summary>
+		/// <value>The macro engine.</value>
+		public MacroEngine MacroEngine { get; private set; }
+
+		/// <summary>
+		/// Gets the property string.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="sender">The sender.</param>
+		/// <param name="result">The result.</param>
+		/// <param name="input">The input.</param>
+		/// <returns></returns>
+		public string GetPropertyString<T> ( T sender, IIntegrationResult result, string input ) {
+			string ret = this.GetPropertyString<TfsWorkItemPublisher> ( this, result, input );
+			ret = this.GetPropertyString<T> ( sender, result, ret );
+			return ret;
+		}
+		#endregion
+	}
 }
