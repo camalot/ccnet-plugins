@@ -53,208 +53,270 @@ using System.Text.RegularExpressions;
 
 namespace CCNet.Community.Plugins.Components.Ftp {
 
-  /// <summary>
-  /// A wrapper of the <see cref="System.Net.FtpWebRequest"/> and <see cref="System.Net.FtpWebResponse"/> classes
-  /// to simplify ftp requests
-  /// </summary>
-  public class FtpWebRequest : WebRequest {
-    /// <summary>
-    /// Standard FTP
-    /// </summary>
-    public const string UriSchemeFtp = "ftp";
-    /// <summary>
-    /// Ftp over SSH ( not supported )
-    /// </summary>
-    public const string UriSchemeSshFtp = "sftp";
-    /// <summary>
-    /// Ftp over SSL ( supported )
-    /// </summary>
-    public const string UriSchemeFtpSsl = "ftps";
-    /// <summary>
-    /// Initializes a new instance of the <see cref="FtpWebRequest"/> class.
-    /// </summary>
-    public FtpWebRequest ( ) {
-      EnableSsl = false;
-      UsePassive = false;
-    }
+	/// <summary>
+	/// A wrapper of the <see cref="System.Net.FtpWebRequest"/> and <see cref="System.Net.FtpWebResponse"/> classes
+	/// to simplify ftp requests
+	/// </summary>
+	public class FtpWebRequest : WebRequest {
+		/// <summary>
+		/// Standard FTP
+		/// </summary>
+		public const string UriSchemeFtp = "ftp";
+		/// <summary>
+		/// Ftp over SSH ( not supported )
+		/// </summary>
+		public const string UriSchemeSshFtp = "sftp";
+		/// <summary>
+		/// Ftp over SSL ( supported )
+		/// </summary>
+		public const string UriSchemeFtpSsl = "ftps";
+		/// <summary>
+		/// Initializes a new instance of the <see cref="FtpWebRequest"/> class.
+		/// </summary>
+		public FtpWebRequest () {
+			EnableSsl = false;
+			UsePassive = false;
+		}
 
-    /// <summary>
-    /// Gets or sets a value indicating whether to use passive mode.
-    /// </summary>
-    /// <value><c>true</c> if [use passive]; otherwise, <c>false</c>.</value>
-    public bool UsePassive { get; set; }
-    /// <summary>
-    /// Gets or sets a value indicating whether [enable SSL].
-    /// </summary>
-    /// <value><c>true</c> if [enable SSL]; otherwise, <c>false</c>.</value>
-    public bool EnableSsl { get; set; }
-    
-    /// <summary>
-    /// Lists the directory.
-    /// </summary>
-    /// <param name="ftpUrl">The FTP URL.</param>
-    /// <returns></returns>
-    public List<FtpSystemInfo> ListDirectory ( Uri ftpUrl ) {
-      List<FtpSystemInfo> items = new List<FtpSystemInfo> ( );
-      FtpWebResponse data = Request ( ftpUrl, System.Net.WebRequestMethods.Ftp.ListDirectoryDetails );
-      //throw new Exception ( data.Data );
-      Regex regex = new Regex ( Properties.Resources.FtpDirectoryListRegexPattern, 
-        RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace | RegexOptions.Multiline );
-      Match match = regex.Match ( data.Data );
-      while ( match.Success ) {
-        string perm = match.Groups[ 0 ].Value;
-        bool isDirectory = perm.StartsWith ( "d" );
-        string[] perms = new string[ 3 ];
-        // owner
-        perms[ 0 ] = new String ( new char[] { perm[ 1 ], perm[ 2 ], perm[ 3 ] } );
-        // group
-        perms[ 1 ] = new String ( new char[] { perm[ 4 ], perm[ 5 ], perm[ 6 ] } );
-        // public
-        perms[ 2 ] = new String ( new char[] { perm[ 7 ], perm[ 8 ], perm[ 9 ] } );
-        FtpSystemInfoPermission owner = FtpSystemInfoPermission.FromString ( perms[ 0 ] );
-        FtpSystemInfoPermission group = FtpSystemInfoPermission.FromString ( perms[ 1 ] );
-        FtpSystemInfoPermission pub = FtpSystemInfoPermission.FromString ( perms[ 2 ] );
+		/// <summary>
+		/// Gets or sets a value indicating whether to use passive mode.
+		/// </summary>
+		/// <value><c>true</c> if [use passive]; otherwise, <c>false</c>.</value>
+		public bool UsePassive { get; set; }
+		/// <summary>
+		/// Gets or sets a value indicating whether [enable SSL].
+		/// </summary>
+		/// <value><c>true</c> if [enable SSL]; otherwise, <c>false</c>.</value>
+		public bool EnableSsl { get; set; }
 
-        FtpSystemInfo fsi = null;
-        DateTime lastMod = GetLastModificationDateTime (  match.Groups[7].Value.Trim());
-        if ( isDirectory ) {
-          fsi = new FtpDirectoryInfo ( match.Groups[ 8 ].Value.Trim ( ), 0, owner, group, pub, lastMod );
-        fsi.Url = ftpUrl;
-        } else {
-          long size = 0;
-          long.TryParse ( match.Groups[ 6 ].Value, out size );
-          fsi = new FtpFileInfo ( match.Groups[ 8 ].Value.Trim ( ), size, owner, group, pub, lastMod );
-          fsi.Url = ftpUrl;
-        }
+		/// <summary>
+		/// Lists the directory.
+		/// </summary>
+		/// <param name="ftpUrl">The FTP URL.</param>
+		/// <returns></returns>
+		public List<FtpSystemInfo> ListDirectory ( Uri ftpUrl ) {
+			List<FtpSystemInfo> items = new List<FtpSystemInfo> ();
+			FtpWebResponse data = Request ( ftpUrl, System.Net.WebRequestMethods.Ftp.ListDirectoryDetails );
+			//throw new Exception ( data.Data );
+			Regex regex = new Regex ( Properties.Resources.FtpDirectoryListRegexPattern,
+				RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace | RegexOptions.Multiline );
+			Match match = regex.Match ( data.Data );
+			while ( match.Success ) {
+				string perm = match.Groups[ 0 ].Value;
+				bool isDirectory = perm.StartsWith ( "d" );
+				string[] perms = new string[ 3 ];
+				// owner
+				perms[ 0 ] = new String ( new char[] { perm[ 1 ], perm[ 2 ], perm[ 3 ] } );
+				// group
+				perms[ 1 ] = new String ( new char[] { perm[ 4 ], perm[ 5 ], perm[ 6 ] } );
+				// public
+				perms[ 2 ] = new String ( new char[] { perm[ 7 ], perm[ 8 ], perm[ 9 ] } );
+				FtpSystemInfoPermission owner = FtpSystemInfoPermission.FromString ( perms[ 0 ] );
+				FtpSystemInfoPermission group = FtpSystemInfoPermission.FromString ( perms[ 1 ] );
+				FtpSystemInfoPermission pub = FtpSystemInfoPermission.FromString ( perms[ 2 ] );
 
-        items.Add ( fsi );
-        match = match.NextMatch ( );
-      }
-      return items;
-    }
+				FtpSystemInfo fsi = null;
+				DateTime lastMod = GetLastModificationDateTime ( match.Groups[ 7 ].Value.Trim () );
+				if ( isDirectory ) {
+					fsi = new FtpDirectoryInfo ( match.Groups[ 8 ].Value.Trim (), 0, owner, group, pub, lastMod );
+					fsi.Url = ftpUrl;
+				} else {
+					long size = 0;
+					long.TryParse ( match.Groups[ 6 ].Value, out size );
+					fsi = new FtpFileInfo ( match.Groups[ 8 ].Value.Trim (), size, owner, group, pub, lastMod );
+					fsi.Url = ftpUrl;
+				}
 
-    private DateTime GetLastModificationDateTime ( string dt ) {
-      return DateTime.Parse ( dt );
-    }
+				items.Add ( fsi );
+				match = match.NextMatch ();
+			}
+			return items;
+		}
 
-    /// <summary>
-    /// Downloads the file.
-    /// </summary>
-    /// <param name="ftpUrl">The FTP URL.</param>
-    /// <param name="localFile">The local file.</param>
-    public void DownloadFile ( Uri ftpUrl, string localFile ) {
-      FileInfo local = new FileInfo ( localFile );
-      FtpWebResponse data = Request ( ftpUrl, System.Net.WebRequestMethods.Ftp.DownloadFile );
-      FileStream fs = new FileStream ( local.FullName, FileMode.Create, FileAccess.Write, FileShare.Read );
-      using ( fs ) {
-        fs.Write ( data.ByteData, 0, data.ByteData.Length );
-        fs.Flush ( );
-      }
+		private DateTime GetLastModificationDateTime ( string dt ) {
+			return DateTime.Parse ( dt );
+		}
 
-    }
+		/// <summary>
+		/// Downloads the file.
+		/// </summary>
+		/// <param name="ftpUrl">The FTP URL.</param>
+		/// <param name="localFile">The local file.</param>
+		public void DownloadFile ( Uri ftpUrl, string localFile ) {
+			try {
+				FileInfo local = new FileInfo ( localFile );
+				FtpWebResponse data = Request ( ftpUrl, System.Net.WebRequestMethods.Ftp.DownloadFile );
+				FileStream fs = new FileStream ( local.FullName, FileMode.Create, FileAccess.Write, FileShare.Read );
+				using ( fs ) {
+					fs.Write ( data.ByteData, 0, data.ByteData.Length );
+					fs.Flush ();
+				}
+			} catch {
+				throw;
+			}
+		}
 
-    /// <summary>
-    /// Makes the directory.
-    /// </summary>
-    /// <param name="ftpUrl">The FTP URL.</param>
-    /// <param name="newDirectory">The new directory.</param>
-    /// <returns></returns>
-    public bool MakeDirectory ( Uri ftpUrl, string newDirectory ) {
-      Uri newUrl = new Uri ( ftpUrl.ToString ( ) + "/" + newDirectory );
-      try {
-        FtpWebResponse resp = Request ( newUrl, System.Net.WebRequestMethods.Ftp.MakeDirectory );
-      } catch ( System.Net.WebException ) {
-        throw;
-      }
-      return true;
-    }
+		/// <summary>
+		/// Makes the directory.
+		/// </summary>
+		/// <param name="ftpUrl">The FTP URL.</param>
+		/// <param name="newDirectory">The new directory.</param>
+		/// <returns></returns>
+		public bool MakeDirectory ( Uri ftpUrl, string newDirectory ) {
+			Uri newUrl = new Uri ( ftpUrl.ToString () + "/" + newDirectory );
+			try {
+				FtpWebResponse resp = Request ( newUrl, System.Net.WebRequestMethods.Ftp.MakeDirectory );
+			} catch ( System.Net.WebException ) {
+				throw;
+			}
+			return true;
+		}
 
-    /// <summary>
-    /// Removes the directory.
-    /// </summary>
-    /// <param name="ftpUrl">The FTP URL.</param>
-    /// <returns></returns>
-    public bool RemoveDirectory ( Uri ftpUrl ) {
-      try {
-        FtpWebResponse resp = Request ( ftpUrl, System.Net.WebRequestMethods.Ftp.RemoveDirectory );
-      } catch ( System.Net.WebException ) {
-        throw;
-      }
-      return true;
-    }
+		/// <summary>
+		/// Removes the directory.
+		/// </summary>
+		/// <param name="ftpUrl">The FTP URL.</param>
+		/// <returns></returns>
+		public bool RemoveDirectory ( Uri ftpUrl ) {
+			try {
+				FtpWebResponse resp = Request ( ftpUrl, System.Net.WebRequestMethods.Ftp.RemoveDirectory );
+			} catch ( System.Net.WebException ) {
+				throw;
+			}
+			return true;
+		}
 
-    /// <summary>
-    /// Deletes the file.
-    /// </summary>
-    /// <param name="ftpUrl">The FTP URL.</param>
-    /// <returns></returns>
-    public bool DeleteFile ( Uri ftpUrl ) {
-      try {
-        FtpWebResponse resp = Request ( ftpUrl, System.Net.WebRequestMethods.Ftp.DeleteFile );
-      } catch ( System.Net.WebException ) {
-        throw;
-      }
-      return true;
-    }
+		/// <summary>
+		/// Deletes the file.
+		/// </summary>
+		/// <param name="ftpUrl">The FTP URL.</param>
+		/// <returns></returns>
+		public bool DeleteFile ( Uri ftpUrl ) {
+			try {
+				FtpWebResponse resp = Request ( ftpUrl, System.Net.WebRequestMethods.Ftp.DeleteFile );
+			} catch ( System.Net.WebException ) {
+				throw;
+			}
+			return true;
+		}
 
+		/// <summary>
+		/// Uploads the file.
+		/// </summary>
+		/// <param name="localFile">The local file.</param>
+		/// <param name="ftpUrl">The FTP URL.</param>
+		/// <returns></returns>
+		public bool UploadFile ( string localFile, Uri ftpUrl ) {
+			try {
+				UploadFile ( new FileInfo ( localFile ), ftpUrl );
+			} catch {
+				throw;
+			}
+			return true;
+		}
 
+		/// <summary>
+		/// Uploads the file.
+		/// </summary>
+		/// <param name="localFile">The local file.</param>
+		/// <param name="ftpUrl">The FTP URL.</param>
+		/// <returns></returns>
+		public bool UploadFile ( FileInfo localFile, Uri ftpUrl ) {
+			try {
+				using ( Stream s = localFile.OpenRead () ) {
+					try {
+						UploadFile ( s, ftpUrl );
+					} catch {
+						throw;
+					}
+				}
+			} catch {
+				throw;
+			}
+			return true;
+		}
 
-    /// <summary>
-    /// Requests the specified FTP URL.
-    /// </summary>
-    /// <param name="ftpUrl">The FTP URL.</param>
-    /// <param name="method">The method.</param>
-    /// <returns></returns>
-    public FtpWebResponse Request ( Uri ftpUrl, string method ) {
-      CheckNotSshFtp ( ftpUrl );
+		public bool UploadFile ( Stream fileStream, Uri ftpUrl ) {
+			try {
+				Write ( ftpUrl, System.Net.WebRequestMethods.Ftp.UploadFile, fileStream );
+			} catch {
+				throw;
+			}
+			return true;
+		}
 
-      System.Net.FtpWebRequest req = System.Net.FtpWebRequest.Create ( ftpUrl ) as System.Net.FtpWebRequest;
+		public FtpWebResponse Write ( Uri ftpUrl, string method, Stream stream ) {
+			CheckNotSshFtp ( ftpUrl );
 
-      if ( this.Credentials != null ) {
-        req.Credentials = this.Credentials;
-      } else {
-        req.Credentials = new System.Net.NetworkCredential ( "anonymous", "user@" + ftpUrl.Host );
-      }
+			System.Net.FtpWebRequest req = System.Net.FtpWebRequest.Create ( ftpUrl ) as System.Net.FtpWebRequest;
 
-      req.UsePassive = this.UsePassive;
-      req.Timeout = this.Timeout;
-      req.Method = method;
-      req.EnableSsl = this.EnableSsl || string.Compare(ftpUrl.Scheme,FtpWebRequest.UriSchemeFtpSsl) == 0 || 
-        string.Compare(ftpUrl.Scheme,FtpWebRequest.UriSchemeSshFtp) == 0;
-      req.KeepAlive = false;
+			if ( this.Credentials != null ) {
+				req.Credentials = this.Credentials;
+			} else {
+				req.Credentials = new System.Net.NetworkCredential ( "anonymous", "user@" + ftpUrl.Host );
+			}
 
-      System.Net.FtpWebResponse resp = req.GetResponse ( ) as System.Net.FtpWebResponse;
-      StreamReader sr = new StreamReader ( resp.GetResponseStream ( ) );
-      System.Net.FtpStatusCode code = resp.StatusCode;
-      string desc = resp.StatusDescription;
-      byte[] buffer = null;
+			req.UsePassive = this.UsePassive;
+			req.Timeout = this.Timeout;
+			req.Method = method;
+			req.EnableSsl = this.EnableSsl || string.Compare ( ftpUrl.Scheme, FtpWebRequest.UriSchemeFtpSsl ) == 0 ||
+				string.Compare ( ftpUrl.Scheme, FtpWebRequest.UriSchemeSshFtp ) == 0;
+			req.KeepAlive = false;
 
-      using ( resp ) {
-        Stream strm = resp.GetResponseStream ( );
-        using ( strm ) {
-          MemoryStream ms = new MemoryStream ( );
-          using ( ms ) {
-            byte[ ] buff = new byte[ 1024 ];
-            int i = 0;
-            while ( ( i = strm.Read ( buff, 0, buff.Length ) ) > 0 ) {
-              ms.Write ( buff, 0, i );
-              ms.Flush ( );
-            }
-            ms.Position = 0;
-            buffer = ms.ToArray ( );
-          }
-        }
-      }
+			if ( stream != null ) {
+				using ( Stream reqStream = req.GetRequestStream () ) {
+					using ( stream ) {
+						int i = 0;
+						byte[] buffer = new byte[ 2048 ];
+						while ( ( i = stream.Read ( buffer, 0, buffer.Length ) ) > 0 ) {
+							reqStream.Write ( buffer, 0, i );
+						}
+					}
+				}
+			}
 
-      FtpWebResponse fwr = new FtpWebResponse ( buffer );
-      fwr.StatusCode = code;
-      fwr.StatusDescription = desc;
-      return fwr;
-    }
+			System.Net.FtpWebResponse resp = req.GetResponse () as System.Net.FtpWebResponse;
+			StreamReader sr = new StreamReader ( resp.GetResponseStream () );
+			System.Net.FtpStatusCode code = resp.StatusCode;
+			string desc = resp.StatusDescription;
+			byte[] respBuffer = null;
 
-    private void CheckNotSshFtp ( Uri ftpUrl ) {
-      if ( string.Compare ( ftpUrl.Scheme, FtpWebRequest.UriSchemeSshFtp ) == 0 )
-        throw new NotSupportedException ( Properties.Resources.SshFtpNotSupportedMessage );
-    }
-  }
+			using ( resp ) {
+				Stream strm = resp.GetResponseStream ();
+				using ( strm ) {
+					MemoryStream ms = new MemoryStream ();
+					using ( ms ) {
+						byte[ ] buff = new byte[ 1024 ];
+						int i = 0;
+						while ( ( i = strm.Read ( buff, 0, buff.Length ) ) > 0 ) {
+							ms.Write ( buff, 0, i );
+							ms.Flush ();
+						}
+						ms.Position = 0;
+						respBuffer = ms.ToArray ();
+					}
+				}
+			}
+
+			FtpWebResponse fwr = new FtpWebResponse ( respBuffer );
+			fwr.StatusCode = code;
+			fwr.StatusDescription = desc;
+			return fwr;
+		}
+
+		/// <summary>
+		/// Requests the specified FTP URL.
+		/// </summary>
+		/// <param name="ftpUrl">The FTP URL.</param>
+		/// <param name="method">The method.</param>
+		/// <returns></returns>
+		public FtpWebResponse Request ( Uri ftpUrl, string method ) {
+			return Write ( ftpUrl, method, null );
+		}
+
+		private void CheckNotSshFtp ( Uri ftpUrl ) {
+			if ( string.Compare ( ftpUrl.Scheme, FtpWebRequest.UriSchemeSshFtp ) == 0 )
+				throw new NotSupportedException ( Properties.Resources.SshFtpNotSupportedMessage );
+		}
+	}
 }

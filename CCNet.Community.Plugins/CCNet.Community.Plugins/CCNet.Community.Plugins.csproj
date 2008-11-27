@@ -119,6 +119,7 @@
     <Compile Include="Enums.cs" />
     <Compile Include="Publishers\CodePlexReleasePublisher.cs" />
     <Compile Include="Publishers\CodePlexReleaseTaskResult.cs" />
+    <Compile Include="Publishers\FtpPublisher.cs" />
     <Compile Include="Publishers\Pownce\PownceEvent.cs" />
     <Compile Include="Publishers\Pownce\PownceFile.cs" />
     <Compile Include="Publishers\Pownce\PownceLink.cs" />
