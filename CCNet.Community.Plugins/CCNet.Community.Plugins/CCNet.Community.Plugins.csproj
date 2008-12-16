@@ -186,10 +186,10 @@
     <WebReferences Include="Web References\" />
   </ItemGroup>
   <ItemGroup>
-    <WebReferenceUrl Include="https://codeplex.com/Services/ReleaseService.asmx">
-      <UrlBehavior>Dynamic</UrlBehavior>
+    <WebReferenceUrl Include="https://www.codeplex.com/Services/ReleaseService.asmx">
+      <UrlBehavior>Static</UrlBehavior>
       <RelPath>Web References\CodePlexApi\</RelPath>
-      <UpdateFromURL>https://codeplex.com/Services/ReleaseService.asmx</UpdateFromURL>
+      <UpdateFromURL>https://www.codeplex.com/Services/ReleaseService.asmx</UpdateFromURL>
       <ServiceLocationURL>
       </ServiceLocationURL>
       <CachedDynamicPropName>

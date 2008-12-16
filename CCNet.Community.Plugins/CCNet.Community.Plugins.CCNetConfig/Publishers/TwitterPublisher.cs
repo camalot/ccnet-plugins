@@ -70,7 +70,7 @@ namespace CCNet.Community.Plugins.CCNetConfig.Publishers {
     /// </summary>
     public TwitterPublisher ( )
       : base ( "twit" ) {
-
+			this.Password = new HiddenPassword ();
     }
 
 		/// <summary>
@@ -100,7 +100,7 @@ namespace CCNet.Community.Plugins.CCNetConfig.Publishers {
     DisplayName ( "(Password)" ), Category ( "Required" ),
     ReflectorName ( "password" ), DefaultValue ( null ),
     TypeConverter ( typeof ( PasswordTypeConverter ) )]
-    public HiddenPassword Password { get; set; }
+		public HiddenPassword Password { get; set; }
 		/// <summary>
 		/// Gets or sets the proxy.
 		/// </summary>

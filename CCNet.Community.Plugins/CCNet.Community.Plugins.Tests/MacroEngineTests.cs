@@ -19,11 +19,13 @@ namespace CCNet.Community.Plugins.Tests {
       private set;
     }
 
-    #endregion
+		public string GetPropertyString<T> ( T sender, IIntegrationResult result, string input ) {
+			return input;
+		}
 
+		#endregion
     public string MyProperty { get { return "This is My Property"; } }
-
-  }
+	}
   public class MacroEngineTests : IntegrationResultTestObject {
     public MacroEngineTests ( )
       : base ( ) {
