@@ -60,7 +60,7 @@ namespace CCNet.Community.Plugins.Publishers {
 	/// <summary>
 	/// An Ftp publisher.
 	/// </summary>
-	[ReflectorType ( "ftp" )]
+	[ReflectorType ( "ftpPublisher" )]
 	public class FtpPublisher : ITask, IMacroRunner {
 
 		/// <summary>
