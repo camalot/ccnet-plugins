@@ -37,7 +37,7 @@
   <ItemGroup>
     <Reference Include="CCNetConfig.Core, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\CCNetConfig\trunk\CCNetConfig\bin\Debug\CCNetConfig.Core.dll</HintPath>
+      <HintPath>..\3rdParty\CCNetConfig.Core.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
