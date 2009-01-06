@@ -59,7 +59,7 @@ namespace CCNet.Community.Plugins.Publishers {
 	/// <summary>
 	/// 
 	/// </summary>
-	[ReflectorType ( "pownce" )]
+	[ReflectorType ( "pownce" ), Obsolete ( "Pownce is closed", true )]
 	public class PowncePublisher : ITask {
 		/// <summary>
 		/// The api key
@@ -69,11 +69,11 @@ namespace CCNet.Community.Plugins.Publishers {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PowncePublisher"/> class.
 		/// </summary>
-		public PowncePublisher() {
-			this.Files = new List<PownceFile> ( );
-			this.Notes = new List<PownceNote> ( );
-			this.Links = new List<PownceLink> ( );
-			this.Events = new List<PownceEvent> ( );
+		public PowncePublisher () {
+			this.Files = new List<PownceFile> ();
+			this.Notes = new List<PownceNote> ();
+			this.Links = new List<PownceLink> ();
+			this.Events = new List<PownceEvent> ();
 		}
 		/// <summary>
 		/// Gets or sets the username.
@@ -128,41 +128,41 @@ namespace CCNet.Community.Plugins.Publishers {
 		/// Runs the specified result.
 		/// </summary>
 		/// <param name="result">The result.</param>
-		public void Run(IIntegrationResult result) {
+		public void Run ( IIntegrationResult result ) {
 			PownceService service = new PownceService ( APPKEY, new NetworkCredential ( this.UserName, this.Password ) );
 			PublishBuildStatus pbs = Util.GetBuildStatus ( result );
 			PublishBuildCondition pbc = Util.GetBuildCondition ( result );
-			foreach (PownceNote pn in this.Notes) {
-				if ((pn.BuildStatus == pbs || pn.BuildStatus == PublishBuildStatus.Any) &&
-					(pn.BuildCondition == pbc || pn.BuildCondition == PublishBuildCondition.AllBuildConditions)) {
-					service.PostText ( pn.Message, pn.RecipientListToString ( ) );
+			foreach ( PownceNote pn in this.Notes ) {
+				if ( ( pn.BuildStatus == pbs || pn.BuildStatus == PublishBuildStatus.Any ) &&
+					( pn.BuildCondition == pbc || pn.BuildCondition == PublishBuildCondition.AllBuildConditions ) ) {
+					service.PostText ( pn.Message, pn.RecipientListToString () );
 				}
 				// required by pownce
 				Thread.Sleep ( 1000 );
 			}
 
-			foreach (PownceLink pl in this.Links) {
-				if ((pl.BuildStatus == pbs || pl.BuildStatus == PublishBuildStatus.Any) &&
-					(pl.BuildCondition == pbc || pl.BuildCondition == PublishBuildCondition.AllBuildConditions)) {
-					service.PostLink ( pl.Message, new Uri ( pl.Url ), pl.RecipientListToString ( ) );
+			foreach ( PownceLink pl in this.Links ) {
+				if ( ( pl.BuildStatus == pbs || pl.BuildStatus == PublishBuildStatus.Any ) &&
+					( pl.BuildCondition == pbc || pl.BuildCondition == PublishBuildCondition.AllBuildConditions ) ) {
+					service.PostLink ( pl.Message, new Uri ( pl.Url ), pl.RecipientListToString () );
 				}
 				// required by pownce
 				Thread.Sleep ( 1000 );
 			}
 
-			foreach (PownceEvent pe in this.Events) {
-				if ((pe.BuildStatus == pbs || pe.BuildStatus == PublishBuildStatus.Any) &&
-					(pe.BuildCondition == pbc || pe.BuildCondition == PublishBuildCondition.AllBuildConditions)) {
-					service.PostEvent ( pe.Message, pe.Name, pe.Location, pe.Date, pe.RecipientListToString ( ) );
+			foreach ( PownceEvent pe in this.Events ) {
+				if ( ( pe.BuildStatus == pbs || pe.BuildStatus == PublishBuildStatus.Any ) &&
+					( pe.BuildCondition == pbc || pe.BuildCondition == PublishBuildCondition.AllBuildConditions ) ) {
+					service.PostEvent ( pe.Message, pe.Name, pe.Location, pe.Date, pe.RecipientListToString () );
 				}
 				// required by pownce
 				Thread.Sleep ( 1000 );
 			}
 
-			foreach (PownceFile pf in this.Files) {
-				if ((pf.BuildStatus == pbs || pf.BuildStatus == PublishBuildStatus.Any) &&
-					(pf.BuildCondition == pbc || pf.BuildCondition == PublishBuildCondition.AllBuildConditions)) {
-					service.PostFile ( pf.Message, pf.FilePath, pf.RecipientListToString ( ) );
+			foreach ( PownceFile pf in this.Files ) {
+				if ( ( pf.BuildStatus == pbs || pf.BuildStatus == PublishBuildStatus.Any ) &&
+					( pf.BuildCondition == pbc || pf.BuildCondition == PublishBuildCondition.AllBuildConditions ) ) {
+					service.PostFile ( pf.Message, pf.FilePath, pf.RecipientListToString () );
 				}
 				// required by pownce
 				Thread.Sleep ( 1000 );
