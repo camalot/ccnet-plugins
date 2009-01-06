@@ -58,172 +58,172 @@ using CCNet.Community.Plugins.Components.Macros;
 using CCNet.Community.Plugins.Common;
 
 namespace CCNet.Community.Plugins.Publishers {
-  [ReflectorType ( "codeplexRelease" )]
-  public class CodePlexReleasePublisher : ITask, IMacroRunner {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="CodePlexReleasePublisher"/> class.
-    /// </summary>
-    public CodePlexReleasePublisher ( ) {
-      Releases = new List<ReleaseItem> ( );
-      MacroEngine = new MacroEngine ( );
-    }
+	[ReflectorType ( "codeplexRelease" )]
+	public class CodePlexReleasePublisher : ITask, IMacroRunner {
+		/// <summary>
+		/// Initializes a new instance of the <see cref="CodePlexReleasePublisher"/> class.
+		/// </summary>
+		public CodePlexReleasePublisher () {
+			Releases = new List<ReleaseItem> ();
+			MacroEngine = new MacroEngine ();
+		}
 
-    #region reflector properties
+		#region reflector properties
 
-    private ReleaseService ReleaseService { get; set; }
-    /// <summary>
-    /// Sets the username.
-    /// </summary>
-    /// <value>The username.</value>
-    [ReflectorProperty ( "username", Required = true )]
-    public string Username { get; set; }
+		private ReleaseService ReleaseService { get; set; }
+		/// <summary>
+		/// Sets the username.
+		/// </summary>
+		/// <value>The username.</value>
+		[ReflectorProperty ( "username", Required = true )]
+		public string Username { get; set; }
 
-    /// <summary>
-    /// Sets the password.
-    /// </summary>
-    /// <value>The password.</value>
-    [ReflectorProperty ( "password", Required = true )]
-    public string Password { get; set; }
+		/// <summary>
+		/// Sets the password.
+		/// </summary>
+		/// <value>The password.</value>
+		[ReflectorProperty ( "password", Required = true )]
+		public string Password { get; set; }
 
-    /// <summary>
-    /// Gets or sets the name of the project.
-    /// </summary>
-    /// <value>The name of the project.</value>
-    [ReflectorProperty ( "projectName", Required = false )]
-    public string ProjectName { get; set; }
+		/// <summary>
+		/// Gets or sets the name of the project.
+		/// </summary>
+		/// <value>The name of the project.</value>
+		[ReflectorProperty ( "projectName", Required = false )]
+		public string ProjectName { get; set; }
 
-    /// <summary>
-    /// Gets or sets the releases.
-    /// </summary>
-    /// <value>The releases.</value>
-    [ReflectorArray ( "releases", Required = true )]
-    public List<ReleaseItem> Releases { get; set; }
-    /// <summary>
-    /// Gets or sets the proxy.
-    /// </summary>
-    /// <value>The proxy.</value>
-    [ReflectorProperty("proxy",Required=false)]
-    public Proxy Proxy { get; set; }
-    /// <summary>
-    /// Gets the modification comments.
-    /// </summary>
-    /// <value>The modification comments.</value>
-    public string ModificationComments { get; private set; }
+		/// <summary>
+		/// Gets or sets the releases.
+		/// </summary>
+		/// <value>The releases.</value>
+		[ReflectorArray ( "releases", Required = true )]
+		public List<ReleaseItem> Releases { get; set; }
+		/// <summary>
+		/// Gets or sets the proxy.
+		/// </summary>
+		/// <value>The proxy.</value>
+		[ReflectorProperty ( "proxy", Required = false )]
+		public Proxy Proxy { get; set; }
+		/// <summary>
+		/// Gets the modification comments.
+		/// </summary>
+		/// <value>The modification comments.</value>
+		public string ModificationComments { get; private set; }
 
-#endregion
-    #region ITask Members
+		#endregion
+		#region ITask Members
 
-    /// <summary>
-    /// Runs the task.
-    /// </summary>
-    /// <param name="result">The result.</param>
-    public void Run ( IIntegrationResult result ) {
-      // only continue if the result was a success.
-      if ( result.Status != ThoughtWorks.CruiseControl.Remote.IntegrationStatus.Success )
-        return;
+		/// <summary>
+		/// Runs the task.
+		/// </summary>
+		/// <param name="result">The result.</param>
+		public void Run ( IIntegrationResult result ) {
+			// only continue if the result was a success.
+			if ( result.Status != ThoughtWorks.CruiseControl.Remote.IntegrationStatus.Success ) {
+				return;
+			}
+			// if the cert comes from microsoft, except it.
+			System.Net.ServicePointManager.ServerCertificateValidationCallback += delegate ( object sender,
+					X509Certificate certificate, X509Chain chain,
+					System.Net.Security.SslPolicyErrors sslPolicyErrors ) {
+				if ( certificate.Issuer.ToLower ().Contains ( "microsoft" ) )
+					return true;
+				else
+					return false;
+			};
 
-      // if the cert comes from microsoft, except it.
-      System.Net.ServicePointManager.ServerCertificateValidationCallback += delegate ( object sender,
-          X509Certificate certificate, X509Chain chain,
-          System.Net.Security.SslPolicyErrors sslPolicyErrors ) {
-        if ( certificate.Issuer.ToLower ( ).Contains ( "microsoft" ) )
-          return true;
-        else
-          return false;
-      };
+			this.ModificationComments = Util.GetModidicationCommentsString ( result );
 
-      this.ModificationComments = Util.GetModidicationCommentsString ( result );
+			// loop each release item
+			foreach ( ReleaseItem item in this.Releases ) {
+				CodePlexReleaseTaskResult taskResult = new CodePlexReleaseTaskResult ( GetPropertyString<ReleaseItem> ( item, result, item.ReleaseName ) );
+				try {
+					if ( ( item.BuildCondition == PublishBuildCondition.ForceBuild &&
+								result.BuildCondition != ThoughtWorks.CruiseControl.Remote.BuildCondition.ForceBuild ) ||
+								item.BuildCondition == PublishBuildCondition.IfModificationExists &&
+								result.BuildCondition != ThoughtWorks.CruiseControl.Remote.BuildCondition.IfModificationExists ) {
+						ThoughtWorks.CruiseControl.Core.Util.Log.Debug ( "Release Creation Skipped due to Build Condition not met." );
+						continue;
+					}
 
-      // loop each release item
-      foreach ( ReleaseItem item in this.Releases ) {
-        CodePlexReleaseTaskResult taskResult = new CodePlexReleaseTaskResult ( GetPropertyString<ReleaseItem> ( item, result, item.ReleaseName ) );
-        try {
-          if ( ( item.BuildCondition == PublishBuildCondition.ForceBuild &&
-                result.BuildCondition != ThoughtWorks.CruiseControl.Remote.BuildCondition.ForceBuild ) ||
-                item.BuildCondition == PublishBuildCondition.IfModificationExists &&
-                result.BuildCondition != ThoughtWorks.CruiseControl.Remote.BuildCondition.IfModificationExists ) {
-            ThoughtWorks.CruiseControl.Core.Util.Log.Debug ( "Release Creation Skipped due to Build Condition not met." );
-            continue;
-          }
+					this.ReleaseService = new ReleaseService ();
+					if ( this.Proxy != null )
+						this.ReleaseService.Proxy = this.Proxy.CreateProxy ();
+					string tProjectName = string.IsNullOrEmpty ( this.ProjectName ) ? result.ProjectName.ToLower ().Trim () : this.ProjectName;
+					ThoughtWorks.CruiseControl.Core.Util.Log.Debug ( string.Format ( "Creating release {1} for {0}",
+						GetPropertyString<ReleaseItem> ( item, result, tProjectName ),
+						GetPropertyString<ReleaseItem> ( item, result, item.ReleaseName ) ) );
+					this.ReleaseService.Credentials = new NetworkCredential ( this.Username, this.Password );
 
-          this.ReleaseService = new ReleaseService ( );
-          if ( this.Proxy != null )
-            this.ReleaseService.Proxy = this.Proxy.CreateProxy ( );
-          string tProjectName = string.IsNullOrEmpty ( this.ProjectName ) ? result.ProjectName.ToLower ( ).Trim ( ) : this.ProjectName;
-          ThoughtWorks.CruiseControl.Core.Util.Log.Debug ( string.Format ( "Creating release {1} for {0}",
-            GetPropertyString<ReleaseItem> ( item, result, tProjectName ),
-            GetPropertyString<ReleaseItem> ( item, result, item.ReleaseName ) ) );
-          this.ReleaseService.Credentials = new NetworkCredential ( this.Username, this.Password );
+					string releaseName = string.Format ( "{0}{1}",
+						GetPropertyString<ReleaseItem> ( item, result, item.ReleaseName ),
+						item.ReleaseType != ReleaseType.None ? string.Format ( " {0}", item.ReleaseType.ToString () ) : string.Empty );
 
-          string releaseName = string.Format("{0}{1}", 
-            GetPropertyString<ReleaseItem> ( item, result, item.ReleaseName ),
-            item.ReleaseType != ReleaseType.None ? string.Format(" {0}",item.ReleaseType.ToString() ) : string.Empty);
+					int releaseId = this.ReleaseService.CreateRelease (
+						GetPropertyString<ReleaseItem> ( item, result, tProjectName ).ToLower ().Trim (),
+						releaseName.Trim (),
+						GetPropertyString<ReleaseItem> ( item, result, item.Description ),
+						item.ReleaseDate.ToShortDateString (),
+						item.Status.ToString (),
+						item.ShowToPublic,
+						item.ShowOnHomePage,
+						item.IsDefaultRelease,
+						this.Username.Trim (),
+						this.Password.Trim ()
+					);
 
-          int releaseId = this.ReleaseService.CreateRelease (
-            GetPropertyString<ReleaseItem> ( item, result, tProjectName ).ToLower ( ).Trim ( ),
-            releaseName.Trim(),
-            GetPropertyString<ReleaseItem> ( item, result, item.Description ),
-            item.ReleaseDate.ToShortDateString ( ),
-            item.Status.ToString ( ),
-            item.ShowToPublic,
-            item.ShowOnHomePage,
-            item.IsDefaultRelease,
-            this.Username.Trim ( ),
-            this.Password.Trim ( )
-          );
+					// set the release if in the task result.
+					taskResult.ReleaseId = releaseId;
+					if ( item.ReleaseType != ReleaseType.None )
+						taskResult.ReleaseType = item.ReleaseType;
 
-          // set the release if in the task result.
-          taskResult.ReleaseId = releaseId;
-          if ( item.ReleaseType != ReleaseType.None )
-            taskResult.ReleaseType = item.ReleaseType;
+					//if ( item.Files == null || item.Files.Count == 0 )
+					//  throw new ArgumentNullException ( "releaseFiles" );
+					List<CodePlexApi.ReleaseFile> releaseFiles = new List<CodePlexApi.ReleaseFile> ();
 
-          //if ( item.Files == null || item.Files.Count == 0 )
-          //  throw new ArgumentNullException ( "releaseFiles" );
-          List<CodePlexApi.ReleaseFile> releaseFiles = new List<CodePlexApi.ReleaseFile> ( );
+					// loop the release files
+					foreach ( ReleaseFile releaseFile in item.Files ) {
+						CodePlexApi.ReleaseFile trf = new CodePlexApi.ReleaseFile ();
+						trf.FileName = Path.GetFileName ( GetPropertyString<ReleaseFile> ( releaseFile, result, releaseFile.FileName ) );
+						trf.Name = GetPropertyString<ReleaseFile> ( releaseFile, result, releaseFile.Name );
+						trf.MimeType = GetPropertyString<ReleaseFile> ( releaseFile, result, releaseFile.MimeType );
+						trf.FileType = releaseFile.FileType.ToString ();
+						// get the file data
+						byte[ ] fileData = releaseFile.GetFileData ( result );
+						if ( fileData == null || fileData.Length == 0 )
+							throw new ArgumentException ( "Invalid File Data", string.Format ( "releaseFile ('{0}')", releaseFile.FileName ) );
+						trf.FileData = fileData;
+						releaseFiles.Add ( trf );
+					}
+					// upload the release files if there are any.
+					if ( item.Files.Count > 0 ) {
+						this.ReleaseService.UploadReleaseFiles (
+							GetPropertyString<ReleaseItem> ( item, result, tProjectName ).ToLower ().Trim (),
+							releaseName.Trim (),
+							releaseFiles.ToArray (),
+							this.Username.Trim (),
+							this.Password.Trim ()
+						);
+					}
+				} catch ( Exception ex ) {
+					// set the error
+					taskResult.Exception = ex;
+				}
+				// add the task result
+				result.AddTaskResult ( taskResult );
+				if ( taskResult.Exception != null )
+					throw taskResult.Exception;
+			}
+		}
+		#endregion
 
-          // loop the release files
-          foreach ( ReleaseFile releaseFile in item.Files ) {
-            CodePlexApi.ReleaseFile trf = new CodePlexApi.ReleaseFile ( );
-            trf.FileName = Path.GetFileName ( GetPropertyString<ReleaseFile> ( releaseFile, result, releaseFile.FileName ) );
-            trf.Name = GetPropertyString<ReleaseFile> ( releaseFile, result, releaseFile.Name );
-            trf.MimeType = GetPropertyString<ReleaseFile> ( releaseFile, result, releaseFile.MimeType );
-            trf.FileType = releaseFile.FileType.ToString ( );
-            // get the file data
-            byte[ ] fileData = releaseFile.GetFileData ( result );
-            if ( fileData == null || fileData.Length == 0 )
-              throw new ArgumentException ( "Invalid File Data", string.Format ( "releaseFile ('{0}')", releaseFile.FileName ) );
-            trf.FileData = fileData;
-            releaseFiles.Add ( trf );
-          }
-          // upload the release files if there are any.
-          if ( item.Files.Count > 0 ) {
-            this.ReleaseService.UploadReleaseFiles (
-              GetPropertyString<ReleaseItem> ( item, result, tProjectName ).ToLower ( ).Trim ( ),
-              releaseName.Trim ( ),
-              releaseFiles.ToArray ( ),
-              this.Username.Trim ( ),
-              this.Password.Trim ( )
-            );
-          }
-        } catch ( Exception ex ) {
-          // set the error
-          taskResult.Exception = ex; 
-        }
-        // add the task result
-        result.AddTaskResult ( taskResult );
-        if ( taskResult.Exception != null )
-          throw taskResult.Exception;
-      }
-    }
-    #endregion
-
-    /// <summary>
-    /// Gets the property string.
-    /// </summary>
-    /// <param name="sender">The sender.</param>
-    /// <param name="result">The result.</param>
-    /// <param name="input">The input.</param>
-    /// <returns></returns>
+		/// <summary>
+		/// Gets the property string.
+		/// </summary>
+		/// <param name="sender">The sender.</param>
+		/// <param name="result">The result.</param>
+		/// <param name="input">The input.</param>
+		/// <returns></returns>
 		string IMacroRunner.GetPropertyString<T> ( T sender, IIntegrationResult result, string input ) {
 			return this.GetPropertyString<T> ( sender, result, input );
 		}
@@ -237,18 +237,19 @@ namespace CCNet.Community.Plugins.Publishers {
 		/// <param name="input">The input.</param>
 		/// <returns></returns>
 		private string GetPropertyString<T> ( T sender, IIntegrationResult result, string input ) {
-			string ret = this.MacroEngine.GetPropertyString<CodePlexReleasePublisher> ( this, result, input );
-			ret = this.GetPropertyString<T> ( sender, result, ret );
+			string ret = this.MacroEngine.GetPropertyString<T> ( sender, result, input );
+			if ( typeof ( T ) != this.GetType () )
+				ret = this.GetPropertyString<CodePlexReleasePublisher> ( this, result, ret );
 			return ret;
 		}
 
-    #region IMacroRunner Members
+		#region IMacroRunner Members
 
-    public MacroEngine MacroEngine {
-      get;
-      private set;
-    }
+		public MacroEngine MacroEngine {
+			get;
+			private set;
+		}
 
-    #endregion
-  }
+		#endregion
+	}
 }

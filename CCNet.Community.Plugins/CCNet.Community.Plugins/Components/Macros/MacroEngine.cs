@@ -127,6 +127,8 @@ namespace CCNet.Community.Plugins.Components.Macros {
           m = m.NextMatch ( );
         }
       }
+
+			//ret = GetPropertyString<IIntegrationResult> ( result, result, ret );
       return ret;
     }
 

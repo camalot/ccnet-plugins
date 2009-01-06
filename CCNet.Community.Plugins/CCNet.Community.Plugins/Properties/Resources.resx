@@ -140,7 +140,7 @@
     <value>@\{\s?([^\(]*?)\s?\(\s?(.*?)\s?\)\s?\}</value>
   </data>
   <data name="PropertyPatern" xml:space="preserve">
-    <value>\$\{([^\)]+)\}</value>
+    <value>\$\{([^\}]+)\}</value>
   </data>
   <data name="SshFtpNotSupportedMessage" xml:space="preserve">
     <value>The SSH Ftp protocol is not supported. For secured ftp requests, ftps ( ftp over ssl) can be used.</value>

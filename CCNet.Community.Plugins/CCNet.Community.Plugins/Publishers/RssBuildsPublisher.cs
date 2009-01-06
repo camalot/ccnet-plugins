@@ -380,8 +380,9 @@ namespace CCNet.Community.Plugins.Publishers {
 		/// <param name="input">The input.</param>
 		/// <returns></returns>
 		private string GetPropertyString<T> ( T sender, IIntegrationResult result, string input ) {
-			string ret = this.MacroEngine.GetPropertyString<RssBuildsPublisher> ( this, result, input );
-			ret = this.GetPropertyString<T> ( sender, result, ret );
+			string ret = this.MacroEngine.GetPropertyString<T> ( sender, result, input );
+			if ( typeof ( T ) != this.GetType () )
+				ret = this.GetPropertyString<RssBuildsPublisher> ( this, result, ret );
 			return ret;
 		}
 

@@ -38,6 +38,9 @@ namespace CCNet.Community.Plugins.Tests {
       ad = runner.MacroEngine.GetPropertyString<IMacroRunner> ( runner, Result, "${CCNetLabel}" );
       Assert.Equal<string> ( @"UNKNOWN", ad );
 
+			ad = runner.MacroEngine.GetPropertyString<IMacroRunner> ( runner, Result, "${CCNetLabel}:${CCNetLabel}" );
+			Assert.Equal<string> ( @"UNKNOWN:UNKNOWN", ad );
+
     }
 
     [Fact]

@@ -19,8 +19,8 @@ namespace CCNet.Community.Plugins.Tests {
 
 ${ModificationComments}</description>
             <releaseFiles>
-              <releaseFile fileName=""F:\redist\${ProjectName}\debug\${Label}\${ProjectName}.${Label}.zip"" fileType=""RuntimeBinary"" mimeType=""application/x-zip"" name=""${ProjectName}.${Label}"" />
-              <releaseFile fileName=""F:\redist\${ProjectName}\debug\${Label}\${ProjectName}.${Label}.src.zip"" fileType=""SourceCode"" mimeType=""application/x-zip"" name=""${ProjectName}.${Label}.src"" />
+              <releaseFile fileName=""b:\redist\${ProjectName}\debug\${Label}\${ProjectName}.${Label}.zip"" fileType=""RuntimeBinary"" mimeType=""application/x-zip"" name=""${ProjectName}.${Label}"" />
+              <releaseFile fileName=""b:\redist\${ProjectName}\debug\${Label}\${ProjectName}.${Label}.src.zip"" fileType=""SourceCode"" mimeType=""application/x-zip"" name=""${ProjectName}.${Label}.src"" />
             </releaseFiles>
             <buildCondition>IfModificationExists</buildCondition>
             <releaseStatus>Released</releaseStatus>
@@ -41,7 +41,7 @@ ${ModificationComments}</description>
 			Assert.Equal<int> ( 1, task.Releases.Count );
 			Assert.Equal<string> ( "${Label}", task.Releases[ 0 ].ReleaseName );
 
-			Assert.Equal<string> ( "UNKNOWN", task.MacroEngine.GetPropertyString<CodePlexReleasePublisher> ( task, CreateResultObject (), "${Label}" ) );
+			Assert.Equal<string> ( "0.0.0.1", task.MacroEngine.GetPropertyString<CodePlexReleasePublisher> ( task, CreateResultObject (), "${Label}" ) );
 		}
 
 		[Fact]
@@ -50,11 +50,10 @@ ${ModificationComments}</description>
 
 			CodePlexReleasePublisher task = new CodePlexReleasePublisher ();
 			NetReflector.Read ( xml, task );
-
+			IntegrationResult result = CreateResultObject ();
 			Assert.DoesNotThrow ( delegate {
-				task.Run ( CreateResultObject () );
+				task.Run ( result );
 			} );
-
 
 		}
 
@@ -64,6 +63,10 @@ ${ModificationComments}</description>
 					ThoughtWorks.CruiseControl.Remote.BuildCondition.IfModificationExists, "Test" ),
 					new IntegrationSummary ( ThoughtWorks.CruiseControl.Remote.IntegrationStatus.Success,
 						"0.0.0.1", "0.0.0.0", DateTime.Now ) );
+
+			result.Status = ThoughtWorks.CruiseControl.Remote.IntegrationStatus.Success;
+			result.ProjectName = "ccnetpluginstest";
+			result.Label = "0.0.0.1";
 
 			result.IntegrationProperties.Add ( "ProjectStatisticsFile", "foo.xml" );
 			result.Modifications = new Modification[ 2 ];
