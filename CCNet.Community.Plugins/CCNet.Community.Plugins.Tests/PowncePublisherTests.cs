@@ -64,7 +64,7 @@ namespace CCNet.Community.Plugins.Tests {
 
 		[Fact (Skip="No user name specified.")]
 		public void Create() {
-			
+			/*
 			string xml = @"<pownce>
 	<username>" + username + @"</username>
 	<password>" + password + @"</password>
@@ -104,6 +104,7 @@ namespace CCNet.Community.Plugins.Tests {
 			Assert.True ( publisher.Events[0].BuildStatus == PublishBuildStatus.Any );
 			Assert.Equal<string> ( username, publisher.UserName );
 			publisher.Run ( Result );
+			 **/
 		}
 	}
 }

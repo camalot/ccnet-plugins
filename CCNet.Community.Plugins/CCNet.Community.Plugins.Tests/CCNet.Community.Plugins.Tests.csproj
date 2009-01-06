@@ -72,6 +72,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CodeplexReleasePublisherTests.cs" />
     <Compile Include="FtpWebRequestTests.cs" />
     <Compile Include="IntegrationResultTestObject.cs" />
     <Compile Include="MacroEngineTests.cs" />

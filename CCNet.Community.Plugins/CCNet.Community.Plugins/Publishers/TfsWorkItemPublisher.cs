@@ -137,7 +137,7 @@ namespace CCNet.Community.Plugins.Publishers {
 		/// <param name="input">The input.</param>
 		/// <returns></returns>
 		public string GetPropertyString<T> ( T sender, IIntegrationResult result, string input ) {
-			string ret = this.GetPropertyString<TfsWorkItemPublisher> ( this, result, input );
+			string ret = this.MacroEngine.GetPropertyString<TfsWorkItemPublisher> ( this, result, input );
 			ret = this.GetPropertyString<T> ( sender, result, ret );
 			return ret;
 		}

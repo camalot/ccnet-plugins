@@ -237,7 +237,7 @@ namespace CCNet.Community.Plugins.Publishers {
 		/// <param name="input">The input.</param>
 		/// <returns></returns>
 		private string GetPropertyString<T> ( T sender, IIntegrationResult result, string input ) {
-			string ret = this.GetPropertyString<CodePlexReleasePublisher> ( this, result, input );
+			string ret = this.MacroEngine.GetPropertyString<CodePlexReleasePublisher> ( this, result, input );
 			ret = this.GetPropertyString<T> ( sender, result, ret );
 			return ret;
 		}
