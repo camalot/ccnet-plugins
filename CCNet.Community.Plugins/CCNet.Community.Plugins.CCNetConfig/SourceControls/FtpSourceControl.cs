@@ -177,7 +177,7 @@ namespace CCNet.Community.Plugins.CCNetConfig.SourceControls {
 			if ( string.Compare ( element.GetAttribute ( "type" ), this.TypeName, false ) != 0 )
 				throw new InvalidCastException ( string.Format ( "Unable to convert {0} to a {1}", element.GetAttribute ( "type" ), this.TypeName ) );
 
-			Utils.ResetObjectProperties<FtpSourceControl> ( this );
+			Util.ResetObjectProperties<FtpSourceControl> ( this );
 
 			this.Server = Util.GetElementOrAttributeValue ( "server", element );
 

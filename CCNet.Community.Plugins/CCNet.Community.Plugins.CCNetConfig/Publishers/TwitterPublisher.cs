@@ -106,6 +106,7 @@ namespace CCNet.Community.Plugins.CCNetConfig.Publishers {
 		/// </summary>
 		/// <value>The proxy.</value>
 		[TypeConverter ( typeof ( ObjectOrNoneTypeConverter ) ), DefaultValue ( null ),
+		NullOrObjectAttribue,
 		Editor ( typeof ( ObjectOrNoneUIEditor ), typeof ( UITypeEditor ) ), ReflectorName ( "proxy" ),
 		Category ( "Optional" ), Description ( "Proxy information." )]
 		public Proxy Proxy { get; set; }
@@ -126,7 +127,7 @@ namespace CCNet.Community.Plugins.CCNetConfig.Publishers {
       if ( string.Compare ( element.Name, this.TypeName, false ) != 0 )
         throw new InvalidCastException ( string.Format ( "Unable to convert {0} to a {1}", element.Name, this.TypeName ) );
 
-			Utils.ResetObjectProperties<TwitterPublisher> ( this );
+			Util.ResetObjectProperties<TwitterPublisher> ( this );
 
       this.UserName = Util.GetElementOrAttributeValue ( "username", element );
       this.Password.Password = Util.GetElementOrAttributeValue ( "password", element );

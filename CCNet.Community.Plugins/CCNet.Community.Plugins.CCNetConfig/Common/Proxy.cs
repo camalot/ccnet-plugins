@@ -66,7 +66,7 @@ namespace CCNet.Community.Plugins.CCNetConfig.Common {
 	/// <summary>
 	/// A common proxy object
 	/// </summary>
-	[ReflectorName("proxy")]
+	[ReflectorName ( "proxy" ), NullOrObjectAttribue]
 	public class Proxy : ICCNetDocumentation, ICCNetObject, ICloneable {
 
 		/// <summary>
@@ -133,7 +133,7 @@ namespace CCNet.Community.Plugins.CCNetConfig.Common {
 			string typeName =  Util.GetReflectorNameAttributeValue ( this.GetType () );
 			if ( string.Compare ( element.Name, typeName, false ) != 0 )
 				throw new InvalidCastException ( string.Format ( "Unable to convert {0} to a {1}", element.Name, typeName ) );
-			Utils.ResetObjectProperties<Proxy> ( this );
+			Util.ResetObjectProperties<Proxy> ( this );
 
 			this.Host = Util.GetElementOrAttributeValue ( "host", element );
 			string s = Util.GetElementOrAttributeValue ( "port", element );
