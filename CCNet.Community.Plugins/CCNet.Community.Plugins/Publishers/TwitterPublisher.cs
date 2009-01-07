@@ -63,10 +63,8 @@ namespace CCNet.Community.Plugins.Publishers {
   /// A twitter publisher. 
   /// </summary>
   [ReflectorType("twit")]
-  public class TwitterPublisher : ITask, IMacroRunner {
+  public class TwitterPublisher : BasePublisherTask {
     public TwitterPublisher ( ) {
-      this.ContinueOnFailure = false;
-			this.MacroEngine = new MacroEngine ();
     }
     /// <summary>
     /// Gets or sets the name of the user.
@@ -80,13 +78,6 @@ namespace CCNet.Community.Plugins.Publishers {
     /// <value>The password.</value>
     [ReflectorProperty ( "password" )]
     public string Password { get; set; }
-
-    /// <summary>
-    /// Gets or sets a value indicating whether [continue on failure].
-    /// </summary>
-    /// <value><c>true</c> if [continue on failure]; otherwise, <c>false</c>.</value>
-    [ReflectorProperty("continueOnFailure",Required=false)]
-    public bool ContinueOnFailure { get; set; }
 
     /// <summary>
     /// Gets or sets the project URL, used if you don't want to use the default url.
@@ -103,7 +94,13 @@ namespace CCNet.Community.Plugins.Publishers {
 
     #region ITask Members
 
-    public void Run ( IIntegrationResult result ) {
+    public override void Run ( IIntegrationResult result ) {
+			// using a custom enum allows for supporting AllBuildConditions
+			if ( this.BuildCondition != PublishBuildCondition.AllBuildConditions && string.Compare ( this.BuildCondition.ToString (), result.BuildCondition.ToString (), true ) != 0 ) {
+				Log.Info ( "TwitterPublisher skipped due to build condition not met." );
+				return;
+			}
+
       try {
         TwitterService twitter = new TwitterService ( );
         if ( this.Proxy != null )
@@ -139,36 +136,5 @@ namespace CCNet.Community.Plugins.Publishers {
         return String.Format ( "{0} Build Failed. See {1}", result.ProjectName, ProjectUrl ?? result.ProjectUrl );
       }
     }
-
-		#region IMacroRunner Members
-
-		public MacroEngine MacroEngine {get;set;}
-
-		/// <summary>
-		/// Gets the property string.
-		/// </summary>
-		/// <param name="sender">The sender.</param>
-		/// <param name="result">The result.</param>
-		/// <param name="input">The input.</param>
-		/// <returns></returns>
-		string IMacroRunner.GetPropertyString<T> ( T sender, IIntegrationResult result, string input ) {
-			return this.GetPropertyString<T> ( sender, result, input );
-		}
-
-		/// <summary>
-		/// Gets the property string.
-		/// </summary>
-		/// <typeparam name="T"></typeparam>
-		/// <param name="sender">The sender.</param>
-		/// <param name="result">The result.</param>
-		/// <param name="input">The input.</param>
-		/// <returns></returns>
-		private string GetPropertyString<T> ( T sender, IIntegrationResult result, string input ) {
-			string ret = this.MacroEngine.GetPropertyString<TwitterPublisher> ( this, result, input );
-			ret = this.GetPropertyString<T> ( sender, result, ret );
-			return ret;
-		}
-
-		#endregion
 	}
 }

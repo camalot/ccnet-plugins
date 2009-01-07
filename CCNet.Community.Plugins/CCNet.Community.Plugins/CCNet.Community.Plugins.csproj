@@ -92,6 +92,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\IContinueOnFailure.cs" />
     <Compile Include="Common\Proxy.cs" />
     <Compile Include="Common\CommunityTaskResult.cs" />
     <Compile Include="Components\Ftp\FtpDirectoryInfo.cs" />
@@ -144,6 +145,8 @@
     <Compile Include="Publishers\RssBuilds\RssElement.cs" />
     <Compile Include="Publishers\RssBuilds\RssElementAttribute.cs" />
     <Compile Include="Publishers\RssBuilds\RssNode.cs" />
+    <Compile Include="Common\BasePublisherTask.cs" />
+    <Compile Include="Tasks\FxCopTask.cs" />
     <Compile Include="Tasks\ITaskArgument.cs" />
     <Compile Include="Tasks\NCoverExcludes.cs" />
     <Compile Include="Util.cs" />

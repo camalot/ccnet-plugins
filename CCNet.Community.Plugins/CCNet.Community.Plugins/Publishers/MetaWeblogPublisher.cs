@@ -16,7 +16,7 @@ namespace CCNet.Community.Plugins.Publishers {
   /// Publishes the build results to a blog supporting the MetaWeblog API
   /// </summary>
   [ReflectorType ( "metaweblog" )]
-	public class MetaWeblogPublisher : ITask, IMacroRunner {
+	public class MetaWeblogPublisher : BasePublisherTask {
     /// <summary>
     /// Gets or sets the meta weblog API URL.
     /// </summary>
@@ -48,12 +48,6 @@ namespace CCNet.Community.Plugins.Publishers {
     [ReflectorProperty ( "descriptionformat", Required = false )]
     public string DescriptionFormat { get; set; }
     /// <summary>
-    /// Gets or sets a value indicating whether [continue on failure].
-    /// </summary>
-    /// <value><c>true</c> if [continue on failure]; otherwise, <c>false</c>.</value>
-    [ReflectorProperty ( "continueOnFailure", Required = false )]
-    public bool ContinueOnFailure { get; set; }
-    /// <summary>
     /// Gets or sets the tags.
     /// </summary>
     /// <value>The tags.</value>
@@ -67,16 +61,19 @@ namespace CCNet.Community.Plugins.Publishers {
     public Proxy Proxy { get; set; }
 
     public MetaWeblogPublisher ( ) {
-      this.ContinueOnFailure = false;
       this.DescriptionFormat = Properties.Settings.Default.MetaWeblogDefaultDescriptionFormat;
       this.TitleFormat = Properties.Settings.Default.MetaWeblogDefaultTitleFormat;
       this.Tags = new string[ 0 ];
-			this.MacroEngine = new MacroEngine ();
     }
 
     #region ITask Members
 
-    public void Run ( IIntegrationResult result ) {
+    public override void Run ( IIntegrationResult result ) {
+			// using a custom enum allows for supporting AllBuildConditions
+			if ( this.BuildCondition != PublishBuildCondition.AllBuildConditions && string.Compare ( this.BuildCondition.ToString (), result.BuildCondition.ToString (), true ) != 0 ) {
+				Log.Info ( "MetaWeblogPublisher skipped due to build condition not met." );
+				return;
+			}
       MetaWeblogClient client = new MetaWeblogClient ( );
 			NetworkCredential creds = new NetworkCredential ( this.GetPropertyString<IMacroRunner> ( this, result, this.Username ), this.GetPropertyString<IMacroRunner> ( this, result, this.Password ) );
 			client.Url = this.GetPropertyString<IMacroRunner> ( this, result, this.MetaWeblogApiUrl );
@@ -148,41 +145,5 @@ namespace CCNet.Community.Plugins.Publishers {
     }
 
     #endregion
-
-		#region IMacroRunner Members
-
-		/// <summary>
-		/// Gets the macro engine.
-		/// </summary>
-		/// <value>The macro engine.</value>
-		public MacroEngine MacroEngine { get; private set; }
-
-		/// <summary>
-		/// Gets the property string.
-		/// </summary>
-		/// <param name="sender">The sender.</param>
-		/// <param name="result">The result.</param>
-		/// <param name="input">The input.</param>
-		/// <returns></returns>
-		string IMacroRunner.GetPropertyString<T> ( T sender, IIntegrationResult result, string input ) {
-			return this.GetPropertyString<T> ( sender, result, input );
-		}
-
-		/// <summary>
-		/// Gets the property string.
-		/// </summary>
-		/// <typeparam name="T"></typeparam>
-		/// <param name="sender">The sender.</param>
-		/// <param name="result">The result.</param>
-		/// <param name="input">The input.</param>
-		/// <returns></returns>
-		private string GetPropertyString<T> ( T sender, IIntegrationResult result, string input ) {
-			string ret = this.MacroEngine.GetPropertyString<T> ( sender, result, input );
-			if ( typeof ( T ) != this.GetType () )
-				ret = this.GetPropertyString<MetaWeblogPublisher> ( this, result, ret );
-			return ret;
-		}
-		#endregion
-
 	}
 }

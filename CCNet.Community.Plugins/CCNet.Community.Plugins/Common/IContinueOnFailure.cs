@@ -45,88 +45,17 @@
  * permitted under your local laws, the contributors exclude the implied warranties of merchantability, fitness for a particular 
  * purpose and non-infringement.
  */
+
 using System;
 using System.Collections.Generic;
 using System.Text;
-using ThoughtWorks.CruiseControl.Core;
-using Exortech.NetReflector;
-using CCNet.Community.Plugins.Common;
-using CCNet.Community.Plugins.Components.Macros;
-using ThoughtWorks.CruiseControl.Core.Util;
 
-namespace CCNet.Community.Plugins.Publishers {
-  /// <summary>
-  /// Publishes a failed build as a workitem to a tfs server
-  /// </summary>
-  [ReflectorType ( "workitemPublisher", Description = "Publishes results to a TFS WorkItem when build fails." )]
-  public class TfsWorkItemPublisher : BasePublisherTask {
-
-		public TfsWorkItemPublisher () {
-
-		}
-    /// <summary>
-    /// Gets or sets the TFS server.
-    /// </summary>
-    /// <value>The TFS server.</value>
-    [ReflectorProperty ( "server", Required = true )]
-    public string TfsServer { get; set; }
-    /// <summary>
-    /// Gets or sets the name of the user.
-    /// </summary>
-    /// <value>The name of the user.</value>
-    [ReflectorProperty ( "username", Required = false )]
-    public string UserName { get; set; }
-    /// <summary>
-    /// Gets or sets the password.
-    /// </summary>
-    /// <value>The password.</value>
-    [ReflectorProperty ( "password", Required = false )]
-    public string Password { get; set; }
-    /// <summary>
-    /// Gets or sets the domain.
-    /// </summary>
-    /// <value>The domain.</value>
-    [ReflectorProperty ( "domain", Required = false )]
-    public string Domain { get; set; }
-    /// <summary>
-    /// Gets or sets the name of the project.
-    /// </summary>
-    /// <value>The name of the project.</value>
-    [ReflectorProperty ( "project", Required = true )]
-    public string ProjectName { get; set; }
-    /// <summary>
-    /// Gets or sets the title prefix.
-    /// </summary>
-    /// <value>The title prefix.</value>
-    [ReflectorProperty ( "titleprefix", Required = false )]
-    public string TitlePrefix { get; set; }
-    #region ITask Members
-
-    /// <summary>
-    /// Runs the specified result.
-    /// </summary>
-    /// <param name="result">The result.</param>
-    public override void Run ( IIntegrationResult result ) {
-			// using a custom enum allows for supporting AllBuildConditions
-			if ( this.BuildCondition != PublishBuildCondition.AllBuildConditions && string.Compare ( this.BuildCondition.ToString (), result.BuildCondition.ToString (), true ) != 0 ) {
-				Log.Info ( "TfsWorkItemPublisher skipped due to build condition not met." );
-				return;
-			}
-      if ( result.Failed ) {
-        try {
-          TfsServerConnection connection = new TfsServerConnection ( this, result );
-          connection.Publish ( );
-        } catch ( Exception ex) {
-					if ( this.ContinueOnFailure ) {
-						Log.Warning ( ex );
-					} else {
-						Log.Error ( ex );
-						throw;
-					}
-				}
-      }
-    }
-
-    #endregion
+namespace CCNet.Community.Plugins.Common {
+	public interface IContinueOnFailure {
+		/// <summary>
+		/// Gets or sets a value indicating whether to continue on error.
+		/// </summary>
+		/// <value><c>true</c> if should continue on error; otherwise, <c>false</c>.</value>
+		bool ContinueOnFailure { get; set; }
 	}
 }

@@ -61,13 +61,12 @@ namespace CCNet.Community.Plugins.Publishers {
 	/// An Ftp publisher.
 	/// </summary>
 	[ReflectorType ( "ftpPublisher" )]
-	public class FtpPublisher : ITask, IMacroRunner {
+	public class FtpPublisher : BasePublisherTask {
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="FtpPublisher"/> class.
 		/// </summary>
 		public FtpPublisher () {
-			this.MacroEngine = new MacroEngine ();
 			this.Files = new List<string> ();
 		}
 
@@ -75,7 +74,7 @@ namespace CCNet.Community.Plugins.Publishers {
 		/// Gets or sets the files.
 		/// </summary>
 		/// <value>The files.</value>
-		[ReflectorArray("files")]
+		[ReflectorArray ( "files" )]
 		public List<string> Files { get; set; }
 
 		/// <summary>
@@ -85,9 +84,9 @@ namespace CCNet.Community.Plugins.Publishers {
 		private string RootFtpPath { get; set; }
 
 		/// <summary>
-		/// Gets or sets the repository root.
+		/// Gets or sets the ftp path. default = /
 		/// </summary>
-		/// <value>The repository root.</value>
+		/// <value>The ftp path.</value>
 		[ReflectorProperty ( "workingDirectory", Required = false )]
 		public string WorkingDirectory { get; set; }
 
@@ -140,14 +139,8 @@ namespace CCNet.Community.Plugins.Publishers {
 		/// Gets or sets the proxy.
 		/// </summary>
 		/// <value>The proxy.</value>
-		[ReflectorProperty("proxy", Required=false)]
+		[ReflectorProperty ( "proxy", Required = false )]
 		public Proxy Proxy { get; set; }
-
-		/// <summary>
-		/// Gets the FTP URL.
-		/// </summary>
-		/// <value>The FTP URL.</value>
-		public Uri FtpUrl { get { return new Uri ( this.ToString () ); } }
 
 		/// <summary>
 		/// Returns a <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
@@ -162,6 +155,25 @@ namespace CCNet.Community.Plugins.Publishers {
 				!this.FtpServer.StartsWith ( "ftp://" ) && !this.UseSsl ? "ftp://" :
 				!this.FtpServer.StartsWith ( "ftps://" ) && this.UseSsl ? "ftps://" :
 				string.Empty, !this.WorkingDirectory.EndsWith ( "/" ) ? "/" : string.Empty ) ).ToString ();
+		}
+
+		/// <summary>
+		/// Returns a <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
+		/// </summary>
+		/// <param name="result">The result.</param>
+		/// <returns>
+		/// A <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
+		/// </returns>
+		private string ToString ( IIntegrationResult result ) {
+			string wd = this.GetPropertyString<FtpPublisher> ( this, result, this.WorkingDirectory );
+			string server = this.GetPropertyString<FtpPublisher> ( this, result, this.FtpServer );
+			return new Uri ( string.Format ( "{4}{0}{1}{2}{3}{5}",
+				server,
+				this.Port != 21 ? ":" + this.Port : string.Empty,
+				!wd.StartsWith ( "/" ) ? "/" : string.Empty, wd,
+				!server.StartsWith ( "ftp://" ) && !this.UseSsl ? "ftp://" :
+				!server.StartsWith ( "ftps://" ) && this.UseSsl ? "ftps://" :
+				string.Empty, !wd.EndsWith ( "/" ) ? "/" : string.Empty ) ).ToString ();
 		}
 
 		/// <summary>
@@ -200,16 +212,27 @@ namespace CCNet.Community.Plugins.Publishers {
 		/// Runs the specified result.
 		/// </summary>
 		/// <param name="result">The result.</param>
-		public void Run ( IIntegrationResult result ) {
+		public override void Run ( IIntegrationResult result ) {
+			// using a custom enum allows for supporting AllBuildConditions
+			if ( this.BuildCondition != PublishBuildCondition.AllBuildConditions && string.Compare ( this.BuildCondition.ToString (), result.BuildCondition.ToString (), true ) != 0 ) {
+				Log.Info ( "FtpPublisher skipped due to build condition not met." );
+				return;
+			}
+
 			if ( result.Succeeded ) {
 				FtpWebRequest req = this.CreateFtpWebRequest ();
 				foreach ( string s in this.Files ) {
 					FileInfo fi = new FileInfo ( s );
 					if ( fi.Exists ) {
 						try {
-							req.UploadFile ( fi, this.FtpUrl );
+							req.UploadFile ( fi, new Uri ( this.ToString ( result ) ) );
 						} catch ( Exception ex ) {
-							Log.Error ( ex );
+							if ( this.ContinueOnFailure ) {
+								Log.Warning ( ex );
+							} else {
+								Log.Error ( ex );
+								throw;
+							}
 						}
 					} else {
 						Log.Warning ( string.Format ( "The file {0} was not found. File skipped.", fi.FullName ) );
@@ -218,31 +241,6 @@ namespace CCNet.Community.Plugins.Publishers {
 			} else {
 				Log.Debug ( "Build failed, Ftp process skipped" );
 			}
-		}
-
-		#endregion
-
-		#region IMacroRunner Members
-
-		/// <summary>
-		/// Gets the macro engine.
-		/// </summary>
-		/// <value>The macro engine.</value>
-		public MacroEngine MacroEngine { get; private set; }
-
-		/// <summary>
-		/// Gets the property string.
-		/// </summary>
-		/// <typeparam name="T"></typeparam>
-		/// <param name="sender">The sender.</param>
-		/// <param name="result">The result.</param>
-		/// <param name="input">The input.</param>
-		/// <returns></returns>
-		public string GetPropertyString<T> ( T sender, IIntegrationResult result, string input ) {
-			string ret = this.MacroEngine.GetPropertyString<T> ( sender, result, input );
-			if ( typeof ( T ) != this.GetType () )
-				ret = this.GetPropertyString<FtpPublisher> ( this, result, ret );
-			return ret;
 		}
 
 		#endregion

@@ -50,6 +50,7 @@
     <Compile Include="Common\BypassPattern.cs" />
     <Compile Include="Common\Proxy.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Publishers\CodePlexReleasePublisher.cs" />
     <Compile Include="Publishers\MetaWeblogPublisher.cs" />
     <Compile Include="Publishers\MetaWeblogTag.cs" />
     <Compile Include="Publishers\TfsWorkItemPublisher.cs" />

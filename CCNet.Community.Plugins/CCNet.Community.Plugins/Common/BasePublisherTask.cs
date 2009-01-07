@@ -45,88 +45,84 @@
  * permitted under your local laws, the contributors exclude the implied warranties of merchantability, fitness for a particular 
  * purpose and non-infringement.
  */
+
 using System;
 using System.Collections.Generic;
 using System.Text;
 using ThoughtWorks.CruiseControl.Core;
-using Exortech.NetReflector;
 using CCNet.Community.Plugins.Common;
 using CCNet.Community.Plugins.Components.Macros;
-using ThoughtWorks.CruiseControl.Core.Util;
+using Exortech.NetReflector;
+using ThoughtWorks.CruiseControl.Remote;
 
-namespace CCNet.Community.Plugins.Publishers {
-  /// <summary>
-  /// Publishes a failed build as a workitem to a tfs server
-  /// </summary>
-  [ReflectorType ( "workitemPublisher", Description = "Publishes results to a TFS WorkItem when build fails." )]
-  public class TfsWorkItemPublisher : BasePublisherTask {
+namespace CCNet.Community.Plugins.Common {
+	/// <summary>
+	/// 
+	/// </summary>
+	public abstract class BasePublisherTask : ITask, IContinueOnFailure, IMacroRunner{
 
-		public TfsWorkItemPublisher () {
-
+		/// <summary>
+		/// Initializes a new instance of the <see cref="BasePublisherTask"/> class.
+		/// </summary>
+		public BasePublisherTask () {
+			this.MacroEngine = new MacroEngine ();
+			this.ContinueOnFailure = false;
+			this.BuildCondition = PublishBuildCondition.AllBuildConditions;
 		}
-    /// <summary>
-    /// Gets or sets the TFS server.
-    /// </summary>
-    /// <value>The TFS server.</value>
-    [ReflectorProperty ( "server", Required = true )]
-    public string TfsServer { get; set; }
-    /// <summary>
-    /// Gets or sets the name of the user.
-    /// </summary>
-    /// <value>The name of the user.</value>
-    [ReflectorProperty ( "username", Required = false )]
-    public string UserName { get; set; }
-    /// <summary>
-    /// Gets or sets the password.
-    /// </summary>
-    /// <value>The password.</value>
-    [ReflectorProperty ( "password", Required = false )]
-    public string Password { get; set; }
-    /// <summary>
-    /// Gets or sets the domain.
-    /// </summary>
-    /// <value>The domain.</value>
-    [ReflectorProperty ( "domain", Required = false )]
-    public string Domain { get; set; }
-    /// <summary>
-    /// Gets or sets the name of the project.
-    /// </summary>
-    /// <value>The name of the project.</value>
-    [ReflectorProperty ( "project", Required = true )]
-    public string ProjectName { get; set; }
-    /// <summary>
-    /// Gets or sets the title prefix.
-    /// </summary>
-    /// <value>The title prefix.</value>
-    [ReflectorProperty ( "titleprefix", Required = false )]
-    public string TitlePrefix { get; set; }
-    #region ITask Members
+		#region ITask Members
 
-    /// <summary>
-    /// Runs the specified result.
-    /// </summary>
-    /// <param name="result">The result.</param>
-    public override void Run ( IIntegrationResult result ) {
-			// using a custom enum allows for supporting AllBuildConditions
-			if ( this.BuildCondition != PublishBuildCondition.AllBuildConditions && string.Compare ( this.BuildCondition.ToString (), result.BuildCondition.ToString (), true ) != 0 ) {
-				Log.Info ( "TfsWorkItemPublisher skipped due to build condition not met." );
-				return;
-			}
-      if ( result.Failed ) {
-        try {
-          TfsServerConnection connection = new TfsServerConnection ( this, result );
-          connection.Publish ( );
-        } catch ( Exception ex) {
-					if ( this.ContinueOnFailure ) {
-						Log.Warning ( ex );
-					} else {
-						Log.Error ( ex );
-						throw;
-					}
-				}
-      }
-    }
+		/// <summary>
+		/// Runs the specified result.
+		/// </summary>
+		/// <param name="result">The result.</param>
+		public abstract void Run ( IIntegrationResult result );
 
-    #endregion
+		#endregion
+
+		/// <summary>
+		/// Gets or sets the build condition in which will execute this task/publisher.
+		/// </summary>
+		/// <value>The build condition.</value>
+		[ReflectorProperty ( "buildCondition", Required = false )]
+		public PublishBuildCondition BuildCondition { get; set; }
+
+		#region ContinueOnFailure Members
+
+		/// <summary>
+		/// Gets or sets a value indicating whether [continue on error].
+		/// </summary>
+		/// <value><c>true</c> if [continue on error]; otherwise, <c>false</c>.</value>
+		[ReflectorProperty ( "continueOnFailure", Required = false )]
+		public bool ContinueOnFailure { get; set; }
+
+		#endregion
+
+		#region IMacroRunner Members
+
+		/// <summary>
+		/// Gets the macro engine.
+		/// </summary>
+		/// <value>The macro engine.</value>
+		public MacroEngine MacroEngine {
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Gets the property string.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="sender">The sender.</param>
+		/// <param name="result">The result.</param>
+		/// <param name="input">The input.</param>
+		/// <returns></returns>
+		public string GetPropertyString<T> ( T sender, IIntegrationResult result, string input ) {
+			string ret = this.MacroEngine.GetPropertyString<T> ( sender, result, input );
+			if ( typeof ( T ) != this.GetType () )
+				ret = this.GetPropertyString<BasePublisherTask> ( this, result, ret );
+			return ret;
+		}
+
+		#endregion
 	}
 }

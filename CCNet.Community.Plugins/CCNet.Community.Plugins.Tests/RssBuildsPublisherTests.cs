@@ -54,10 +54,12 @@ using Xunit;
 using System.Net;
 
 namespace CCNet.Community.Plugins.Tests {
-  public class RssBuildsPublisherTests : IntegrationResultTestObject {
-    [Fact]
-    public void IntializeRssBuildsPublisher ( ) {
-			string xml = @"<rssBuilds>
+	public class RssBuildsPublisherTests : IntegrationResultTestObject {
+		private string xml = string.Empty;
+		public RssBuildsPublisherTests () {
+			xml = @"<rssBuilds>
+	<outputPath>b:\redist\${ProjectName}</outputPath>
+  <fileName>${ProjectName}</fileName>
   <encoding>UTF-16</encoding>
   <rssExtensions>
     <namespace prefix=""foo"" namespaceURI=""urn:foo-bar"" />
@@ -78,14 +80,27 @@ namespace CCNet.Community.Plugins.Tests {
   <descriptionHeader><![CDATA[<p>]]></descriptionHeader>
   <descriptionFooter><![CDATA[</p>]]></descriptionFooter>
 </rssBuilds>";
-      RssBuildsPublisher publisher = NetReflector.Read ( xml ) as RssBuildsPublisher;
-      Assert.Equal<string> ( "UTF-16", publisher.Encoding );
-    }
-    [Fact]
-    public void ValidateGeneratedRssFeed ( ) {
-      HttpWebRequest req = HttpWebRequest.Create ( "http://validator.w3.org/feed/check.cgi?output=soap12" ) as HttpWebRequest;
-      
-    }
-    
-  }
+		}
+		[Fact]
+		public void IntializeRssBuildsPublisher () {
+
+			RssBuildsPublisher publisher = NetReflector.Read ( xml ) as RssBuildsPublisher;
+			Assert.Equal<string> ( "UTF-16", publisher.Encoding );
+
+		}
+		[Fact]
+		public void RunRssBuildsPublisherTest () {
+			RssBuildsPublisher publisher = NetReflector.Read ( xml ) as RssBuildsPublisher;
+			Assert.Equal<string> ( "UTF-16", publisher.Encoding );
+			Assert.DoesNotThrow ( delegate {
+				publisher.Run ( this.Result );
+			} );
+		}
+		[Fact]
+		public void ValidateGeneratedRssFeed () {
+			HttpWebRequest req = HttpWebRequest.Create ( "http://validator.w3.org/feed/check.cgi?output=soap12" ) as HttpWebRequest;
+
+		}
+
+	}
 }

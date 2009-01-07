@@ -36,10 +36,10 @@ namespace CCNet.Community.Plugins.Tests {
       string ad = runner.MacroEngine.GetPropertyString<IMacroRunner> ( runner, Result, "${ArtifactDirectory}" );
       Assert.Equal<string> ( @"d:\redist\ccnetplugins\", ad );
       ad = runner.MacroEngine.GetPropertyString<IMacroRunner> ( runner, Result, "${CCNetLabel}" );
-      Assert.Equal<string> ( @"UNKNOWN", ad );
+      Assert.Equal<string> ( @"1.2.3.4", ad );
 
 			ad = runner.MacroEngine.GetPropertyString<IMacroRunner> ( runner, Result, "${CCNetLabel}:${CCNetLabel}" );
-			Assert.Equal<string> ( @"UNKNOWN:UNKNOWN", ad );
+			Assert.Equal<string> ( @"1.2.3.4:1.2.3.4", ad );
 
     }
 

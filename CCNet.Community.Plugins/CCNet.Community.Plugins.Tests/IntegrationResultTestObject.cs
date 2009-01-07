@@ -7,11 +7,16 @@ namespace CCNet.Community.Plugins.Tests {
   public abstract class IntegrationResultTestObject {
     public IntegrationResult Result { get; set; }
     public IntegrationResultTestObject ( ) {
-      Result = new IntegrationResult ( "test", @"d:\source\ccnetplugins\", @"d:\redist\ccnetplugins\",
+      Result = new IntegrationResult ( "ccnetpluginstest", @"d:\source\ccnetplugins\", @"d:\redist\ccnetplugins\",
         new ThoughtWorks.CruiseControl.Remote.IntegrationRequest (
           ThoughtWorks.CruiseControl.Remote.BuildCondition.IfModificationExists, "Test" ),
           new IntegrationSummary ( ThoughtWorks.CruiseControl.Remote.IntegrationStatus.Success,
             "1.2.3.4", "1.2.3.3", DateTime.Now ) );
+
+			Result.Status = ThoughtWorks.CruiseControl.Remote.IntegrationStatus.Success;
+			Result.ProjectName = "ccnetpluginstest";
+			Result.Label = "1.2.3.4";
+
       Result.IntegrationProperties.Add ( "ProjectStatisticsFile", "foo.xml" );
       Result.Modifications = new Modification[ 2 ];
       Result.Modifications[ 0 ] = new Modification ( );

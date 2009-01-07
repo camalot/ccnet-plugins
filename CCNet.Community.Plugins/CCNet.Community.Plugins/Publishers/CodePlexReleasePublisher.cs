@@ -56,19 +56,30 @@ using System.Security.Cryptography.X509Certificates;
 using CCNet.Community.Plugins.CodePlexApi;
 using CCNet.Community.Plugins.Components.Macros;
 using CCNet.Community.Plugins.Common;
+using ThoughtWorks.CruiseControl.Core.Util;
 
 namespace CCNet.Community.Plugins.Publishers {
+	/// <summary>
+	/// 
+	/// </summary>
 	[ReflectorType ( "codeplexRelease" )]
-	public class CodePlexReleasePublisher : ITask, IMacroRunner {
+	public class CodePlexReleasePublisher : BasePublisherTask {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="CodePlexReleasePublisher"/> class.
 		/// </summary>
 		public CodePlexReleasePublisher () {
 			Releases = new List<ReleaseItem> ();
-			MacroEngine = new MacroEngine ();
+			this.Timeout = 60 * 3000;
 		}
 
 		#region reflector properties
+
+		/// <summary>
+		/// Gets or sets the timeout.
+		/// </summary>
+		/// <value>The timeout.</value>
+		[ReflectorProperty("timeout",Required=false)]
+		public int Timeout { get; set; }
 
 		private ReleaseService ReleaseService { get; set; }
 		/// <summary>
@@ -117,11 +128,19 @@ namespace CCNet.Community.Plugins.Publishers {
 		/// Runs the task.
 		/// </summary>
 		/// <param name="result">The result.</param>
-		public void Run ( IIntegrationResult result ) {
+		public override void Run ( IIntegrationResult result ) {
 			// only continue if the result was a success.
 			if ( result.Status != ThoughtWorks.CruiseControl.Remote.IntegrationStatus.Success ) {
+				Log.Info ( "CodePlexReleasePublisher skipped due to build status not met." );
 				return;
 			}
+
+			// using a custom enum allows for supporting AllBuildConditions
+			if ( this.BuildCondition != PublishBuildCondition.AllBuildConditions && string.Compare ( this.BuildCondition.ToString (), result.BuildCondition.ToString (), true ) != 0 ) {
+				Log.Info ( "CodePlexReleasePublisher skipped due to build condition not met." );
+				return;
+			}
+
 			// if the cert comes from microsoft, except it.
 			System.Net.ServicePointManager.ServerCertificateValidationCallback += delegate ( object sender,
 					X509Certificate certificate, X509Chain chain,
@@ -147,6 +166,7 @@ namespace CCNet.Community.Plugins.Publishers {
 					}
 
 					this.ReleaseService = new ReleaseService ();
+					this.ReleaseService.Timeout = this.Timeout;
 					if ( this.Proxy != null )
 						this.ReleaseService.Proxy = this.Proxy.CreateProxy ();
 					string tProjectName = string.IsNullOrEmpty ( this.ProjectName ) ? result.ProjectName.ToLower ().Trim () : this.ProjectName;
@@ -212,44 +232,14 @@ namespace CCNet.Community.Plugins.Publishers {
 				// add the task result
 				result.AddTaskResult ( taskResult );
 				if ( taskResult.Exception != null )
-					throw taskResult.Exception;
+					if ( this.ContinueOnFailure ) {
+						Log.Warning ( taskResult.Exception );
+					} else {
+						Log.Error ( taskResult.Exception );
+						throw taskResult.Exception;
+					}
 			}
-		}
 		#endregion
-
-		/// <summary>
-		/// Gets the property string.
-		/// </summary>
-		/// <param name="sender">The sender.</param>
-		/// <param name="result">The result.</param>
-		/// <param name="input">The input.</param>
-		/// <returns></returns>
-		string IMacroRunner.GetPropertyString<T> ( T sender, IIntegrationResult result, string input ) {
-			return this.GetPropertyString<T> ( sender, result, input );
 		}
-
-		/// <summary>
-		/// Gets the property string.
-		/// </summary>
-		/// <typeparam name="T"></typeparam>
-		/// <param name="sender">The sender.</param>
-		/// <param name="result">The result.</param>
-		/// <param name="input">The input.</param>
-		/// <returns></returns>
-		private string GetPropertyString<T> ( T sender, IIntegrationResult result, string input ) {
-			string ret = this.MacroEngine.GetPropertyString<T> ( sender, result, input );
-			if ( typeof ( T ) != this.GetType () )
-				ret = this.GetPropertyString<CodePlexReleasePublisher> ( this, result, ret );
-			return ret;
-		}
-
-		#region IMacroRunner Members
-
-		public MacroEngine MacroEngine {
-			get;
-			private set;
-		}
-
-		#endregion
 	}
 }
