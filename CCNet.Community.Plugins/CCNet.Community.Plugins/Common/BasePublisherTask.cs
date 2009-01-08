@@ -118,7 +118,7 @@ namespace CCNet.Community.Plugins.Common {
 		/// <returns></returns>
 		public string GetPropertyString<T> ( T sender, IIntegrationResult result, string input ) {
 			string ret = this.MacroEngine.GetPropertyString<T> ( sender, result, input );
-			if ( typeof ( T ) != this.GetType () )
+			if ( !typeof ( T ).IsAssignableFrom(this.GetType()) )
 				ret = this.GetPropertyString<BasePublisherTask> ( this, result, ret );
 			return ret;
 		}
