@@ -141,7 +141,7 @@ namespace CCNet.Community.Plugins.Components.Twitter {
     /// the Twitter developers, this will be used in the future (hopefully near) to set more information
     /// in Twitter about the client posting the information as well as future usage in a clients directory.		
     /// </summary>
-    public Uri Url { get { return new Uri ( "http://codeplex.com/ccnetplugins" ); } }
+		public Uri Url { get { return new Uri ( "http://ccnetplugins.codeplex.com" ); } }
 
     /// <summary>
     /// Gets or sets the proxy.
@@ -155,8 +155,14 @@ namespace CCNet.Community.Plugins.Components.Twitter {
     /// <param name="userName">The username to use with the request</param>
     /// <param name="password">The password to use with the request</param>
     /// <returns>The response of the request, or null if we got 404 or nothing.</returns>
+		/// <workitems>
+		///		<workitem rel="3582">Expect100Continue had to be set to false;</workitem>
+		/// </workitems>
     protected string ExecuteGetCommand ( string url, string userName, string password ) {
+			// fix for twitter 417 error. http://groups.google.com/group/twitter-development-talk/browse_thread/thread/7c67ff1a2407dee7
+				System.Net.ServicePointManager.Expect100Continue = false;
       using ( WebClient client = new WebClient ( ) ) {
+
         if ( !string.IsNullOrEmpty ( userName ) && !string.IsNullOrEmpty ( password ) ) {
           client.Credentials = new NetworkCredential ( userName, password );
         }
@@ -196,8 +202,13 @@ namespace CCNet.Community.Plugins.Components.Twitter {
     /// <param name="password">The password to use with the request</param>
     /// <param name="data">The data to post</param> 
     /// <returns>The response of the request, or null if we got 404 or nothing.</returns>
-    protected string ExecutePostCommand ( string url, string userName, string password, string data ) {
-      WebRequest request = WebRequest.Create ( url );
+		/// <workitems>
+		///		<workitem rel="3582">Expect100Continue had to be set to false;</workitem>
+		/// </workitems>
+		protected string ExecutePostCommand ( string url, string userName, string password, string data ) {
+			// fix for twitter 417 error. http://groups.google.com/group/twitter-development-talk/browse_thread/thread/7c67ff1a2407dee7
+			System.Net.ServicePointManager.Expect100Continue = false;
+			WebRequest request = WebRequest.Create ( url );
       if ( !string.IsNullOrEmpty ( userName ) && !string.IsNullOrEmpty ( password ) ) {
         request.Credentials = new NetworkCredential ( userName, password );
         request.ContentType = "application/x-www-form-urlencoded";

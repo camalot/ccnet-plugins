@@ -60,18 +60,17 @@ namespace CCNet.Community.Plugins.Tests {
     [Fact]
     public void TwitterPublisherCreation ( ) {
       string xml = @"<twit>
-  <username>someuser</username>
-  <password>somepassword</password>
+  <username>ccnetplugintest</username>
+  <password>p@ssw0rd1</password>
 </twit>";
 
       TwitterPublisher publisher = NetReflector.Read ( xml ) as TwitterPublisher;
-      Assert.True ( string.Compare ( "someuser", publisher.UserName, false ) == 0 );
-      Assert.True ( string.Compare ( "somepassword", publisher.Password, false ) == 0 );
+			Assert.True ( string.Compare ( "ccnetplugintest", publisher.UserName, false ) == 0 );
+			Assert.True ( string.Compare ( "p@ssw0rd1", publisher.Password, false ) == 0 );
 
       // change username and password and comment out return statement for full test.
-      return;
       IntegrationResult result = new IntegrationResult ( "Test", "c:\\source", "c:\\builds", new ThoughtWorks.CruiseControl.Remote.IntegrationRequest ( ThoughtWorks.CruiseControl.Remote.BuildCondition.ForceBuild, "foo" ), new IntegrationSummary ( ThoughtWorks.CruiseControl.Remote.IntegrationStatus.Success, "0.1.2.3", "0.1.2.2", DateTime.Now.Subtract ( new TimeSpan ( 0, 5, 30 ) ) ) );
-      result.ProjectUrl = "http://codeplex.com/ccnetplugins";
+			result.ProjectUrl = "http://ccnetplugins.codeplex.com";
       result.MarkStartTime ( );
       result.Label = "0.1.2.3";
       result.LastIntegrationStatus = ThoughtWorks.CruiseControl.Remote.IntegrationStatus.Success;
