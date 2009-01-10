@@ -60,7 +60,7 @@ using ThoughtWorks.CruiseControl.Core.Util;
 
 namespace CCNet.Community.Plugins.Publishers {
 	/// <summary>
-	/// 
+	/// Publishes the release on CodePlex using the CodePlex API
 	/// </summary>
 	[ReflectorType ( "codeplexRelease" )]
 	public class CodePlexReleasePublisher : BasePublisherTask {
@@ -128,6 +128,9 @@ namespace CCNet.Community.Plugins.Publishers {
 		/// Runs the task.
 		/// </summary>
 		/// <param name="result">The result.</param>
+		/// <workitems>
+		///		<workitem rel="3586">Update CodePlexReleasePublisher to support Dev Status</workitem>
+		/// </workitems>
 		public override void Run ( IIntegrationResult result ) {
 			// only continue if the result was a success.
 			if ( result.Status != ThoughtWorks.CruiseControl.Remote.IntegrationStatus.Success ) {
@@ -179,12 +182,20 @@ namespace CCNet.Community.Plugins.Publishers {
 						GetPropertyString<ReleaseItem> ( item, result, item.ReleaseName ),
 						item.ReleaseType != ReleaseType.None ? string.Format ( " {0}", item.ReleaseType.ToString () ) : string.Empty );
 
+					string status = item.Status.ToString ();
+					if ( item.ReleaseType == ReleaseType.Alpha )
+						status = ReleaseStatus.Alpha.ToString ();
+					else if ( item.ReleaseType == ReleaseType.Beta || item.ReleaseType == ReleaseType.Nightly )
+						status = ReleaseStatus.Beta.ToString ();
+					else if ( item.ReleaseType == ReleaseType.Production )
+						status = ReleaseStatus.Stable.ToString ();
+
 					int releaseId = this.ReleaseService.CreateRelease (
 						GetPropertyString<ReleaseItem> ( item, result, tProjectName ).ToLower ().Trim (),
 						releaseName.Trim (),
 						GetPropertyString<ReleaseItem> ( item, result, item.Description ),
 						item.ReleaseDate.ToShortDateString (),
-						item.Status.ToString (),
+						status,
 						item.ShowToPublic,
 						item.ShowOnHomePage,
 						item.IsDefaultRelease,

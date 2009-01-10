@@ -54,14 +54,30 @@ namespace CCNet.Community.Plugins {
   /// The status of the release
   /// </summary>
   public enum ReleaseStatus {
-    /// <summary>
-    /// The release is a planned release.
-    /// </summary>
-    Planned,
-    /// <summary>
-    /// The release is an available release
-    /// </summary>
-    Released
+		/// <summary>
+		/// The release is a planned release.
+		/// </summary>
+		Planned = 0,
+		/// <summary>
+		/// The release is released (stable?)
+		/// </summary>
+		Released,
+		/// <summary>
+		/// The release is in the planning stages
+		/// </summary>
+		Planning,
+		/// <summary>
+		/// The release is an alpha
+		/// </summary>
+		Alpha,
+		/// <summary>
+		/// The release is a beta
+		/// </summary>
+		Beta,
+		/// <summary>
+		/// The release is a stable release
+		/// </summary>
+		Stable,
   }
 
   /// <summary>
@@ -93,7 +109,7 @@ namespace CCNet.Community.Plugins {
     /// <summary>
     /// No specified release type
     /// </summary>
-    None,
+    None = 0,
     /// <summary>
     /// An alpha release
     /// </summary>

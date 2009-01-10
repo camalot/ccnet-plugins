@@ -56,7 +56,7 @@ namespace CCNet.Community.Plugins.Publishers {
     private string description;
     private bool isDefaultRelease;
     private DateTime? releaseDate;
-    private ReleaseStatus releaseStatus = ReleaseStatus.Planned;
+    private ReleaseStatus releaseStatus = ReleaseStatus.Beta;
     private bool showOnHomePage;
     private bool showToPublic;
     private List<ReleaseFile> files = null;

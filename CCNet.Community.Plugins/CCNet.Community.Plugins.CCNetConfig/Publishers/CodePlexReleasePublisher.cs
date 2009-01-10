@@ -145,13 +145,29 @@ namespace CCNet.Community.Plugins.CCNetConfig.Publishers {
 			/// </summary>
 			public enum ReleaseStatus {
 				/// <summary>
-				/// The release is not available to users
+				/// The release is a planned release.
 				/// </summary>
 				Planned,
 				/// <summary>
-				/// The release is publically available
+				/// The release is released (stable?)
 				/// </summary>
 				Released,
+				/// <summary>
+				/// The release is in the planning stages
+				/// </summary>
+				Planning,
+				/// <summary>
+				/// The release is an alpha
+				/// </summary>
+				Alpha,
+				/// <summary>
+				/// The release is a beta
+				/// </summary>
+				Beta,
+				/// <summary>
+				/// The release is a stable release
+				/// </summary>
+				Stable,
 			}
 
 			/// <summary>
