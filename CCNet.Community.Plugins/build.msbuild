@@ -58,7 +58,7 @@
     <MSBuildProperties>Configuration=$(Configuration);OutputPath=$(OutputPath);CCNetLabel=$(CCNetLabel);CCNetIntegrationStatus=$(CCNetIntegrationStatus);CCNetBuildCondition=$(CCNetBuildCondition);CCNetProject=$(CCNetProject);CCNetBuildDate=$(CCNetBuildDate);CCNetLastIntegrationStatus=$(CCNetLastIntegrationStatus);CCNetBuildTime=$(CCNetBuildTime);CCNetArtifactDirectory=$(CCNetArtifactDirectory);CCNetWorkingDirectory=$(CCNetWorkingDirectory);CCNetRequestSource=$(CCNetRequestSource)</MSBuildProperties>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectsToBuild Include="**\*csproj" Exclude="**\CCNet.Community.Plugins.Tests.csproj;" />
+    <ProjectsToBuild Include="**\*.csproj" Exclude="**\CCNet.Community.Plugins.Tests.csproj;" />
     <InstallProjectToBuild Include="**\*.wix.msbuild" />
   </ItemGroup>
 
@@ -84,7 +84,7 @@
 
   <!-- Zips releases up -->
   <Target Name="ZipRelease" DependsOnTargets="">
-    <CreateItem Include="$(OutputPath)*.*;$(OutputPath)Data\*.*" Exclude="$(OutputPath)*.zip;$(OutputPath)Help\**\*.*">
+    <CreateItem Include="$(OutputPath)*.*;$(OutputPath)Data\*.*" Exclude="$(OutputPath)*.zip;$(OutputPath)Help\**\*.*;$(OutputPath)*CCNetConfig.*">
       <Output ItemName="ZipFiles" TaskParameter="Include" />
     </CreateItem>
     <Zip Comment="$(CCNetBuildDate) $(CCNetBuildTime) $(CCNetProject) version $(CCNetLabel)" Files="@(ZipFiles)"
@@ -93,14 +93,16 @@
     <Zip Comment="$(CCNetBuildDate) $(CCNetBuildTime) $(CCNetProject) version $(CCNetLabel) Source"
       Files="@(SourceFiles)" WorkingDirectory="$(CCNetWorkingDirectory)\$(CCNetProject)\"
       ZipFileName="$(OutputPath)$(CCNetProject).$(CCNetLabel).src.zip" Flatten="False" ZipLevel="9" />
-    <!--CallTarget Targets="BuildInstall" ContinueOnError="false" />
-
-    <CreateItem Include="$(OutputPath)\*.msi">
-      <Output ItemName="MSIFile" TaskParameter="Include" />
+    
+    <!-- Zip up ccnetconfig plugins -->
+    <CreateItem Include="$(OutputPath)*CCNetConfig.*" Exclude="$(OutputPath)CCNetConfig.Core.*">
+      <Output ItemName="PluginZipFiles" TaskParameter="Include" />
     </CreateItem>
-    <Zip Comment="$(CCNetBuildDate) $(CCNetBuildTime) $(CCNetProject) version $(CCNetLabel) Installer"
-      Files="@(MSIFile)" WorkingDirectory="$(OutputPath)"
-      ZipFileName="$(OutputPath)$(CCNetProject).$(CCNetLabel).msi.zip" Flatten="True" ZipLevel="9" /-->
+
+    <Zip Comment="$(CCNetBuildDate) $(CCNetBuildTime) $(CCNetProject) version $(CCNetLabel)" Files="@(PluginZipFiles)"
+     WorkingDirectory="$(OutputPath)"
+     ZipFileName="$(OutputPath)$(CCNetProject).$(CCNetLabel).ccnetconfig.zip" ZipLevel="9" Flatten="False" />
+
   </Target>
 
   <Target Name="ReleaseCleanup" DependsOnTargets="ZipRelease">
