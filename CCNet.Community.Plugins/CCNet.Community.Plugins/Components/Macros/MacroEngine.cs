@@ -85,6 +85,10 @@ namespace CCNet.Community.Plugins.Components.Macros {
     /// <param name="input">The input.</param>
     /// <returns></returns>
     public string GetPropertyString<T> ( T sender, IIntegrationResult result, string input ) {
+			if ( string.IsNullOrEmpty ( input ) ) {
+				return input;
+			}
+
       Regex xpathFinder = new Regex ( Properties.Resources.XPathPattern, RegexOptions.Singleline | RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace );
       Match m1 = xpathFinder.Match ( input );
       string ret = input;

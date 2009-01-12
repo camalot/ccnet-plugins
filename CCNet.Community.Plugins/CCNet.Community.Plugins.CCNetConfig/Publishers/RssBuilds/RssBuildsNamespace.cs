@@ -51,6 +51,102 @@
  *      - http://codeplex.com/ccnetconfig
  * 
  */
+using System;
+using System.Collections.Generic;
+using System.Text;
+using CCNetConfig.Core;
+using System.ComponentModel;
 using CCNetConfig.Core.Components;
-// this is for CCNetConfig to find updates for this plugin.
-[assembly: UpdateFeed ( "http://ccnetconfig.org/ccnetplugins/rss.xml" )]
+using CCNetConfig.Core.Serialization;
+
+namespace CCNet.Community.Plugins.CCNetConfig.Publishers {
+	public class RssBuildsNamespace : ICCNetObject, ICloneable {
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="RssBuildsNamespace"/> class.
+		/// </summary>
+		public RssBuildsNamespace () {
+
+		}
+
+		/// <summary>
+		/// Gets or sets the prefix.
+		/// </summary>
+		/// <value>The prefix.</value>
+		[Description("The namespace prefix"), Category("Optional"),
+		ReflectorName("prefix"), DefaultValue(null), Required]
+		public string Prefix { get; set; }
+
+		/// <summary>
+		/// Gets or sets the namespace URI.
+		/// </summary>
+		/// <value>The namespace URI.</value>
+		[Description("Thie namespace URI"), Category("Optional"),
+		ReflectorName("namespaceURI"), DefaultValue(null), Required]
+		public Uri NamespaceUri { get; set; }
+
+		#region ISerialize Members
+
+		/// <summary>
+		/// Deserializes the specified element.
+		/// </summary>
+		/// <param name="element">The element.</param>
+		public void Deserialize ( System.Xml.XmlElement element ) {
+			if ( string.Compare ( element.Name, "namespace", false ) != 0 )
+				throw new InvalidCastException ( string.Format ( "Unable to convert {0} to a {1}", element.Name, this.GetType ().Name ) );
+			
+			Util.ResetObjectProperties<RssBuildsNamespace> ( this );
+			
+			this.Prefix = Util.GetElementOrAttributeValue ( "prefix", element ); ;
+
+			string s = Util.GetElementOrAttributeValue ( "namespaceURI", element );
+			this.NamespaceUri = new Uri ( s );
+		}
+
+		/// <summary>
+		/// Serializes this instance.
+		/// </summary>
+		/// <returns></returns>
+		public System.Xml.XmlElement Serialize () {
+			return new Serializer<RssBuildsNamespace> ().Serialize ( this );
+		}
+
+		#endregion
+
+		#region ICloneable Members
+
+		/// <summary>
+		/// Creates a new object that is a copy of the current instance.
+		/// </summary>
+		/// <returns>
+		/// A new object that is a copy of this instance.
+		/// </returns>
+		public RssBuildsNamespace Clone () {
+			RssBuildsNamespace rbn = this.MemberwiseClone () as RssBuildsNamespace;
+			rbn.NamespaceUri = new Uri ( this.NamespaceUri.ToString () );
+			return rbn;
+		}
+
+		/// <summary>
+		/// Creates a new object that is a copy of the current instance.
+		/// </summary>
+		/// <returns>
+		/// A new object that is a copy of this instance.
+		/// </returns>
+		object ICloneable.Clone () {
+			return this.Clone ();
+		}
+
+		#endregion
+
+		/// <summary>
+		/// Returns a <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+		/// </summary>
+		/// <returns>
+		/// A <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+		/// </returns>
+		public override string ToString () {
+			return this.Prefix;
+		}
+	}
+}

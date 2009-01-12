@@ -54,32 +54,44 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using CCNetConfig.Core.Components;
 using CCNetConfig.Core;
+using System.ComponentModel;
+using CCNetConfig.Core.Components;
 using CCNetConfig.Core.Serialization;
 
-namespace CCNet.Community.Plugins.CCNetConfig.Common {
-	/// <summary>
-	/// 
-	/// </summary>
-	[ReflectorName("pattern")]
-	public class BypassPattern : ICCNetObject, ICloneable{
+namespace CCNet.Community.Plugins.CCNetConfig.Publishers {
+	public class RssBuildsElementAttribute : ICCNetObject, ICloneable {
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="RssBuildsElementAttribute"/> class.
+		/// </summary>
+		public RssBuildsElementAttribute () {
+			
+		}
+
+		/// <summary>
+		/// Gets or sets the prefix.
+		/// </summary>
+		/// <value>The prefix.</value>
+		[Category ( "Optional" ), DefaultValue ( null ), ReflectorName("prefix"),
+		ReflectorNodeType(ReflectorNodeTypes.Attribute),
+		Description ( "The prefix to use for the element. This prefix MUST exist in the namespaces defined in the rss extensions" )]
+		public string Prefix { get; set; }
+		/// <summary>
+		/// Gets or sets the name.
+		/// </summary>
+		/// <value>The name.</value>
+		[Category ( "Required" ), DisplayName ( "(Name)" ), DefaultValue ( null ), ReflectorName("name"),
+		Required,
+		ReflectorNodeType ( ReflectorNodeTypes.Attribute ), Description ( "The name of the element." )]
+		public string Name { get; set; }
 		/// <summary>
 		/// Gets or sets the value.
 		/// </summary>
 		/// <value>The value.</value>
-		[ReflectorNodeType(ReflectorNodeTypes.Value), ReflectorName("pattern")]
+		[Category ( "Optional" ), DefaultValue ( null ), ReflectorName("value"), 
+		ReflectorNodeType ( ReflectorNodeTypes.Attribute ), Description ( "The value of the element." )]
 		public string Value { get; set; }
-
-		/// <summary>
-		/// Returns a <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
-		/// </summary>
-		/// <returns>
-		/// A <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
-		/// </returns>
-		public override string ToString () {
-			return this.Value;
-		}
 
 		#region ISerialize Members
 
@@ -88,7 +100,21 @@ namespace CCNet.Community.Plugins.CCNetConfig.Common {
 		/// </summary>
 		/// <param name="element">The element.</param>
 		public void Deserialize ( System.Xml.XmlElement element ) {
-			new Serializer<BypassPattern> ().Deserialize ( element, this );
+			if ( string.Compare ( element.Name, "attribute", false ) != 0 )
+				throw new InvalidCastException ( string.Format ( "Unable to convert {0} to a {1}", element.Name, this.GetType ().Name ) );
+
+			Util.ResetObjectProperties<RssBuildsElementAttribute> ( this );
+			
+			this.Name = Util.GetElementOrAttributeValue ( "name", element );
+
+			string s = Util.GetElementOrAttributeValue ( "value", element );
+			if ( !string.IsNullOrEmpty ( s ) )
+				this.Value = s;
+
+			s = Util.GetElementOrAttributeValue ( "prefix", element );
+			if ( !string.IsNullOrEmpty ( s ) )
+				this.Prefix = s;
+
 		}
 
 		/// <summary>
@@ -96,7 +122,7 @@ namespace CCNet.Community.Plugins.CCNetConfig.Common {
 		/// </summary>
 		/// <returns></returns>
 		public System.Xml.XmlElement Serialize () {
-			return new Serializer<BypassPattern> ().Serialize ( this );
+			return new Serializer<RssBuildsElementAttribute> ().Serialize ( this );
 		}
 
 		#endregion
@@ -109,8 +135,9 @@ namespace CCNet.Community.Plugins.CCNetConfig.Common {
 		/// <returns>
 		/// A new object that is a copy of this instance.
 		/// </returns>
-		public BypassPattern Clone () {
-			return this.MemberwiseClone () as BypassPattern;
+		public RssBuildsElementAttribute Clone () {
+			RssBuildsElementAttribute rbea = this.MemberwiseClone () as RssBuildsElementAttribute;
+			return rbea;
 		}
 
 		/// <summary>
@@ -124,5 +151,15 @@ namespace CCNet.Community.Plugins.CCNetConfig.Common {
 		}
 
 		#endregion
+
+		/// <summary>
+		/// Returns a <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
+		/// </summary>
+		/// <returns>
+		/// A <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
+		/// </returns>
+		public override string ToString () {
+			return this.Name;
+		}
 	}
 }

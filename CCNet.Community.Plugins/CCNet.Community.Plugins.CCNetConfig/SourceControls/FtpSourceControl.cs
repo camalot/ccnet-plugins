@@ -250,7 +250,7 @@ namespace CCNet.Community.Plugins.CCNetConfig.SourceControls {
 		/// <value>The documentation URI.</value>
 		[Browsable ( false ), EditorBrowsable ( EditorBrowsableState.Never ), ReflectorIgnore]
 		public Uri DocumentationUri {
-			get { return new Uri ( "http://www.codeplex.com/ccnetplugins/Wiki/Print.aspx?title=FtpSourceControl" ); }
+			get { return new Uri ( "http://ccnetplugins.codeplex.com/Wiki/Print.aspx?title=FtpSourceControl" ); }
 		}
 
 		#endregion

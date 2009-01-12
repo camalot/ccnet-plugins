@@ -51,78 +51,74 @@
  *      - http://codeplex.com/ccnetconfig
  * 
  */
-
 using System;
 using System.Collections.Generic;
 using System.Text;
 using CCNetConfig.Core;
 using System.ComponentModel;
-using CCNetConfig.Core.Serialization;
 using CCNetConfig.Core.Components;
+using System.ComponentModel.Design;
 using System.Drawing.Design;
+using CCNetConfig.Core.Serialization;
 using System.Xml;
 
-namespace CCNet.Community.Plugins.CCNetConfig.Common {
+namespace CCNet.Community.Plugins.CCNetConfig.Publishers {
 	/// <summary>
-	/// A common proxy object
+	/// Represents an XmlElement that is added to the XmlDocument.
 	/// </summary>
-	[ReflectorName ( "proxy" ), NullOrObject]
-	public class Proxy : ICCNetDocumentation, ICCNetObject, ICloneable {
+	public class RssBuildsElement : ICCNetObject, ICloneable {
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Proxy"/> class.
+		/// Initializes a new instance of the <see cref="RssBuildsElement"/> class.
 		/// </summary>
-		public Proxy () {
-			this.BypassList = new CloneableList<BypassPattern> ();
-			this.Password = new HiddenPassword ();
+		public RssBuildsElement () {
+
 		}
 
 		/// <summary>
-		/// Gets or sets the host.
+		/// Gets or sets the prefix.
 		/// </summary>
-		/// <value>The host.</value>
-		[ReflectorName("host"), DefaultValue(null), DisplayName("(Host)"),
-		Description ( "The proxy host name" ), Required, Category ( "Required" ),]
-		public string Host { get; set; }
+		/// <value>The prefix.</value>
+		[Category ( "Optional" ), DefaultValue ( null ),
+		ReflectorName("prefix"), ReflectorNodeType(ReflectorNodeTypes.Attribute),
+		Description ( "The prefix to use for the element. This prefix MUST exist in the namespaces defined in the rss extensions" )]
+		public string Prefix { get; set; }
+
 		/// <summary>
-		/// Gets or sets the username.
+		/// Gets or sets the name.
 		/// </summary>
-		/// <value>The username.</value>
-		[ReflectorName("username"), DefaultValue(null),
-		Description ( "Proxy credential username" ), Category ( "Optional" ),]
-		public string Username { get; set; }
+		/// <value>The name.</value>
+		[Category ( "Required" ), DisplayName ( "(Name)" ), DefaultValue ( null ), ReflectorName("name"),
+		Description ( "The name of the element." ), Required, ReflectorNodeType(ReflectorNodeTypes.Attribute)]
+		public string Name { get; set; }
+
 		/// <summary>
-		/// Gets or sets the password.
+		/// Gets or sets the value.
 		/// </summary>
-		/// <value>The password.</value>
-		[ReflectorName("password"), DefaultValue(null),
-		Description ( "Proxy credential password" ),
-		TypeConverter ( typeof ( PasswordTypeConverter ) ), Category ( "Optional" ),]
-		public HiddenPassword Password { get; set; }
+		/// <value>The value.</value>
+		[Category ( "Optional" ), DefaultValue ( null ), ReflectorName("value"),
+		Description ( "The value of the element." ), ReflectorNodeType(ReflectorNodeTypes.Attribute),
+		Editor ( typeof ( MultilineStringEditor ), typeof ( UITypeEditor ) )]
+		public string Value { get; set; }
+
 		/// <summary>
-		/// Gets or sets the domain.
+		/// Gets or sets the child elements.
 		/// </summary>
-		/// <value>The domain.</value>
-		[ReflectorName("domain"), DefaultValue(null),
-		Description ( "Proxy credential domain" ), Category ( "Optional" ),]
-		public string Domain { get; set; }
+		/// <value>The child elements.</value>
+		[Category ( "Optional" ), DefaultValue ( null ),
+		ReflectorName("childElements"),
+		Description ( "Child nodes to add to this element." ),
+		TypeConverter ( typeof ( IListTypeConverter ) )]
+		public CloneableList<RssBuildsElement> ChildElements { get; set; }
+
 		/// <summary>
-		/// Gets or sets the port.
+		/// Gets or sets the attributes.
 		/// </summary>
-		/// <value>The port.</value>
-		[ReflectorName ( "port" ), DefaultValue ( null ),
-		Description ( "The proxy port." ), Category ( "Optional" ),
-		Editor(typeof(NumericUpDownUIEditor),typeof(UITypeEditor))]
-		public int? Port { get; set; }
-		/// <summary>
-		/// Gets or sets the bypass list.
-		/// </summary>
-		/// <value>The bypass list.</value>
-		[ReflectorName ( "bypassList" ), DefaultValue ( null ),
-		Description ( "The proxy port." ), Category ( "Optional" ),
-		TypeConverter(typeof(IListTypeConverter)),
-		Editor ( typeof ( CollectionEditor ), typeof ( UITypeEditor ) )]
-		public CloneableList<BypassPattern> BypassList { get; set; }
+		/// <value>The attributes.</value>
+		[Category ( "Optional" ), DefaultValue ( null ), ReflectorName("attributes"),
+		Description ( "Attributes to add to this element." ),
+		TypeConverter ( typeof ( IListTypeConverter ) )]
+		public CloneableList<RssBuildsElementAttribute> Attributes { get; set; }
 
 		#region ISerialize Members
 
@@ -131,46 +127,36 @@ namespace CCNet.Community.Plugins.CCNetConfig.Common {
 		/// </summary>
 		/// <param name="element">The element.</param>
 		public void Deserialize ( System.Xml.XmlElement element ) {
-			new Serializer<Proxy> ().Deserialize ( element, this );
-			/*string typeName =  Util.GetReflectorNameAttributeValue ( this.GetType () );
-			if ( string.Compare ( element.Name, typeName, false ) != 0 )
-				throw new InvalidCastException ( string.Format ( "Unable to convert {0} to a {1}", element.Name, typeName ) );
-			Util.ResetObjectProperties<Proxy> ( this );
+			if ( string.Compare ( element.Name, "rssElement", false ) != 0 )
+				throw new InvalidCastException ( string.Format ( "Unable to convert {0} to an {1}", element.Name, this.GetType ().Name ) );
 
-			this.Host = Util.GetElementOrAttributeValue ( "host", element );
-			string s = Util.GetElementOrAttributeValue ( "port", element );
-			if ( !string.IsNullOrEmpty ( s ) ) {
-				int t = -1;
-				if ( int.TryParse ( s, out t ) ) {
-					if ( t > 0 ) {
-						this.Port = t;
-					}
-				}
+			Util.ResetObjectProperties<RssBuildsElement> ( this );
+			
+			string s = Util.GetElementOrAttributeValue ( "name", element );
+			this.Name = s;
+
+			XmlNodeList subNodes = element.SelectNodes ( string.Format ( "childElements/{0}", element.Name ) );
+			foreach ( XmlElement ele in subNodes ) {
+				RssBuildsElement rsse = new RssBuildsElement ();
+				rsse.Deserialize ( ele );
+				this.ChildElements.Add ( rsse );
 			}
 
-			s = Util.GetElementOrAttributeValue ( "username", element );
-			if ( !string.IsNullOrEmpty ( s ) ) {
-				this.Username = s;
+			if ( this.ChildElements.Count == 0 ) {
+				s = Util.GetElementOrAttributeValue ( "value", element );
+				this.Value = s;
 			}
 
-			s = Util.GetElementOrAttributeValue ( "password", element );
-			if ( !string.IsNullOrEmpty ( s ) ) {
-				this.Password.Password = s;
-			}
+			s = Util.GetElementOrAttributeValue ( "prefix", element );
+			if ( !string.IsNullOrEmpty ( s ) )
+				this.Prefix = s;
 
-			s = Util.GetElementOrAttributeValue ( "domain", element );
-			if ( !string.IsNullOrEmpty ( s ) ) {
-				this.Domain = s;
+			subNodes = element.SelectNodes ( "attributes/attribute" );
+			foreach ( XmlElement ele in subNodes ) {
+				RssBuildsElementAttribute rea = new RssBuildsElementAttribute ();
+				rea.Deserialize ( ele );
+				this.Attributes.Add ( rea );
 			}
-			XmlElement bypass = element.SelectSingleNode("bypassList") as XmlElement;
-			if ( bypass!= null ) {
-				XmlNodeList nodes = element.SelectNodes ( "pattern" );
-				foreach ( XmlElement ele in nodes ) {
-					BypassPattern bp = new BypassPattern ();
-					bp.Value = ele.InnerText;
-					this.BypassList.Add ( bp );
-				}
-			}*/
 		}
 
 		/// <summary>
@@ -178,7 +164,7 @@ namespace CCNet.Community.Plugins.CCNetConfig.Common {
 		/// </summary>
 		/// <returns></returns>
 		public System.Xml.XmlElement Serialize () {
-			return new Serializer<Proxy> ().Serialize ( this );
+			return new Serializer<RssBuildsElement> ().Serialize ( this );
 		}
 
 		#endregion
@@ -186,28 +172,17 @@ namespace CCNet.Community.Plugins.CCNetConfig.Common {
 		#region ICloneable Members
 
 		/// <summary>
-		/// Clones this instance.
+		/// Creates a new object that is a copy of the current instance.
 		/// </summary>
-		/// <returns></returns>
-		public Proxy Clone () {
-			Proxy p = this.MemberwiseClone () as Proxy;
-			p.Password = this.Password.Clone ();
-			p.BypassList = this.BypassList.Clone ();
-			return p;
+		/// <returns>
+		/// A new object that is a copy of this instance.
+		/// </returns>
+		public object Clone () {
+			RssBuildsElement re = this.MemberwiseClone () as RssBuildsElement;
+			re.ChildElements = this.ChildElements.Clone ();
+			re.Attributes = this.Attributes.Clone ();
+			return re;
 		}
-
-		/// <summary>
-		/// Gets the documentation URI.
-		/// </summary>
-		/// <value>The documentation URI.</value>
-		[Browsable ( false ), EditorBrowsable ( EditorBrowsableState.Never ), ReflectorIgnore]
-		public Uri DocumentationUri {
-			get { return new Uri ( "http://www.codeplex.com/ccnetplugins/Wiki/Print.aspx?title=Proxy" ); }
-		}
-
-		#endregion
-
-		#region ICloneable Members
 
 		/// <summary>
 		/// Creates a new object that is a copy of the current instance.
@@ -228,7 +203,7 @@ namespace CCNet.Community.Plugins.CCNetConfig.Common {
 		/// A <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
 		/// </returns>
 		public override string ToString () {
-			return this.GetType ().Name;
+			return this.Name;
 		}
 	}
 }

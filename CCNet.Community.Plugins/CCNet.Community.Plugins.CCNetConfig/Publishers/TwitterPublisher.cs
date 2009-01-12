@@ -106,7 +106,7 @@ namespace CCNet.Community.Plugins.CCNetConfig.Publishers {
 		/// </summary>
 		/// <value>The proxy.</value>
 		[TypeConverter ( typeof ( ObjectOrNoneTypeConverter ) ), DefaultValue ( null ),
-		NullOrObjectAttribue,
+		NullOrObject,
 		Editor ( typeof ( ObjectOrNoneUIEditor ), typeof ( UITypeEditor ) ), ReflectorName ( "proxy" ),
 		Category ( "Optional" ), Description ( "Proxy information." )]
 		public Proxy Proxy { get; set; }
@@ -124,7 +124,8 @@ namespace CCNet.Community.Plugins.CCNetConfig.Publishers {
     /// </summary>
     /// <param name="element">The element.</param>
     public override void Deserialize ( System.Xml.XmlElement element ) {
-      if ( string.Compare ( element.Name, this.TypeName, false ) != 0 )
+			new Serializer<TwitterPublisher> ().Deserialize ( element, this );
+      /*if ( string.Compare ( element.Name, this.TypeName, false ) != 0 )
         throw new InvalidCastException ( string.Format ( "Unable to convert {0} to a {1}", element.Name, this.TypeName ) );
 
 			Util.ResetObjectProperties<TwitterPublisher> ( this );
@@ -141,7 +142,7 @@ namespace CCNet.Community.Plugins.CCNetConfig.Publishers {
 			if ( proxyElement != null ) {
 				this.Proxy = new Proxy ();
 				this.Proxy.Deserialize ( proxyElement );
-			}
+			}*/
     }
 
     /// <summary>

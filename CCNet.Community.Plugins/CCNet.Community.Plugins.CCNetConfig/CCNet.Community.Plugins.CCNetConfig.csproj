@@ -48,13 +48,20 @@
   <ItemGroup>
     <Compile Include="AdditionalAssemblyInfo.cs" />
     <Compile Include="Common\BypassPattern.cs" />
+    <Compile Include="Common\Category.cs" />
     <Compile Include="Common\Proxy.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Publishers\CodePlexReleaseFile.cs" />
+    <Compile Include="Publishers\CodePlex\CodePlexReleaseFile.cs" />
     <Compile Include="Publishers\CodePlexReleasePublisher.cs" />
-    <Compile Include="Publishers\CodePlexReleaseItem.cs" />
+    <Compile Include="Publishers\CodePlex\CodePlexReleaseItem.cs" />
     <Compile Include="Publishers\MetaWeblogPublisher.cs" />
-    <Compile Include="Publishers\MetaWeblogTag.cs" />
+    <Compile Include="Publishers\MetaWeblog\MetaWeblogTag.cs" />
+    <Compile Include="Publishers\RssBuilds\RssBuildsElement.cs" />
+    <Compile Include="Publishers\RssBuilds\RssBuildsElementAttribute.cs" />
+    <Compile Include="Publishers\RssBuilds\RssBuildsFeedImage.cs" />
+    <Compile Include="Publishers\RssBuilds\RssBuildsNamespace.cs" />
+    <Compile Include="Publishers\RssBuilds\RssBuildsPingItem.cs" />
+    <Compile Include="Publishers\RssBuildsPublisher.cs" />
     <Compile Include="Publishers\TfsWorkItemPublisher.cs" />
     <Compile Include="Publishers\TwitterPublisher.cs" />
     <Compile Include="SourceControls\FtpSourceControl.cs" />

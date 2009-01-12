@@ -54,32 +54,49 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using CCNetConfig.Core.Components;
 using CCNetConfig.Core;
 using CCNetConfig.Core.Serialization;
+using System.ComponentModel;
+using CCNetConfig.Core.Components;
 
-namespace CCNet.Community.Plugins.CCNetConfig.Common {
+namespace CCNet.Community.Plugins.CCNetConfig.Publishers {
 	/// <summary>
-	/// 
+	/// Represents a ping service to ping
 	/// </summary>
-	[ReflectorName("pattern")]
-	public class BypassPattern : ICCNetObject, ICloneable{
+	public class RssBuildsPingItem : ICCNetObject, ICloneable {
 		/// <summary>
-		/// Gets or sets the value.
+		/// Initializes a new instance of the <see cref="RssBuildsPingItem"/> class.
 		/// </summary>
-		/// <value>The value.</value>
-		[ReflectorNodeType(ReflectorNodeTypes.Value), ReflectorName("pattern")]
-		public string Value { get; set; }
+		public RssBuildsPingItem () {
+
+		}
 
 		/// <summary>
-		/// Returns a <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
+		/// Gets or sets the name of the feed.
 		/// </summary>
-		/// <returns>
-		/// A <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
-		/// </returns>
-		public override string ToString () {
-			return this.Value;
-		}
+		/// <value>The name of the feed.</value>
+		[Description ( "The name of the feed." ), DefaultValue ( null ),
+		Category ( "Required" ), DisplayName ( "(FeedName)" ),
+		Required, ReflectorName ( "feedName" ), ReflectorNodeType ( ReflectorNodeTypes.Attribute )]
+		public string FeedName { get; set; }
+
+		/// <summary>
+		/// Gets or sets the feed URL.
+		/// </summary>
+		/// <value>The feed URL.</value>
+		[Description ( "The URL to the feed." ), DefaultValue ( null ), Category ( "Required" ),
+		DisplayName ( "(FeedUrl)" ), Required, ReflectorNodeType ( ReflectorNodeTypes.Attribute ),
+		ReflectorName ( "feedUrl" )]
+		public Uri FeedUrl { get; set; }
+
+		/// <summary>
+		/// Gets or sets the ping URL.
+		/// </summary>
+		/// <value>The ping URL.</value>
+		[Description ( "The URL to the host to ping." ), DefaultValue ( null ),
+		Category ( "Required" ), DisplayName ( "(PingUrl)" ), Required,
+		ReflectorName ( "pingUrl" ), ReflectorNodeType ( ReflectorNodeTypes.Attribute )]
+		public Uri PingUrl { get; set; }
 
 		#region ISerialize Members
 
@@ -88,7 +105,18 @@ namespace CCNet.Community.Plugins.CCNetConfig.Common {
 		/// </summary>
 		/// <param name="element">The element.</param>
 		public void Deserialize ( System.Xml.XmlElement element ) {
-			new Serializer<BypassPattern> ().Deserialize ( element, this );
+			if ( string.Compare ( element.Name, "pingItem", false ) != 0 )
+				throw new InvalidCastException ( string.Format ( "Unable to convert {0} to a {1}", element.Name, "pingItem" ) );
+
+			Util.ResetObjectProperties<RssBuildsPingItem> ( this );
+
+			string s = Util.GetElementOrAttributeValue ( "feedUrl", element );
+			this.FeedUrl = new Uri ( s );
+
+			s = Util.GetElementOrAttributeValue ( "pingUrl", element );
+			this.PingUrl = new Uri ( s );
+
+			this.FeedName = Util.GetElementOrAttributeValue ( "feedName", element );
 		}
 
 		/// <summary>
@@ -96,7 +124,7 @@ namespace CCNet.Community.Plugins.CCNetConfig.Common {
 		/// </summary>
 		/// <returns></returns>
 		public System.Xml.XmlElement Serialize () {
-			return new Serializer<BypassPattern> ().Serialize ( this );
+			return new Serializer<RssBuildsPingItem> ().Serialize ( this );
 		}
 
 		#endregion
@@ -109,8 +137,11 @@ namespace CCNet.Community.Plugins.CCNetConfig.Common {
 		/// <returns>
 		/// A new object that is a copy of this instance.
 		/// </returns>
-		public BypassPattern Clone () {
-			return this.MemberwiseClone () as BypassPattern;
+		public RssBuildsPingItem Clone () {
+			RssBuildsPingItem rbpi = this.MemberwiseClone () as RssBuildsPingItem;
+			rbpi.FeedUrl = new Uri ( this.FeedUrl.ToString () );
+			rbpi.PingUrl = new Uri ( this.PingUrl.ToString () );
+			return rbpi;
 		}
 
 		/// <summary>

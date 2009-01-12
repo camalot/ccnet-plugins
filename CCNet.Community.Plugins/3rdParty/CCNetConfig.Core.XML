@@ -4,6 +4,15 @@
         <name>CCNetConfig.Core</name>
     </assembly>
     <members>
+        <!-- Badly formed XML comment ignored for member "T:CCNetConfig.Core.Components.StringTypeConverter" -->
+        <member name="M:CCNetConfig.Core.Components.StringTypeConverter.Convert(System.String,System.Type)">
+            <summary>
+            Converts the specified value.
+            </summary>
+            <param name="value">The value.</param>
+            <param name="newType">The new type.</param>
+            <returns></returns>
+        </member>
         <member name="T:CCNetConfig.Core.Components.ObjectOrNoneTypeConverter">
             <summary>
             
@@ -234,6 +243,14 @@
             </summary>
             <param name="element">The element.</param>
             <param name="baseObject">The base object.</param>
+        </member>
+        <member name="M:CCNetConfig.Core.Serialization.Serializer`1.GetReflectorProperies(`0)">
+            <summary>
+            Gets a list of properties for the specified object that contain a reflector name attribute,
+            do not have a reflector ignore attribute and are publicly readable and writeable.
+            </summary>
+            <param name="obj">The obj.</param>
+            <returns></returns>
         </member>
         <member name="T:CCNetConfig.Core.HiddenPassword">
             <summary>
@@ -1341,6 +1358,16 @@
             true if the specified value is valid for this object; otherwise, false.
             </returns>
         </member>
+        <member name="T:CCNetConfig.Core.Components.NullOrObjectAttribute">
+            <summary>
+            Indicates that an object can be a value or it can be null. Used to help the serializer.
+            </summary>
+        </member>
+        <member name="M:CCNetConfig.Core.Components.NullOrObjectAttribute.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:CCNetConfig.Core.Components.NullOrObjectAttribute"/> class.
+            </summary>
+        </member>
         <member name="T:CCNetConfig.Core.Components.DefaultableEnumTypeConverter">
             <summary>
             Converts the nullable <see cref="T:System.Enum"/> to a <see cref="T:System.String"/> and back.
@@ -1436,6 +1463,29 @@
             <summary>
             A Static class that contains helper methods and properties.
             </summary>
+        </member>
+        <member name="M:CCNetConfig.Core.Util.GetSerializerValue(System.Reflection.MemberInfo)">
+            <summary>
+            Gets the display name.
+            </summary>
+            <param name="mi">The mi.</param>
+            <returns></returns>
+        </member>
+        <member name="M:CCNetConfig.Core.Util.GetRealNameFromSerializerValue``1(System.String)">
+            <summary>
+            Gets the real name from serializer value.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="name">The name.</param>
+            <returns></returns>
+        </member>
+        <member name="M:CCNetConfig.Core.Util.GetPropertyInfoFromReflectorName``1(System.String)">
+            <summary>
+            Gets the name of the property info from the reflector name.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="name">The reflector name.</param>
+            <returns></returns>
         </member>
         <member name="M:CCNetConfig.Core.Util.RefreshUserSettings">
             <summary>
@@ -2026,6 +2076,13 @@
             </summary>
             <param name="ccnet">The ccnet.</param>
             <returns></returns>
+        </member>
+        <member name="M:CCNetConfig.Core.Util.ResetObjectProperties``1(``0)">
+            <summary>
+            Resets the object properties automatically based on the type and custom attributes.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="obj">The obj.</param>
         </member>
         <member name="M:CCNetConfig.Core.Util.Decode(System.String)">
             <summary>
@@ -3055,6 +3112,23 @@
             Gets the text.
             </summary>
             <value>The text.</value>
+        </member>
+        <member name="T:CCNetConfig.Core.Components.SerializerValueAttribute">
+            <summary>
+            Overrides the value of an enum to the specified value.
+            </summary>
+        </member>
+        <member name="M:CCNetConfig.Core.Components.SerializerValueAttribute.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:CCNetConfig.Core.Components.SerializerValueAttribute"/> class.
+            </summary>
+            <param name="value">The value.</param>
+        </member>
+        <member name="P:CCNetConfig.Core.Components.SerializerValueAttribute.Value">
+            <summary>
+            Gets or sets the value.
+            </summary>
+            <value>The value.</value>
         </member>
         <member name="T:CCNetConfig.Core.Labeller">
             <summary>
@@ -4257,16 +4331,6 @@
             UI to allow the user to select the plugins that they have installed so the property grid only displays
             Objects they have.
             </remarks>
-        </member>
-        <member name="T:CCNetConfig.Core.Components.NullOrObjectAttribue">
-            <summary>
-            Indicates that an object can be a value or it can be null. Used to help the serializer.
-            </summary>
-        </member>
-        <member name="M:CCNetConfig.Core.Components.NullOrObjectAttribue.#ctor">
-            <summary>
-            Initializes a new instance of the <see cref="T:CCNetConfig.Core.Components.NullOrObjectAttribue"/> class.
-            </summary>
         </member>
     </members>
 </doc>
