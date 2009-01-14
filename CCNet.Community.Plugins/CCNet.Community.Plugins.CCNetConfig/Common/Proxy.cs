@@ -111,6 +111,7 @@ namespace CCNet.Community.Plugins.CCNetConfig.Common {
 		/// </summary>
 		/// <value>The port.</value>
 		[ReflectorName ( "port" ), DefaultValue ( null ),
+		MinimumValue ( 0 ), MaximumValue ( Int16.MaxValue ),
 		Description ( "The proxy port." ), Category ( "Optional" ),
 		Editor(typeof(NumericUpDownUIEditor),typeof(UITypeEditor))]
 		public int? Port { get; set; }

@@ -180,7 +180,8 @@ namespace CCNet.Community.Plugins.CCNetConfig.Publishers {
 		/// </summary>
 		/// <param name="element">The element.</param>
 		public void Deserialize ( System.Xml.XmlElement element ) {
-			Util.ResetObjectProperties<CodePlexReleaseFile> ( this );
+			new Serializer<CodePlexReleaseFile> ().Deserialize ( element, this );
+			/*Util.ResetObjectProperties<CodePlexReleaseFile> ( this );
 
 			string s = Util.GetElementOrAttributeValue ( "fileName", element );
 			if ( !string.IsNullOrEmpty ( s ) )
@@ -197,6 +198,7 @@ namespace CCNet.Community.Plugins.CCNetConfig.Publishers {
 			s = Util.GetElementOrAttributeValue ( "name", element );
 			if ( !string.IsNullOrEmpty ( s ) )
 				this.Name = s;
+			*/
 		}
 
 		#endregion

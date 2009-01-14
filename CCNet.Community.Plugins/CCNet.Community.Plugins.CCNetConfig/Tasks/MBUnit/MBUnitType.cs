@@ -55,31 +55,30 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using CCNetConfig.Core;
+using System.ComponentModel;
 using CCNetConfig.Core.Components;
 using CCNetConfig.Core.Serialization;
-using System.ComponentModel;
 
-namespace CCNet.Community.Plugins.CCNetConfig.Common {
+namespace CCNet.Community.Plugins.CCNetConfig.Tasks.MBUnit {
 	/// <summary>
-	/// 
+	/// Specifies that only those tests of the type className will be run in this execution of MbUnit.Cons. 
 	/// </summary>
-	[ReflectorName("category")]
-	public class Category : ICCNetObject, ICloneable {
-
+	[ReflectorName("type")]
+	public class MBUnitType : ICCNetObject, ICloneable {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Category"/> class.
+		/// Initializes a new instance of the <see cref="MBUnitType"/> class.
 		/// </summary>
-		public Category () {
+		public MBUnitType () {
 
 		}
 		/// <summary>
-		/// Gets or sets the name.
+		/// Gets or sets the value.
 		/// </summary>
-		/// <value>The name.</value>
-		[ReflectorName("name"),ReflectorNodeType(ReflectorNodeTypes.Attribute), Required,
-		Description ( "The name of the category." ), DefaultValue ( null ), Category ( "Required" ),
-		DisplayName("(Name)")]
-		public string Name { get; set; }
+		/// <value>The value.</value>
+		[Description ( "The type to filter" ),
+		ReflectorName ( "type" ), ReflectorNodeType ( ReflectorNodeTypes.Value ),
+		Required, DisplayName ( "(Value)" ), Category ( "Required" )]
+		public string Value { get; set; }
 
 		#region ISerialize Members
 
@@ -88,13 +87,7 @@ namespace CCNet.Community.Plugins.CCNetConfig.Common {
 		/// </summary>
 		/// <param name="element">The element.</param>
 		public void Deserialize ( System.Xml.XmlElement element ) {
-			new Serializer<Category> ().Deserialize ( element, this );
-			/*if ( string.Compare ( element.Name, "category", false ) != 0 )
-				throw new InvalidCastException ( string.Format ( "Unable to convert {0} to a {1}", element.Name, "category" ) );
-
-			Util.ResetObjectProperties<Category> ( this );
-			this.Name = Util.GetElementOrAttributeValue ( "name", element );
-			*/
+			new Serializer<MBUnitType> ().Deserialize ( element, this );
 		}
 
 		/// <summary>
@@ -102,22 +95,22 @@ namespace CCNet.Community.Plugins.CCNetConfig.Common {
 		/// </summary>
 		/// <returns></returns>
 		public System.Xml.XmlElement Serialize () {
-			return new Serializer<Category> ().Serialize ( this );
+			return new Serializer<MBUnitType> ().Serialize ( this );
 		}
 
 		#endregion
 
 		#region ICloneable Members
-
 		/// <summary>
 		/// Creates a new object that is a copy of the current instance.
 		/// </summary>
 		/// <returns>
 		/// A new object that is a copy of this instance.
 		/// </returns>
-		public Category Clone () {
-			return this.MemberwiseClone () as Category;
+		public MBUnitType Clone () {
+			return this.MemberwiseClone () as MBUnitType;
 		}
+
 
 		/// <summary>
 		/// Creates a new object that is a copy of the current instance.
@@ -138,7 +131,7 @@ namespace CCNet.Community.Plugins.CCNetConfig.Common {
 		/// A <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
 		/// </returns>
 		public override string ToString () {
-			return this.Name;
+			return string.IsNullOrEmpty ( this.Value ) ? this.GetType ().Name : this.Value;
 		}
 	}
 }

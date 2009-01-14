@@ -55,31 +55,28 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using CCNetConfig.Core;
-using CCNetConfig.Core.Components;
 using CCNetConfig.Core.Serialization;
 using System.ComponentModel;
+using CCNetConfig.Core.Components;
 
 namespace CCNet.Community.Plugins.CCNetConfig.Common {
 	/// <summary>
-	/// 
+	/// An assembly to load.
 	/// </summary>
-	[ReflectorName("category")]
-	public class Category : ICCNetObject, ICloneable {
-
+	[ReflectorName ( "assembly" )]
+	public class Assembly : ICCNetObject, ICloneable {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Category"/> class.
+		/// Initializes a new instance of the <see cref="MBUnitAssembly"/> class.
 		/// </summary>
-		public Category () {
+		public Assembly () {
 
 		}
-		/// <summary>
-		/// Gets or sets the name.
-		/// </summary>
-		/// <value>The name.</value>
-		[ReflectorName("name"),ReflectorNodeType(ReflectorNodeTypes.Attribute), Required,
-		Description ( "The name of the category." ), DefaultValue ( null ), Category ( "Required" ),
-		DisplayName("(Name)")]
-		public string Name { get; set; }
+
+		[Description ( "Assembly name" ),
+		ReflectorName ( "assembly" ), ReflectorNodeType ( ReflectorNodeTypes.Value ),
+		Required, DisplayName ( "(Value)" ), Category ( "Required" )]
+		public string Value { get; set; }
+
 
 		#region ISerialize Members
 
@@ -88,13 +85,7 @@ namespace CCNet.Community.Plugins.CCNetConfig.Common {
 		/// </summary>
 		/// <param name="element">The element.</param>
 		public void Deserialize ( System.Xml.XmlElement element ) {
-			new Serializer<Category> ().Deserialize ( element, this );
-			/*if ( string.Compare ( element.Name, "category", false ) != 0 )
-				throw new InvalidCastException ( string.Format ( "Unable to convert {0} to a {1}", element.Name, "category" ) );
-
-			Util.ResetObjectProperties<Category> ( this );
-			this.Name = Util.GetElementOrAttributeValue ( "name", element );
-			*/
+			new Serializer<Assembly> ().Deserialize ( element, this );
 		}
 
 		/// <summary>
@@ -102,7 +93,7 @@ namespace CCNet.Community.Plugins.CCNetConfig.Common {
 		/// </summary>
 		/// <returns></returns>
 		public System.Xml.XmlElement Serialize () {
-			return new Serializer<Category> ().Serialize ( this );
+			return new Serializer<Assembly> ().Serialize ( this );
 		}
 
 		#endregion
@@ -115,8 +106,9 @@ namespace CCNet.Community.Plugins.CCNetConfig.Common {
 		/// <returns>
 		/// A new object that is a copy of this instance.
 		/// </returns>
-		public Category Clone () {
-			return this.MemberwiseClone () as Category;
+		public Assembly Clone () {
+			Assembly a = this.MemberwiseClone () as Assembly;
+			return a;
 		}
 
 		/// <summary>
@@ -138,7 +130,7 @@ namespace CCNet.Community.Plugins.CCNetConfig.Common {
 		/// A <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
 		/// </returns>
 		public override string ToString () {
-			return this.Name;
+			return string.IsNullOrEmpty ( this.Value ) ? this.GetType ().Name : this.Value;
 		}
 	}
 }

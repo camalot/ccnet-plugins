@@ -133,7 +133,7 @@ namespace CCNet.Community.Plugins.CCNetConfig.Publishers {
 		/// <value>The name of the release.</value>
 		[Category ( "Required" ), DefaultValue ( null ), DisplayName ( "(ReleaseName)" ),
 		ReflectorName ( "releaseName" ), Required,
-		ReflectorNodeType(ReflectorNodeTypes.Attribute),
+		ReflectorNodeType ( ReflectorNodeTypes.Attribute ),
 		Description ( "The name of the release. This MUST be a unique name." )]
 		public string ReleaseName { get; set; }
 
@@ -277,7 +277,8 @@ namespace CCNet.Community.Plugins.CCNetConfig.Publishers {
 		/// </summary>
 		/// <param name="element">The element.</param>
 		public void Deserialize ( System.Xml.XmlElement element ) {
-			Util.ResetObjectProperties<CodePlexReleaseItem> ( this );
+			new Serializer<CodePlexReleaseItem> ().Deserialize ( element, this );
+			/*Util.ResetObjectProperties<CodePlexReleaseItem> ( this );
 
 			string s = Util.GetElementOrAttributeValue ( "releaseName", element );
 			if ( !string.IsNullOrEmpty ( s ) )
@@ -326,6 +327,7 @@ namespace CCNet.Community.Plugins.CCNetConfig.Publishers {
 			s = Util.GetElementOrAttributeValue ( "showToPublic", element );
 			if ( !string.IsNullOrEmpty ( s ) )
 				this.ShowToPublic = string.Compare ( s, bool.TrueString, true ) == 0;
+		*/
 		}
 
 		#endregion

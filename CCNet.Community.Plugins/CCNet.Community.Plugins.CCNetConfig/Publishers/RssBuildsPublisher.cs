@@ -292,7 +292,8 @@ namespace CCNet.Community.Plugins.CCNetConfig.Publishers {
 		}
 
 		public override void Deserialize ( System.Xml.XmlElement element ) {
-			if ( string.Compare ( element.Name, this.TypeName, false ) != 0 )
+			new Serializer<RssBuildsPublisher> ().Deserialize ( element, this );
+			/*if ( string.Compare ( element.Name, this.TypeName, false ) != 0 )
 				throw new InvalidCastException ( string.Format ( "Unable to convert {0} to a {1}", element.Name, this.TypeName ) );
 
 			Util.ResetObjectProperties<RssBuildsPublisher> ( this );
@@ -401,6 +402,7 @@ namespace CCNet.Community.Plugins.CCNetConfig.Publishers {
 			XmlElement fiEle = element.SelectSingleNode ( "feedImage" ) as XmlElement;
 			if ( fiEle != null )
 				this.FeedImage.Deserialize ( fiEle );
+			*/
 		}
 
 		/// <summary>

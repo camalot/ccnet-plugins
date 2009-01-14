@@ -127,7 +127,8 @@ namespace CCNet.Community.Plugins.CCNetConfig.Publishers {
     /// </summary>
     /// <param name="element">The element.</param>
     public override void Deserialize ( System.Xml.XmlElement element ) {
-      if ( string.Compare ( element.Name, this.TypeName, false ) != 0 )
+			new Serializer<TfsWorkItemPublisher> ().Deserialize ( element, this );
+      /*if ( string.Compare ( element.Name, this.TypeName, false ) != 0 )
         throw new InvalidCastException ( string.Format ( "Unable to convert {0} to a {1}", element.Name, this.TypeName ) );
 
       this.Domain = string.Empty;
@@ -149,7 +150,7 @@ namespace CCNet.Community.Plugins.CCNetConfig.Publishers {
       s = Util.GetElementOrAttributeValue ( "password", element );
       if ( !string.IsNullOrEmpty ( s ) )
         this.Password.Password = s;
-
+			*/
     }
 
     /// <summary>

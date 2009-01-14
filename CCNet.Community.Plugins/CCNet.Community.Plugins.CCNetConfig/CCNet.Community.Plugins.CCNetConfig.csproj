@@ -50,10 +50,13 @@
     <Compile Include="Common\BypassPattern.cs" />
     <Compile Include="Common\Category.cs" />
     <Compile Include="Common\Proxy.cs" />
+    <Compile Include="Labellers\LastChangeVersionLabeller.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Publishers\CodePlex\CodePlexReleaseFile.cs" />
     <Compile Include="Publishers\CodePlexReleasePublisher.cs" />
     <Compile Include="Publishers\CodePlex\CodePlexReleaseItem.cs" />
+    <Compile Include="Publishers\FtpPublisher.cs" />
+    <Compile Include="Publishers\Ftp\FtpFile.cs" />
     <Compile Include="Publishers\MetaWeblogPublisher.cs" />
     <Compile Include="Publishers\MetaWeblog\MetaWeblogTag.cs" />
     <Compile Include="Publishers\RssBuilds\RssBuildsElement.cs" />
@@ -65,12 +68,17 @@
     <Compile Include="Publishers\TfsWorkItemPublisher.cs" />
     <Compile Include="Publishers\TwitterPublisher.cs" />
     <Compile Include="SourceControls\FtpSourceControl.cs" />
+    <Compile Include="Tasks\MBUnitTask.cs" />
+    <Compile Include="Common\Assembly.cs" />
+    <Compile Include="Tasks\MBUnit\MBUnitAuthor.cs" />
+    <Compile Include="Tasks\MBUnit\MBUnitFilters.cs" />
+    <Compile Include="Tasks\MBUnit\MBUnitNamespace.cs" />
+    <Compile Include="Tasks\MBUnit\MBUnitType.cs" />
+    <Compile Include="Tasks\XUnitTask.cs" />
     <Compile Include="Util.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Labellers\" />
     <Folder Include="States\" />
-    <Folder Include="Tasks\" />
     <Folder Include="Triggers\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

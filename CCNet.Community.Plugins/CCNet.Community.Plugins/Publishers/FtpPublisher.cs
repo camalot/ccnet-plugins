@@ -68,6 +68,8 @@ namespace CCNet.Community.Plugins.Publishers {
 		/// </summary>
 		public FtpPublisher () {
 			this.Files = new List<string> ();
+			this.Username = "anonymous";
+			this.Password = "anonymous@anonymous.com";
 		}
 
 		/// <summary>
@@ -218,7 +220,6 @@ namespace CCNet.Community.Plugins.Publishers {
 				Log.Info ( "FtpPublisher skipped due to build condition not met." );
 				return;
 			}
-
 			if ( result.Succeeded ) {
 				FtpWebRequest req = this.CreateFtpWebRequest ();
 				foreach ( string s in this.Files ) {

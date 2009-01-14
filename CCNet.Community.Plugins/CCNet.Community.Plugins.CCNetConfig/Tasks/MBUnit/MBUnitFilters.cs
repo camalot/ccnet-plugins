@@ -55,31 +55,74 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using CCNetConfig.Core;
-using CCNetConfig.Core.Components;
 using CCNetConfig.Core.Serialization;
+using CCNetConfig.Core.Components;
+using CCNet.Community.Plugins.CCNetConfig.Common;
 using System.ComponentModel;
 
-namespace CCNet.Community.Plugins.CCNetConfig.Common {
-	/// <summary>
-	/// 
-	/// </summary>
-	[ReflectorName("category")]
-	public class Category : ICCNetObject, ICloneable {
-
+namespace CCNet.Community.Plugins.CCNetConfig.Tasks.MBUnit {
+	[ReflectorName("filters")]
+	public class MBUnitFilters : ICCNetObject, ICloneable {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Category"/> class.
+		/// Initializes a new instance of the <see cref="MBUnitFilters"/> class.
 		/// </summary>
-		public Category () {
-
+		public MBUnitFilters () {
+			this.FilterCategories = new CloneableList<Category> ();
+			this.ExludeCategories = new CloneableList<Category> ();
+			this.Authors = new CloneableList<MBUnitAuthor> ();
+			this.Types = new CloneableList<MBUnitType> ();
+			this.Namespaces = new CloneableList<MBUnitNamespace> ();
 		}
+
 		/// <summary>
-		/// Gets or sets the name.
+		/// Gets or sets the filter categories.
 		/// </summary>
-		/// <value>The name.</value>
-		[ReflectorName("name"),ReflectorNodeType(ReflectorNodeTypes.Attribute), Required,
-		Description ( "The name of the category." ), DefaultValue ( null ), Category ( "Required" ),
-		DisplayName("(Name)")]
-		public string Name { get; set; }
+		/// <value>The filter categories.</value>
+		[Description ( "Specifies that only those test fixtures decorated with the FixtureCategory attribute and categoryName will be run in this execution of MbUnit.Cons." ),
+		ReflectorName ( "filterCategories" ), DefaultValue ( null ),
+		ReflectorArray ( "category" ), Category ( "Optional" ), 
+		TypeConverter ( typeof ( IListTypeConverter ) )]
+		public CloneableList<Category> FilterCategories { get; set; }
+
+		/// <summary>
+		/// Gets or sets the exlude categories.
+		/// </summary>
+		/// <value>The exlude categories.</value>
+		[Description ( "Specifies that those test fixtures decorated with the FixtureCategory attribute and categoryName will not be run in this execution of MbUnit.Cons." ),
+		ReflectorName ( "excludeCategories" ), DefaultValue ( null ),
+		ReflectorArray ( "category" ), Category ( "Optional" ),
+		TypeConverter ( typeof ( IListTypeConverter ) )]
+		public CloneableList<Category> ExludeCategories { get; set; }
+
+		/// <summary>
+		/// Gets or sets the authors.
+		/// </summary>
+		/// <value>The authors.</value>
+		[Description ( "Specifies that only those test fixtures decorated with the Author attribute and authorName will be run in this execution of MbUnit.Cons" ),
+		ReflectorName ( "authors" ), DefaultValue ( null ),
+		ReflectorArray ( "author" ), Category ( "Optional" ),
+		TypeConverter ( typeof ( IListTypeConverter ) )]
+		public CloneableList<MBUnitAuthor> Authors { get; set; }
+
+		/// <summary>
+		/// Gets or sets the types.
+		/// </summary>
+		/// <value>The types.</value>
+		[Description ( "Specifies that only those tests of the type className will be run in this execution of MbUnit.Cons." ),
+		ReflectorName ( "types" ), DefaultValue ( null ),
+		ReflectorArray ( "type" ), Category ( "Optional" ),
+		TypeConverter ( typeof ( IListTypeConverter ) )]
+		public CloneableList<MBUnitType> Types { get; set; }
+
+		/// <summary>
+		/// Gets or sets the namespaces.
+		/// </summary>
+		/// <value>The namespaces.</value>
+		[Description ( "Specifies that only those tests in the named namespace will be run in this execution of MbUnit.Cons. " ),
+		ReflectorName ( "namespaces" ), DefaultValue ( null ),
+		ReflectorArray ( "ns" ), Category ( "Optional" ),
+		TypeConverter ( typeof ( IListTypeConverter ) )]
+		public CloneableList<MBUnitNamespace> Namespaces { get; set; }
 
 		#region ISerialize Members
 
@@ -88,13 +131,7 @@ namespace CCNet.Community.Plugins.CCNetConfig.Common {
 		/// </summary>
 		/// <param name="element">The element.</param>
 		public void Deserialize ( System.Xml.XmlElement element ) {
-			new Serializer<Category> ().Deserialize ( element, this );
-			/*if ( string.Compare ( element.Name, "category", false ) != 0 )
-				throw new InvalidCastException ( string.Format ( "Unable to convert {0} to a {1}", element.Name, "category" ) );
-
-			Util.ResetObjectProperties<Category> ( this );
-			this.Name = Util.GetElementOrAttributeValue ( "name", element );
-			*/
+			new Serializer<MBUnitFilters> ().Deserialize ( element, this );
 		}
 
 		/// <summary>
@@ -102,21 +139,26 @@ namespace CCNet.Community.Plugins.CCNetConfig.Common {
 		/// </summary>
 		/// <returns></returns>
 		public System.Xml.XmlElement Serialize () {
-			return new Serializer<Category> ().Serialize ( this );
+			return new Serializer<MBUnitFilters> ().Serialize ( this );
 		}
 
 		#endregion
 
 		#region ICloneable Members
-
 		/// <summary>
 		/// Creates a new object that is a copy of the current instance.
 		/// </summary>
 		/// <returns>
 		/// A new object that is a copy of this instance.
 		/// </returns>
-		public Category Clone () {
-			return this.MemberwiseClone () as Category;
+		public MBUnitFilters Clone () {
+			MBUnitFilters f = this.MemberwiseClone () as MBUnitFilters;
+			f.Authors = this.Authors.Clone ();
+			f.ExludeCategories = this.ExludeCategories.Clone ();
+			f.FilterCategories = this.FilterCategories.Clone ();
+			f.Namespaces = this.Namespaces.Clone ();
+			f.Types = this.Types.Clone ();
+			return f;
 		}
 
 		/// <summary>
@@ -131,14 +173,8 @@ namespace CCNet.Community.Plugins.CCNetConfig.Common {
 
 		#endregion
 
-		/// <summary>
-		/// Returns a <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
-		/// </summary>
-		/// <returns>
-		/// A <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
-		/// </returns>
 		public override string ToString () {
-			return this.Name;
+			return this.GetType().Name;
 		}
 	}
 }

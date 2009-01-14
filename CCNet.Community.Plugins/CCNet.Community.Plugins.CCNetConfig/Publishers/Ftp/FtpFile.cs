@@ -55,31 +55,25 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using CCNetConfig.Core;
-using CCNetConfig.Core.Components;
 using CCNetConfig.Core.Serialization;
-using System.ComponentModel;
+using CCNetConfig.Core.Components;
 
-namespace CCNet.Community.Plugins.CCNetConfig.Common {
-	/// <summary>
-	/// 
-	/// </summary>
-	[ReflectorName("category")]
-	public class Category : ICCNetObject, ICloneable {
-
+namespace CCNet.Community.Plugins.CCNetConfig.Publishers.Ftp {
+	[ReflectorName("file")]
+	public class FtpFile : ICCNetObject, ICloneable{
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Category"/> class.
+		/// Initializes a new instance of the <see cref="FtpFile"/> class.
 		/// </summary>
-		public Category () {
+		public FtpFile () {
 
 		}
+
 		/// <summary>
-		/// Gets or sets the name.
+		/// Gets or sets the file.
 		/// </summary>
-		/// <value>The name.</value>
-		[ReflectorName("name"),ReflectorNodeType(ReflectorNodeTypes.Attribute), Required,
-		Description ( "The name of the category." ), DefaultValue ( null ), Category ( "Required" ),
-		DisplayName("(Name)")]
-		public string Name { get; set; }
+		/// <value>The file.</value>
+		[ReflectorName("file"),ReflectorNodeType(ReflectorNodeTypes.Value)]
+		public string File { get; set; }
 
 		#region ISerialize Members
 
@@ -88,13 +82,7 @@ namespace CCNet.Community.Plugins.CCNetConfig.Common {
 		/// </summary>
 		/// <param name="element">The element.</param>
 		public void Deserialize ( System.Xml.XmlElement element ) {
-			new Serializer<Category> ().Deserialize ( element, this );
-			/*if ( string.Compare ( element.Name, "category", false ) != 0 )
-				throw new InvalidCastException ( string.Format ( "Unable to convert {0} to a {1}", element.Name, "category" ) );
-
-			Util.ResetObjectProperties<Category> ( this );
-			this.Name = Util.GetElementOrAttributeValue ( "name", element );
-			*/
+			new Serializer<FtpFile> ().Deserialize ( element, this );
 		}
 
 		/// <summary>
@@ -102,7 +90,7 @@ namespace CCNet.Community.Plugins.CCNetConfig.Common {
 		/// </summary>
 		/// <returns></returns>
 		public System.Xml.XmlElement Serialize () {
-			return new Serializer<Category> ().Serialize ( this );
+			return new Serializer<FtpFile> ().Serialize ( this );
 		}
 
 		#endregion
@@ -115,10 +103,9 @@ namespace CCNet.Community.Plugins.CCNetConfig.Common {
 		/// <returns>
 		/// A new object that is a copy of this instance.
 		/// </returns>
-		public Category Clone () {
-			return this.MemberwiseClone () as Category;
+		public FtpFile Clone () {
+			return this.MemberwiseClone () as FtpFile;
 		}
-
 		/// <summary>
 		/// Creates a new object that is a copy of the current instance.
 		/// </summary>
@@ -126,19 +113,9 @@ namespace CCNet.Community.Plugins.CCNetConfig.Common {
 		/// A new object that is a copy of this instance.
 		/// </returns>
 		object ICloneable.Clone () {
-			return this.Clone ();
+			throw new NotImplementedException ();
 		}
 
 		#endregion
-
-		/// <summary>
-		/// Returns a <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
-		/// </summary>
-		/// <returns>
-		/// A <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
-		/// </returns>
-		public override string ToString () {
-			return this.Name;
-		}
 	}
 }

@@ -61,6 +61,7 @@ using CCNetConfig.Core.Components;
 using System.Drawing.Design;
 using CCNet.Community.Plugins.CCNetConfig.Common;
 using System.Xml;
+using CCNetConfig.Core.Enums;
 
 namespace CCNet.Community.Plugins.CCNetConfig.Publishers {
   [ReflectorName ( "twit" ), Plugin, MinimumVersion ( "1.3" )]
@@ -82,6 +83,18 @@ namespace CCNet.Community.Plugins.CCNetConfig.Publishers {
     Editor ( typeof ( DefaultableBooleanUIEditor ), typeof ( UITypeEditor ) ),
     TypeConverter ( typeof ( DefaultableBooleanTypeConverter ) )]
     public bool? ContinueOnFailure { get; set; }
+
+		/// <summary>
+		/// Gets or sets the build condition.
+		/// </summary>
+		/// <value>The build condition.</value>
+		[Editor ( typeof ( DefaultableEnumUIEditor ), typeof ( UITypeEditor ) ),
+		TypeConverter ( typeof ( DefaultableEnumTypeConverter ) ),
+		ReflectorName ( "buildCondition" ),
+		Description ( "The build condition in which the info should be added to the feed." ),
+		DefaultValue ( null ), Category ( "Optional" )]
+		public PublishBuildCondition? BuildCondition { get; set; }
+
 
 		/// <summary>
 		/// Gets or sets the name of the user.

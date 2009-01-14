@@ -87,7 +87,8 @@ namespace CCNet.Community.Plugins.CCNetConfig.Publishers {
     /// </summary>
     /// <param name="element">The element.</param>
     public override void Deserialize ( System.Xml.XmlElement element ) {
-      if ( string.Compare ( element.Name, this.TypeName, false ) != 0 )
+			new Serializer<MetaWeblogPublisher> ().Deserialize ( element, this );
+      /*if ( string.Compare ( element.Name, this.TypeName, false ) != 0 )
         throw new InvalidCastException ( string.Format ( "Unable to convert {0} to a {1}", element.Name, this.TypeName ) );
 
       this.UserName = Util.GetElementOrAttributeValue ( "username", element );
@@ -113,7 +114,7 @@ namespace CCNet.Community.Plugins.CCNetConfig.Publishers {
         MetaWeblogTag mwt = new MetaWeblogTag();
         mwt.Deserialize(tNode);
         this.Tags.Add ( mwt );
-      }
+      }*/
     }
 
     /// <summary>
