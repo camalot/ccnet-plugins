@@ -148,6 +148,15 @@ namespace CCNet.Community.Plugins.CCNetConfig.Publishers {
 		Editor ( typeof ( ObjectOrNoneUIEditor ), typeof ( UITypeEditor ) ), ReflectorName ( "proxy" ),
 		Category ( "Optional" ), Description ( "Proxy information." )]
 		public Proxy Proxy { get; set; }
+
+		/// <summary>
+		/// Gets or sets the timeout.
+		/// </summary>
+		/// <value>The timeout.</value>
+		[Editor(typeof(NumericUpDownUIEditor),typeof(UITypeEditor)),DefaultValue(null),
+		ReflectorName("timeout"), Category("Optional"),
+		Description("Sets the number of seconds for the publisher to timeout")]
+		public int Timeout { get; set; }
 		/// <summary>
 		/// Serializes this instance.
 		/// </summary>

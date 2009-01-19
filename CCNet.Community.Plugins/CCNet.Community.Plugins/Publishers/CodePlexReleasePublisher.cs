@@ -69,7 +69,8 @@ namespace CCNet.Community.Plugins.Publishers {
 		/// </summary>
 		public CodePlexReleasePublisher () {
 			Releases = new List<ReleaseItem> ();
-			this.Timeout = 60 * 3000;
+			this.Timeout = 60 * 3;
+			this.ContinueOnFailure = false;
 		}
 
 		#region reflector properties
@@ -169,7 +170,7 @@ namespace CCNet.Community.Plugins.Publishers {
 					}
 
 					this.ReleaseService = new ReleaseService ();
-					this.ReleaseService.Timeout = this.Timeout;
+					this.ReleaseService.Timeout = this.Timeout * 1000;
 					if ( this.Proxy != null )
 						this.ReleaseService.Proxy = this.Proxy.CreateProxy ();
 					string tProjectName = string.IsNullOrEmpty ( this.ProjectName ) ? result.ProjectName.ToLower ().Trim () : this.ProjectName;

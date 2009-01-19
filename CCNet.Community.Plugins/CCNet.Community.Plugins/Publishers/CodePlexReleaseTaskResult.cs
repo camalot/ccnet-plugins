@@ -97,7 +97,7 @@ namespace CCNet.Community.Plugins.Publishers {
     }
 
     /// <summary>
-    /// Faileds this instance.
+    /// Returns if this task failed
     /// </summary>
     /// <returns></returns>
     public bool Failed ( ) {
@@ -105,7 +105,7 @@ namespace CCNet.Community.Plugins.Publishers {
     }
 
     /// <summary>
-    /// Succeededs this instance.
+		///  Returns if this task Succeeded
     /// </summary>
     /// <returns></returns>
     public bool Succeeded ( ) {

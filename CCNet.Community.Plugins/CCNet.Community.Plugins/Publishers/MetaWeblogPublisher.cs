@@ -17,6 +17,10 @@ namespace CCNet.Community.Plugins.Publishers {
   /// </summary>
   [ReflectorType ( "metaweblog" )]
 	public class MetaWeblogPublisher : BasePublisherTask {
+
+		public MetaWeblogPublisher () {
+			this.Timeout = 30;
+		}
     /// <summary>
     /// Gets or sets the meta weblog API URL.
     /// </summary>
@@ -60,6 +64,14 @@ namespace CCNet.Community.Plugins.Publishers {
     [ReflectorProperty("proxy",Required=false)]
     public Proxy Proxy { get; set; }
 
+		/// <summary>
+		/// Gets or sets the timeout.
+		/// </summary>
+		/// <value>The timeout.</value>
+		[ReflectorProperty ( "timeout", Required = false )]
+		public int Timeout { get; set; }
+
+
     public MetaWeblogPublisher ( ) {
       this.DescriptionFormat = Properties.Settings.Default.MetaWeblogDefaultDescriptionFormat;
       this.TitleFormat = Properties.Settings.Default.MetaWeblogDefaultTitleFormat;
@@ -75,6 +87,7 @@ namespace CCNet.Community.Plugins.Publishers {
 				return;
 			}
       MetaWeblogClient client = new MetaWeblogClient ( );
+			client.Timeout = this.Timeout * 1000;
 			NetworkCredential creds = new NetworkCredential ( this.GetPropertyString<IMacroRunner> ( this, result, this.Username ), this.GetPropertyString<IMacroRunner> ( this, result, this.Password ) );
 			client.Url = this.GetPropertyString<IMacroRunner> ( this, result, this.MetaWeblogApiUrl );
       client.Credentials = creds;
