@@ -18,9 +18,6 @@ namespace CCNet.Community.Plugins.Publishers {
   [ReflectorType ( "metaweblog" )]
 	public class MetaWeblogPublisher : BasePublisherTask {
 
-		public MetaWeblogPublisher () {
-			this.Timeout = 30;
-		}
     /// <summary>
     /// Gets or sets the meta weblog API URL.
     /// </summary>
@@ -72,10 +69,14 @@ namespace CCNet.Community.Plugins.Publishers {
 		public int Timeout { get; set; }
 
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="MetaWeblogPublisher"/> class.
+		/// </summary>
     public MetaWeblogPublisher ( ) {
       this.DescriptionFormat = Properties.Settings.Default.MetaWeblogDefaultDescriptionFormat;
       this.TitleFormat = Properties.Settings.Default.MetaWeblogDefaultTitleFormat;
       this.Tags = new string[ 0 ];
+			this.Timeout = 30;
     }
 
     #region ITask Members
