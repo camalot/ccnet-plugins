@@ -147,6 +147,8 @@ namespace CCNet.Community.Plugins.Publishers {
 			this.ItemElements = new List<RssElement> ();
 			this.Categories = new List<Category> ();
 			this.PingItems = new List<PingElement> ();
+			this.ItemTitle = "${Project} ${Label}";
+			this.ItemUrl = "${ProjectUrl}";
 			// need to add some default namespaces.
 			AddDefaultNamespaces ();
 		}
@@ -309,6 +311,7 @@ namespace CCNet.Community.Plugins.Publishers {
 		/// <param name="result">The result.</param>
 		public override void Run ( IIntegrationResult result ) {
 			try {
+				Log.Debug ( "Running RssBuildsPublisher" );
 				string outputPath = Path.Combine ( result.ArtifactDirectory, this.GetPropertyString<RssBuildsPublisher> ( this, result, this.OutputPath ) );
 
 				if ( result.Status != IntegrationStatus.Success )
@@ -519,16 +522,16 @@ namespace CCNet.Community.Plugins.Publishers {
 			channel.AppendChild ( itemElement );
 
 			XmlElement ele = doc.CreateElement ( "title" );
-			ele.InnerText = string.Format ( this.GetPropertyString<IMacroRunner> ( this, result, ItemTitle ), result.ProjectName, result.Label );
+			ele.InnerText = this.GetPropertyString<IMacroRunner> ( this, result, ItemTitle );
 			itemElement.AppendChild ( ele );
 
 			ele = doc.CreateElement ( "guid" );
 			ele.SetAttribute ( "isPermaLink", "true" );
-			ele.InnerText = string.Format ( this.GetPropertyString<IMacroRunner> ( this, result, this.ItemUrl ), result.ProjectName, result.Label );
+			ele.InnerText = this.GetPropertyString<IMacroRunner> ( this, result, this.ItemUrl);
 			itemElement.AppendChild ( ele );
 
 			ele = doc.CreateElement ( "link" );
-			ele.InnerText = string.Format ( this.GetPropertyString<IMacroRunner> ( this, result, this.ItemUrl ), result.ProjectName, result.Label );
+			ele.InnerText = this.GetPropertyString<IMacroRunner> ( this, result, this.ItemUrl );
 			itemElement.AppendChild ( ele );
 
 			ele = doc.CreateElement ( "pubDate" );
@@ -537,7 +540,7 @@ namespace CCNet.Community.Plugins.Publishers {
 
 			if ( AddEnclosure ) {
 				ele = doc.CreateElement ( "enclosure" );
-				ele.SetAttribute ( "url", string.Format ( this.GetPropertyString<IMacroRunner> ( this, result, this.EnclosureUrl ), result.ProjectName, result.Label ) );
+				ele.SetAttribute ( "url",this.GetPropertyString<IMacroRunner> ( this, result, this.EnclosureUrl ) );
 				itemElement.AppendChild ( ele );
 			}
 
