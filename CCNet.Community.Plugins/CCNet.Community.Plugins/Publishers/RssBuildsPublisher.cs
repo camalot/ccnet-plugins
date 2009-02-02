@@ -147,7 +147,7 @@ namespace CCNet.Community.Plugins.Publishers {
 			this.ItemElements = new List<RssElement> ();
 			this.Categories = new List<Category> ();
 			this.PingItems = new List<PingElement> ();
-			this.ItemTitle = "${Project} ${Label}";
+			this.ItemTitle = "${ProjectName} ${Label}";
 			this.ItemUrl = "${ProjectUrl}";
 			// need to add some default namespaces.
 			AddDefaultNamespaces ();
