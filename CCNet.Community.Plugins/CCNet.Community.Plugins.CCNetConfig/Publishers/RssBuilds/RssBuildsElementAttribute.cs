@@ -60,12 +60,12 @@ using CCNetConfig.Core.Components;
 using CCNetConfig.Core.Serialization;
 
 namespace CCNet.Community.Plugins.CCNetConfig.Publishers {
+		[ReflectorName("attribute")]
 	public class RssBuildsElementAttribute : ICCNetObject, ICloneable {
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RssBuildsElementAttribute"/> class.
 		/// </summary>
-		[ReflectorName("attribute")]
 		public RssBuildsElementAttribute () {
 			
 		}
