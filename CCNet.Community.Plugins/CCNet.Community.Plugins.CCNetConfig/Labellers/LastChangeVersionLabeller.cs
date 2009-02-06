@@ -12,7 +12,6 @@ namespace CCNet.Community.Plugins.CCNetConfig.Labellers {
 	/// The LastChangeVersionLabeller works a lot like the LastChangeLabeller, except it also uses the date to build the label.
 	/// </summary>
 	[Plugin,
-	ReflectorName ( "lastChangeVersionLabeller" ),
 	Description ( "The LastChangeVersionLabeller works a lot like the LastChangeLabeller, except it also uses the date to build the label." )]
 	public class LastChangeVersionLabeller : Labeller, ICCNetDocumentation {
 

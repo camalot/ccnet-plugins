@@ -65,6 +65,7 @@ namespace CCNet.Community.Plugins.CCNetConfig.Publishers {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RssBuildsElementAttribute"/> class.
 		/// </summary>
+		[ReflectorName("attribute")]
 		public RssBuildsElementAttribute () {
 			
 		}

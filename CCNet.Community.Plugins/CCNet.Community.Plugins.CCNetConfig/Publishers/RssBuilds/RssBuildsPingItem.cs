@@ -63,6 +63,7 @@ namespace CCNet.Community.Plugins.CCNetConfig.Publishers {
 	/// <summary>
 	/// Represents a ping service to ping
 	/// </summary>
+	[ReflectorName("pingItem")]
 	public class RssBuildsPingItem : ICCNetObject, ICloneable {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RssBuildsPingItem"/> class.

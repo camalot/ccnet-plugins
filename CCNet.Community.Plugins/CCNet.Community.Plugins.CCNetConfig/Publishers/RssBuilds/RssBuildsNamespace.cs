@@ -60,6 +60,7 @@ using CCNetConfig.Core.Components;
 using CCNetConfig.Core.Serialization;
 
 namespace CCNet.Community.Plugins.CCNetConfig.Publishers {
+	[ReflectorName("namespace")]
 	public class RssBuildsNamespace : ICCNetObject, ICloneable {
 
 		/// <summary>

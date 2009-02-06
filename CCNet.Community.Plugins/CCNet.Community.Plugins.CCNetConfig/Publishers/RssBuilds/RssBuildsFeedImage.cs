@@ -63,6 +63,7 @@ namespace CCNet.Community.Plugins.CCNetConfig.Publishers {
 	/// <summary>
 	/// Represents a rss feed image.
 	/// </summary>
+	[TypeConverter(typeof(ExpandableObjectConverter))]
 	public class RssBuildsFeedImage : ICCNetObject, ICloneable {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RssBuildsFeedImage"/> class.

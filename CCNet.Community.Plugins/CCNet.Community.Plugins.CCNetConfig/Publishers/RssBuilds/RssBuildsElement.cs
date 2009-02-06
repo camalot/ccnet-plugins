@@ -66,6 +66,7 @@ namespace CCNet.Community.Plugins.CCNetConfig.Publishers {
 	/// <summary>
 	/// Represents an XmlElement that is added to the XmlDocument.
 	/// </summary>
+	[ReflectorName("rssElement")]
 	public class RssBuildsElement : ICCNetObject, ICloneable {
 
 		/// <summary>
